@@ -7,13 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4B0A104F1A1ED3CF00A71B53 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A104E1A1ED3CF00A71B53 /* AppDelegate.swift */; };
 		4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10501A1ED3CF00A71B53 /* diancaila.xcdatamodeld */; };
-		4B0A10541A1ED3CF00A71B53 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10531A1ED3CF00A71B53 /* ViewController.swift */; };
 		4B0A10571A1ED3CF00A71B53 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4B0A10551A1ED3CF00A71B53 /* Main.storyboard */; };
 		4B0A10591A1ED3CF00A71B53 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4B0A10581A1ED3CF00A71B53 /* Images.xcassets */; };
 		4B0A105C1A1ED3CF00A71B53 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4B0A105A1A1ED3CF00A71B53 /* LaunchScreen.xib */; };
 		4B0A10681A1ED3D000A71B53 /* diancailaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10671A1ED3D000A71B53 /* diancailaTests.swift */; };
+		4B0A10811A1ED41400A71B53 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10711A1ED41400A71B53 /* AppDelegate.swift */; };
+		4B0A10821A1ED41400A71B53 /* CustomGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10721A1ED41400A71B53 /* CustomGrid.swift */; };
+		4B0A10831A1ED41400A71B53 /* CustomStepper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10731A1ED41400A71B53 /* CustomStepper.swift */; };
+		4B0A10841A1ED41400A71B53 /* DeskIdDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10741A1ED41400A71B53 /* DeskIdDelegate.swift */; };
+		4B0A10851A1ED41400A71B53 /* DeskPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10751A1ED41400A71B53 /* DeskPickerViewController.swift */; };
+		4B0A10861A1ED41400A71B53 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10761A1ED41400A71B53 /* Menu.swift */; };
+		4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10771A1ED41400A71B53 /* MenuDetailTableViewCell.swift */; };
+		4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10781A1ED41400A71B53 /* MenuTableViewCell.swift */; };
+		4B0A10891A1ED41400A71B53 /* MenuType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10791A1ED41400A71B53 /* MenuType.swift */; };
+		4B0A108A1A1ED41400A71B53 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107A1A1ED41400A71B53 /* Order.swift */; };
+		4B0A108B1A1ED41400A71B53 /* OrderConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107B1A1ED41400A71B53 /* OrderConfirmViewController.swift */; };
+		4B0A108C1A1ED41400A71B53 /* OrderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107C1A1ED41400A71B53 /* OrderListViewController.swift */; };
+		4B0A108D1A1ED41400A71B53 /* OrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107D1A1ED41400A71B53 /* OrderViewController.swift */; };
+		4B0A108E1A1ED41400A71B53 /* TakeawayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107E1A1ED41400A71B53 /* TakeawayViewController.swift */; };
+		4B0A108F1A1ED41400A71B53 /* UIUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107F1A1ED41400A71B53 /* UIUtil.swift */; };
+		4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10801A1ED41400A71B53 /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,15 +43,29 @@
 /* Begin PBXFileReference section */
 		4B0A10491A1ED3CF00A71B53 /* diancaila.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = diancaila.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B0A104D1A1ED3CF00A71B53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4B0A104E1A1ED3CF00A71B53 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4B0A10511A1ED3CF00A71B53 /* diancaila.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = diancaila.xcdatamodel; sourceTree = "<group>"; };
-		4B0A10531A1ED3CF00A71B53 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4B0A10561A1ED3CF00A71B53 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4B0A10581A1ED3CF00A71B53 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4B0A105B1A1ED3CF00A71B53 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		4B0A10611A1ED3D000A71B53 /* diancailaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = diancailaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B0A10661A1ED3D000A71B53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4B0A10671A1ED3D000A71B53 /* diancailaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = diancailaTests.swift; sourceTree = "<group>"; };
+		4B0A10711A1ED41400A71B53 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4B0A10721A1ED41400A71B53 /* CustomGrid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomGrid.swift; sourceTree = "<group>"; };
+		4B0A10731A1ED41400A71B53 /* CustomStepper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomStepper.swift; sourceTree = "<group>"; };
+		4B0A10741A1ED41400A71B53 /* DeskIdDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeskIdDelegate.swift; sourceTree = "<group>"; };
+		4B0A10751A1ED41400A71B53 /* DeskPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeskPickerViewController.swift; sourceTree = "<group>"; };
+		4B0A10761A1ED41400A71B53 /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
+		4B0A10771A1ED41400A71B53 /* MenuDetailTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuDetailTableViewCell.swift; sourceTree = "<group>"; };
+		4B0A10781A1ED41400A71B53 /* MenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
+		4B0A10791A1ED41400A71B53 /* MenuType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuType.swift; sourceTree = "<group>"; };
+		4B0A107A1A1ED41400A71B53 /* Order.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
+		4B0A107B1A1ED41400A71B53 /* OrderConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderConfirmViewController.swift; sourceTree = "<group>"; };
+		4B0A107C1A1ED41400A71B53 /* OrderListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderListViewController.swift; sourceTree = "<group>"; };
+		4B0A107D1A1ED41400A71B53 /* OrderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderViewController.swift; sourceTree = "<group>"; };
+		4B0A107E1A1ED41400A71B53 /* TakeawayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeawayViewController.swift; sourceTree = "<group>"; };
+		4B0A107F1A1ED41400A71B53 /* UIUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIUtil.swift; sourceTree = "<group>"; };
+		4B0A10801A1ED41400A71B53 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,8 +107,22 @@
 		4B0A104B1A1ED3CF00A71B53 /* diancaila */ = {
 			isa = PBXGroup;
 			children = (
-				4B0A104E1A1ED3CF00A71B53 /* AppDelegate.swift */,
-				4B0A10531A1ED3CF00A71B53 /* ViewController.swift */,
+				4B0A10711A1ED41400A71B53 /* AppDelegate.swift */,
+				4B0A10721A1ED41400A71B53 /* CustomGrid.swift */,
+				4B0A10731A1ED41400A71B53 /* CustomStepper.swift */,
+				4B0A10741A1ED41400A71B53 /* DeskIdDelegate.swift */,
+				4B0A10751A1ED41400A71B53 /* DeskPickerViewController.swift */,
+				4B0A10761A1ED41400A71B53 /* Menu.swift */,
+				4B0A10771A1ED41400A71B53 /* MenuDetailTableViewCell.swift */,
+				4B0A10781A1ED41400A71B53 /* MenuTableViewCell.swift */,
+				4B0A10791A1ED41400A71B53 /* MenuType.swift */,
+				4B0A107A1A1ED41400A71B53 /* Order.swift */,
+				4B0A107B1A1ED41400A71B53 /* OrderConfirmViewController.swift */,
+				4B0A107C1A1ED41400A71B53 /* OrderListViewController.swift */,
+				4B0A107D1A1ED41400A71B53 /* OrderViewController.swift */,
+				4B0A107E1A1ED41400A71B53 /* TakeawayViewController.swift */,
+				4B0A107F1A1ED41400A71B53 /* UIUtil.swift */,
+				4B0A10801A1ED41400A71B53 /* ViewController.swift */,
 				4B0A10551A1ED3CF00A71B53 /* Main.storyboard */,
 				4B0A10581A1ED3CF00A71B53 /* Images.xcassets */,
 				4B0A105A1A1ED3CF00A71B53 /* LaunchScreen.xib */,
@@ -215,9 +257,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B0A10541A1ED3CF00A71B53 /* ViewController.swift in Sources */,
+				4B0A108B1A1ED41400A71B53 /* OrderConfirmViewController.swift in Sources */,
+				4B0A10891A1ED41400A71B53 /* MenuType.swift in Sources */,
+				4B0A108C1A1ED41400A71B53 /* OrderListViewController.swift in Sources */,
+				4B0A108F1A1ED41400A71B53 /* UIUtil.swift in Sources */,
+				4B0A108D1A1ED41400A71B53 /* OrderViewController.swift in Sources */,
+				4B0A10831A1ED41400A71B53 /* CustomStepper.swift in Sources */,
+				4B0A108E1A1ED41400A71B53 /* TakeawayViewController.swift in Sources */,
+				4B0A10811A1ED41400A71B53 /* AppDelegate.swift in Sources */,
+				4B0A10861A1ED41400A71B53 /* Menu.swift in Sources */,
+				4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */,
+				4B0A108A1A1ED41400A71B53 /* Order.swift in Sources */,
+				4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,
-				4B0A104F1A1ED3CF00A71B53 /* AppDelegate.swift in Sources */,
+				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,
+				4B0A10851A1ED41400A71B53 /* DeskPickerViewController.swift in Sources */,
+				4B0A10841A1ED41400A71B53 /* DeskIdDelegate.swift in Sources */,
+				4B0A10821A1ED41400A71B53 /* CustomGrid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
