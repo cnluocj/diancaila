@@ -8,7 +8,14 @@
 
 import Foundation
 
-struct MenuType {
-    let id: Int = 0
+class MenuType: NSObject {
+    let id: String = ""
     let name: String = ""
+    let pubDate: String = ""
+    
+    init(id: String, name: String, pubDate: String) {
+        self.id = id
+        self.name = name
+        self.pubDate = pubDate
+    }
 }

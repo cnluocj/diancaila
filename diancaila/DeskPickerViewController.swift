@@ -8,9 +8,13 @@
 
 import UIKit
 
+protocol OrderValuePassDelegate {
+       func value(value: Any)  
+}
+
 class DeskPickerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     
-    var delegate: DeskIdDelegate!
+    var delegate: OrderValuePassDelegate!
     
     var picker :UIPickerView!
     
@@ -48,7 +52,7 @@ class DeskPickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         
         self.view.addSubview(navBar)
         
-        self.picker = UIPickerView(frame: CGRectMake(0, 66, UIUtil.screenWidth, 150))
+        self.picker = UIPickerView(frame: CGRectMake(0, 120, UIUtil.screenWidth, 150))
         self.picker.backgroundColor = UIColor.whiteColor()
         self.picker.delegate = self
         self.picker.dataSource = self
@@ -60,7 +64,7 @@ class DeskPickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     func didPressDoneButton(sender: UIBarButtonItem) {
-        self.delegate.passValue(deskId)
+        self.delegate.value(deskId)
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     

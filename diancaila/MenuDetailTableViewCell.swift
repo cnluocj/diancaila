@@ -55,7 +55,7 @@ class MenuDetailTableViewCell: UITableViewCell {
         // 如果大于300，就是弹出的全部菜单
         if (self.superTableView.frame.width > 300) {
             self.steper = CustomStepper(frame: CGRectMake(self.superTableView.frame.width/7*5, 50, self.superTableView.frame.width/3, 50))
-            self.badge = UIButton(frame: CGRectMake(UIUtil.screenWidth - 35, 10, 25, 25))
+            self.badge = UIButton(frame: CGRectMake(UIUtil.screenWidth - 50, 10, 25, 25))
             
         } else {
             
@@ -96,7 +96,7 @@ class MenuDetailTableViewCell: UITableViewCell {
             badge.hidden = false
             badge.setTitle("\(Int(sender.value))", forState: UIControlState.Normal)
             
-            let order = Order(_menuTypeIndex: self.menuStyleIndex, _menuIndex: self.menuIndex, _menu: menu, _count: Int(sender.value))
+            let order = Order(menuTypeIndex: self.menuStyleIndex, menuIndex: self.menuIndex, menu: menu, count: Int(sender.value))
             self.viewcontroller.orderList["\(self.menuStyleIndex)_\(menuIndex)"] = order
         }
         

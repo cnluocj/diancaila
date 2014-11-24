@@ -8,27 +8,79 @@
 
 import UIKit
 
-class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, DeskIdDelegate {
+class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, OrderValuePassDelegate, UIScrollViewDelegate, HttpProtocol {
     
     var deskIdView: UITableView!
     var deskIdCell: UITableViewCell!
+    var orderListView: UITableView!
+    
+//    var textLabel: UILabel!
+    
+    var orderList: [Order]!
     
     let cellHeight =  CGFloat(42)
 
     var deskId: Int = 0
+    
+    var ehttp: HttpController = HttpController()
+    
 
     override func viewDidLoad() {
+        let scrollViewHeight = 44 * CGFloat(orderList.count) + 320
+        let scrollView = UIScrollView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
+        scrollView.delegate = self
+        scrollView.contentSize = CGSize(width: UIUtil.screenWidth, height: scrollViewHeight)
+        scrollView.scrollEnabled = true
+        scrollView.bounces = true
+        self.view.addSubview(scrollView)
+        
         super.viewDidLoad()
         
         
         self.view.backgroundColor = UIUtil.gray_system
         self.title = "下单确认"
-        
+
         self.deskIdView = UITableView(frame: CGRectMake(0, 40, UIUtil.screenWidth, cellHeight))
         self.deskIdView.delegate = self
         self.deskIdView.dataSource = self
         self.deskIdView.scrollEnabled = false
-        self.view.addSubview(self.deskIdView)
+        scrollView.addSubview(deskIdView)
+        
+        self.orderListView = UITableView(frame: CGRectMake(0, 130, UIUtil.screenWidth, 44 * CGFloat(orderList.count) - 1))
+        self.orderListView.scrollEnabled = false
+        self.orderListView.delegate = self
+        self.orderListView.dataSource = self
+        scrollView.addSubview(orderListView)
+        
+        
+        var heightOffset = CGFloat(0)
+        var radius = CGFloat(70)
+        if scrollViewHeight > UIUtil.screenHeight {
+            heightOffset =  scrollViewHeight - 160
+        } else {
+            heightOffset = UIUtil.screenHeight - 160
+        }
+        let okButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2-40, heightOffset, radius, radius))
+        okButton.setTitle("下单", forState: UIControlState.Normal)
+        okButton.backgroundColor = UIColor.orangeColor()
+        okButton.setTitle("松开～", forState: UIControlState.Highlighted)
+        okButton.layer.cornerRadius = radius/2
+        okButton.addTarget(self, action: "didPressOkButton:", forControlEvents: UIControlEvents.TouchUpInside)
+        scrollView.addSubview(okButton)
+        
+        
+//        textLabel = UILabel(frame: CGRect(x: 50, y: 200, width: UIUtil.screenWidth, height: 100))
+//        scrollView.addSubview(textLabel)
+        
+    }
+    
+    func didPressOkButton(sender: UIButton) {
+        self.ehttp.deletage = self
+        self.ehttp.onSearch("http://m.weather.com.cn/data/101010100.html")
+    }
+    
+    func didReceiveResults(result: NSDictionary) {
+        
     }
     
     func gotoDeskPickerViewController() {
@@ -44,38 +96,63 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        if tableView == orderListView {
+            return orderList.count
+        } else {
+            return 1
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        deskIdCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: "cell")
-        deskIdCell.textLabel?.text = "桌号"
-        if deskId == 0 {
-            deskIdCell.detailTextLabel?.text = "请选择桌号"
+        if tableView == orderListView {
+            let orderCell = "orderCell"
+            var cell: AnyObject? = tableView.dequeueReusableCellWithIdentifier(orderCell)
+            if cell == nil {
+                cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: orderCell)
+            }
+            let tempCell = cell as UITableViewCell
+            tempCell.textLabel?.text = orderList[indexPath.row].menu.name
+            tempCell.detailTextLabel?.text = "\(orderList[indexPath.row].count)份"
+            tempCell.selectionStyle = UITableViewCellSelectionStyle.None
+            
+            return tempCell
+            
         } else {
-            deskIdCell.detailTextLabel?.text = "\(deskId)号桌"
+            deskIdCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: "cell")
+            deskIdCell.textLabel?.text = "桌号"
+            if deskId == 0 {
+                deskIdCell.detailTextLabel?.text = "请选择桌号"
+            } else {
+                deskIdCell.detailTextLabel?.text = "\(deskId)号桌"
+            }
+            deskIdCell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+            return deskIdCell
         }
-        deskIdCell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
-        return deskIdCell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        gotoDeskPickerViewController()
-        
-        tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        if tableView == deskIdView {
+            gotoDeskPickerViewController()
+            
+            tableView.deselectRowAtIndexPath(indexPath, animated: false)
+                
+        }
     }
-
+    
    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func passValue(id: Int) {
-        deskId = id
+    
+    // order value pass delegate
+    func value(value: Any) {
+        deskId = Int(value as NSNumber)
         deskIdView.reloadData()
     }
+    
     
     
     /*

@@ -12,13 +12,13 @@ class Order {
     
     var menuTypeIndex: Int = 0
     var menuIndex: Int = 0
-    var menu: Menu = Menu()
+    var menu: Menu = Menu(id: "", name: "", description: "", cover: "", price: 0, vipPrice: 0, type: MenuType(id: "", name: "", pubDate: ""))
     var count: Int = 0
     
-    init(_menuTypeIndex: Int, _menuIndex: Int, _menu: Menu, _count: Int) {
-        self.menuTypeIndex = _menuTypeIndex
-        self.menuIndex = _menuIndex
-        self.menu = _menu
-        self.count = _count
+    init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
+        self.menuTypeIndex = menuTypeIndex
+        self.menuIndex = menuIndex
+        self.menu = menu
+        self.count = count
     }
 }

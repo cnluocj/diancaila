@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import AudioToolbox
 
-class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol {
     
     var tableView1: UITableView!
     var tableView2: UITableView!
@@ -30,7 +31,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var contentHeight : CGFloat!
     
     // 菜单类型
-    var menuType: [MenuType] = []
+    var menuType: NSArray = NSArray()
     
     // 菜单详细列表
     var menuDetail: [[Menu]] = []
@@ -39,7 +40,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var menuTypeIndex = 0
     
     
-    // 订单
+    // 订单     key 为 "menuTypeIndex_menuIndex"  用于记录每样订单在表中的位置
     var orderList: [String:Order] = [:]
     // 订单总份数
     var orderCount = 0
@@ -49,6 +50,8 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // 订单列表打开与否
     var orderListIsOpen = false
     
+    // json解析器
+    let jsonController = JSONController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,42 +64,30 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 除了导航，底下内容的高度
         contentHeight = UIUtil.screenHeight - UIUtil.statusHeight - navHeight
         
-        let type1 = MenuType(id:1, name:"紫菜包饭类")
-        menuType.append(type1)
-        let type2 = MenuType(id:2, name:"拌饭类")
-        menuType.append(type2)
-        let type3 = MenuType(id:3, name:"汤类")
-        menuType.append(type3)
-        
-        for type in menuType {
-            var menuList: [Menu] = []
-            let menu1 = Menu(id:type.id*10+1, name:"im \(type.name) 's 1", price: 12, type: type)
-            menuList.append(menu1)
-            
-            let menu2 = Menu(id:type.id*10+2, name:"im \(type.name) 's 2", price: 13, type: type)
-            menuList.append(menu2)
-            
-            menuDetail.append(menuList)
-        }
-        
         
         // 目录菜单
-        tableView1 = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth/3, UIUtil.screenHeight - countViewHeight))
+        tableView1 = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth/3, contentHeight - countViewHeight))
         tableView1.delegate = self
         tableView1.dataSource = self
         tableView1.backgroundColor = UIUtil.gray
-        tableView1.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
         setExtraCellLineHidden(tableView1)
         self.view.addSubview(tableView1)
         
+        
+        let jsonString = "{\"menutype\":[{\"d_type_id\":\"1\",\"d_type_name\":\"热菜\",\"d_type_time\":\"2014-11-18 10:27:55\"},{\"d_type_id\":\"2\",\"d_type_name\":\"凉菜\",\"d_type_time\":\"2014-11-18 10:28:00\"},{\"d_type_id\":\"3\",\"d_type_name\":\"特色菜\",\"d_type_time\":\"2014-11-18 10:28:05\"},{\"d_type_id\":\"4\",\"d_type_name\":\"店铺主推\",\"d_type_time\":\"2014-11-18 10:28:12\"}]}"
+        let data = jsonString.dataUsingEncoding(NSUTF8StringEncoding)
+        var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
+        jsonController.menuTypeDelegate = self
+        jsonController.parseMenuType(jsonResult)
+        
         // 分割线
-        let divide = UIView(frame: CGRectMake(UIUtil.screenWidth/3, 0, 1, UIUtil.screenHeight - countViewHeight))
+        let divide = UIView(frame: CGRectMake(UIUtil.screenWidth/3, 0, 1, contentHeight - countViewHeight))
         divide.backgroundColor = UIColor.grayColor()
         divide.alpha = 0.3
         self.view.addSubview(divide)
         
         // 详细菜单
-        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/3+1, 0, (UIUtil.screenWidth/3)*2, UIUtil.screenHeight))
+        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/3+1, 0, (UIUtil.screenWidth/3)*2, contentHeight - countViewHeight))
         tableView2.delegate = self
         tableView2.dataSource = self
         self.view.addSubview(tableView2)
@@ -178,6 +169,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func didPressChooseOverButton(sender: UIButton) {
         let orderConfirmViewController = OrderConfirmViewController()
+        orderConfirmViewController.orderList = orderList.values.array
         self.navigationController?.pushViewController(orderConfirmViewController, animated: true)
     }
     
@@ -195,30 +187,48 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func openOrderListView() {
         orderListTableView.reloadData()
             
-        UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+        UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.allZeros, animations: { () -> Void in
             self.orderListView.transform = CGAffineTransformMakeTranslation(0, -(self.contentHeight - self.countViewHeight))
         }, completion: nil)
         
         orderListIsOpen = true
+        
+        
+        playSound("lock", soundType: "caf")
     }
     
     func closeOrderListView() {
          tableView2.reloadData()
         
-         UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
             self.orderListView.transform = CGAffineTransformMakeTranslation(0, self.contentHeight - self.countViewHeight)
         }, completion: nil)
         
         orderListIsOpen = false
     
+        playSound("lock", soundType: "caf")
     }
+    
+    func playSound(soundName: String, soundType: String) {
+
+        let path = "/System/Library/Audio/UISounds/\(soundName).\(soundType)"
+        var sound: SystemSoundID = SystemSoundID()
+        var url = NSURL(fileURLWithPath: path)
+        AudioServicesCreateSystemSoundID(CFURLCopyAbsoluteURL(url), &sound)
+        AudioServicesPlaySystemSound(sound)
+    }
+    
+    
+    // JSONParseProtocol 相关
+    func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray) {
         
+        menuType = menuTypeArray ?? NSArray()
+        tableView1.reloadData()
+        tableView1.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
+    }
     
-//    func gotoOrderList(sender: UIImage) {
-//        let controller = OrderListViewController()
-//        self.presentViewController(controller, animated: true, completion: nil)
-//    }
     
+    // about tableview delegate
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if tableView == self.tableView1 {
             return 1
@@ -231,7 +241,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if tableView == self.tableView1 {
             return menuType.count
         } else if tableView == self.tableView2 {
-            return menuDetail[menuTypeIndex].count
+            if menuDetail.count == 0 {
+                return 0
+            } else {
+                return menuDetail[menuTypeIndex].count
+            }
         } else {
             return orderList.count
         }
@@ -345,6 +359,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         view.backgroundColor = UIColor.clearColor()
         tableView.tableFooterView = view
     }
+
 
     
     

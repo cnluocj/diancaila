@@ -23,7 +23,7 @@ class UIUtil {
     }
     
     class var gray_system : UIColor{
-        return UIColor(red: 0.92156, green: 0.92156, blue: 0.92509, alpha: 1)
+        return UIColor(red: 235/255, green: 235/255, blue: 241/255, alpha: 1)
     }
     
     class var yellow_light: UIColor{
