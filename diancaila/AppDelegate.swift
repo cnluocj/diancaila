@@ -13,15 +13,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    var rootView: ViewController!
+    var rootView: LoginViewController!
     var navController: UINavigationController!
     
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
+        // 改变状态栏字体颜色
+        UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.LightContent, animated: true)
+        
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        self.rootView = ViewController()
+//        self.rootView = ViewController()
+        self.rootView = LoginViewController()
         
         self.navController = getNavController()
         navController.pushViewController(rootView, animated: true)

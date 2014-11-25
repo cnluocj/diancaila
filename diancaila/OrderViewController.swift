@@ -77,7 +77,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let jsonString = "{\"menutype\":[{\"d_type_id\":\"1\",\"d_type_name\":\"热菜\",\"d_type_time\":\"2014-11-18 10:27:55\"},{\"d_type_id\":\"2\",\"d_type_name\":\"凉菜\",\"d_type_time\":\"2014-11-18 10:28:00\"},{\"d_type_id\":\"3\",\"d_type_name\":\"特色菜\",\"d_type_time\":\"2014-11-18 10:28:05\"},{\"d_type_id\":\"4\",\"d_type_name\":\"店铺主推\",\"d_type_time\":\"2014-11-18 10:28:12\"}]}"
         let data = jsonString.dataUsingEncoding(NSUTF8StringEncoding)
         var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
-        jsonController.menuTypeDelegate = self
+        jsonController.parseDelegate = self
         jsonController.parseMenuType(jsonResult)
         
         // 分割线
@@ -85,6 +85,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         divide.backgroundColor = UIColor.grayColor()
         divide.alpha = 0.3
         self.view.addSubview(divide)
+        
+        
+        menuDetail.append([Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1")])
+        for _ in 0..<10 {
+        menuDetail[0].append(Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1"))
+        }
         
         // 详细菜单
         tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/3+1, 0, (UIUtil.screenWidth/3)*2, contentHeight - countViewHeight))

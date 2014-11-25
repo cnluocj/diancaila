@@ -8,22 +8,26 @@
 
 import Foundation
 
-struct Menu{
+class Menu{
     let id: String = ""
     let name: String = ""
     let description: String = ""
     let cover: String = ""
     let price: Double = 0
     let vipPrice: Double = 0
-    let type: MenuType = MenuType(id: "", name: "", pubDate: "")
+    let typeId: String = ""
+    let shopId: String = ""
+    let pubDate: String = ""
     
-    init(id: String, name: String, description: String, cover: String, price: Double, vipPrice: Double, type: MenuType) {
+    init(id: String, name: String, description: String, cover: String, price: Double, vipPrice: Double, typeId: String, shopId: String, pubDate: String) {
         self.id = id
         self.name = name
         self.description = description
         self.cover = cover
         self.price = price
         self.vipPrice = vipPrice
-        self.type = type
+        self.typeId = typeId
+        self.shopId = shopId
+        self.pubDate = pubDate
     }
 }

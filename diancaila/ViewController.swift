@@ -35,6 +35,7 @@ class ViewController: UIViewController {
         
         self.title = "点菜啦"
         self.view.backgroundColor = UIColor.whiteColor()
+        self.navigationItem.setHidesBackButton(true, animated: false)
         
         // 设置状态栏字体颜色
         UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.LightContent, animated: true)

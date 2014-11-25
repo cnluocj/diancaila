@@ -26,7 +26,11 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     
 
     override func viewDidLoad() {
-        let scrollViewHeight = 44 * CGFloat(orderList.count) + 320
+        var scrollViewHeight = 44 * CGFloat(orderList.count) + 320
+        if scrollViewHeight < UIUtil.screenHeight {
+            // 为了当 scrollview没有超出界的时候拖动也有动画效果
+            scrollViewHeight = UIUtil.screenHeight+1
+        }
         let scrollView = UIScrollView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         scrollView.delegate = self
         scrollView.contentSize = CGSize(width: UIUtil.screenWidth, height: scrollViewHeight)
@@ -79,6 +83,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         self.ehttp.onSearch("http://m.weather.com.cn/data/101010100.html")
     }
     
+    // test
     func didReceiveResults(result: NSDictionary) {
         
     }

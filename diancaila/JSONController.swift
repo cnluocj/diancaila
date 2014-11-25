@@ -11,24 +11,50 @@ import Foundation
 
 @objc protocol JSONParseProtocol {
     optional func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray)
+    
+    optional func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray)
 }
 
 class JSONController : NSObject {
-    var menuTypeDelegate: JSONParseProtocol?
+    var parseDelegate: JSONParseProtocol?
     
     func parseMenuType(result: NSDictionary) {
-        let menuTypeArray: NSArray = result["menutype"] as NSArray
-        var resultArray: NSMutableArray = NSMutableArray()
+        let resultArray: NSArray = result["menutype"] as NSArray
+        var menuTypeArray: NSMutableArray = NSMutableArray()
         
-        for type in menuTypeArray {
+        for type in resultArray {
             let typeId: String = type.objectForKey("d_type_id") as String
             let typeName: String = type.objectForKey("d_type_name") as String
             let pubDate: String = type.objectForKey("d_type_time") as String
             
             let menuType: MenuType = MenuType(id: typeId, name: typeName, pubDate: pubDate)
-            resultArray.addObject(menuType)
+            menuTypeArray.addObject(menuType)
         }
         
-        menuTypeDelegate?.didFinishParseMenuTypeAndReturn!(resultArray)
+        parseDelegate?.didFinishParseMenuTypeAndReturn!(menuTypeArray)
     }
+    
+    
+    func parseMenuByTypeId(result: NSDictionary, typeId: String) {
+        let resultArray: NSArray = result[typeId] as NSArray
+        var menuArray: NSMutableArray = NSMutableArray()
+        
+        for menu in resultArray {
+            let id: String = menu.objectForKey("dish_id") as String
+            let name: String = menu.objectForKey("dish_name") as String
+            let description: String = menu.objectForKey("dish_des") as String
+            let typeId: String = menu.objectForKey("dish_type_id") as String
+            let cover: String = menu.objectForKey("dish_cover") as String
+            let price: Double = (menu.objectForKey("dish_origin_price") as NSString).doubleValue
+            let vipPrice: Double = (menu.objectForKey("dish_user_price") as NSString).doubleValue
+            let shopId: String = menu.objectForKey("dish_shop_id") as NSString
+            let pubDate: String = menu.objectForKey("dish_tiem") as NSString
+            
+            let menu: Menu = Menu(id: id, name: name, description: description, cover: cover, price: price, vipPrice: vipPrice, typeId: typeId, shopId: shopId, pubDate: pubDate)
+            menuArray.addObject(menu)
+        }
+        
+        parseDelegate?.didFinishParseMenuByTypeIdAndReturn!(menuArray)
+    }
+    
 }

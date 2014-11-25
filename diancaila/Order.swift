@@ -12,7 +12,7 @@ class Order {
     
     var menuTypeIndex: Int = 0
     var menuIndex: Int = 0
-    var menu: Menu = Menu(id: "", name: "", description: "", cover: "", price: 0, vipPrice: 0, type: MenuType(id: "", name: "", pubDate: ""))
+    var menu: Menu = Menu(id: "", name: "", description: "", cover: "", price: 0, vipPrice: 0, typeId: "", shopId: "", pubDate: "")
     var count: Int = 0
     
     init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
