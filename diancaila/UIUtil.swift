@@ -30,6 +30,11 @@ class UIUtil {
         return UIColor(red: 0.99607, green: 0.97647, blue: 0.63137, alpha: 1)
     }
     
+    // 导航栏是否透明的偏移量
+    class var contentOffset: CGFloat{
+        return CGFloat(64)
+    }
+    
     /** 屏幕数值相关 */
     class var screenWidth: CGFloat  { return UIScreen.mainScreen().bounds.size.width }
     class var screenHeight: CGFloat { return UIScreen.mainScreen().bounds.size.height }

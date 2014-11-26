@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func getNavController() ->UINavigationController{
         let navController = UINavigationController()
         //22为iphone状态栏高度
-        let navImage = UIUtil.imageFromColor(UIUtil.screenWidth, height: navController.navigationBar.frame.height+22, color: UIUtil.navColor)
+        let navImage = UIUtil.imageFromColor(UIUtil.screenWidth, height: navController.navigationBar.frame.height+20, color: UIUtil.navColor)
         // 改变背景颜色，使用生成的纯色图片
         navController.navigationBar.setBackgroundImage(navImage, forBarMetrics: UIBarMetrics.Default)
         // 主体是否从顶部开始

@@ -30,4 +30,12 @@ class Menu{
         self.shopId = shopId
         self.pubDate = pubDate
     }
+    
+    init(id: String, name: String) {
+        self.id = id
+        self.name = name
+    }
+    
+    init() {
+    }
 }

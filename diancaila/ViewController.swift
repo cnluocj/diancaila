@@ -45,9 +45,8 @@ class ViewController: UIViewController {
         topMargin = navHeight + UIUtil.statusHeight
         
         // 点餐按钮
-//        let img1 = UIUtil.scaleToSize(UIImage(named: "rules-100")!, size: CGSize(width: 100, height: 100))
         initHeadBtn(orderBtn, title: "点餐", img: UIImage(named: "order")!, x: 0.0, y: 0)
-        orderBtn.addTarget(self, action: "gotoOrderView:", forControlEvents: UIControlEvents.TouchUpInside)
+        orderBtn.addTarget(self, action: "didPressOrderButton:", forControlEvents: UIControlEvents.TouchUpInside)
         self.view.addSubview(orderBtn)
         
         // 外卖按钮
@@ -57,9 +56,26 @@ class ViewController: UIViewController {
         self.view.addSubview(takeawayBtn)
         
         
+        let orderBarItem = UIBarButtonItem(title: "订单", style: UIBarButtonItemStyle.Plain, target: self, action: "didPressOrderBarItem:")
+        orderBarItem.setTitleTextAttributes([NSFontAttributeName : UIFont.systemFontOfSize(15), NSForegroundColorAttributeName: UIColor.whiteColor()], forState: UIControlState.Normal)
+        self.navigationItem.rightBarButtonItem = orderBarItem
     }
     
-    func gotoOrderView(sender: UIButton) {
+    
+    func didPressOrderBarItem(sender: UIBarButtonItem) {
+        gotoOrderListTableView()
+    }
+    
+    func gotoOrderListTableView() {
+        let viewController = OrderListViewController()
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func didPressOrderButton(sender: UIButton) {
+        gotoOrderView()
+    }
+    
+    func gotoOrderView() {
         
         let orderViewController = OrderViewController()
         self.navigationController?.pushViewController(orderViewController, animated: true)

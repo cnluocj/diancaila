@@ -15,8 +15,6 @@ class MenuTableViewCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        
-        
         menuLabel = UILabel(frame: CGRectMake(15, 0, UIUtil.screenWidth/3-20, 50))
         // 自动换行
         menuLabel.numberOfLines = 0
@@ -27,6 +25,9 @@ class MenuTableViewCell: UITableViewCell {
         
         let view = UIView(frame: self.frame)
         view.backgroundColor = UIColor.whiteColor()
+        let selectDivide = UIView(frame: CGRectMake(0, 0, 5, self.frame.height+6.5))
+        selectDivide.backgroundColor = UIColor.orangeColor()
+        view.addSubview(selectDivide)
         self.selectedBackgroundView = view
     }
     

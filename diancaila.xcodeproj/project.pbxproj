@@ -28,6 +28,7 @@
 		4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10801A1ED41400A71B53 /* ViewController.swift */; };
 		4B2E43101A1F1E82008D75BD /* HttpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2E430F1A1F1E82008D75BD /* HttpController.swift */; };
 		4B3110521A22CB1000ABDF96 /* JSONController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3110511A22CB1000ABDF96 /* JSONController.swift */; };
+		4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */; };
 		4BFE5AF91A242F7200CC592E /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFE5AF81A242F7200CC592E /* LoginViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +68,7 @@
 		4B0A10801A1ED41400A71B53 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4B2E430F1A1F1E82008D75BD /* HttpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpController.swift; sourceTree = "<group>"; };
 		4B3110511A22CB1000ABDF96 /* JSONController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONController.swift; sourceTree = "<group>"; };
+		4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderListViewController.swift; sourceTree = "<group>"; };
 		4BFE5AF81A242F7200CC592E /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -131,6 +133,7 @@
 				4B2E430F1A1F1E82008D75BD /* HttpController.swift */,
 				4B3110511A22CB1000ABDF96 /* JSONController.swift */,
 				4BFE5AF81A242F7200CC592E /* LoginViewController.swift */,
+				4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */,
 			);
 			path = diancaila;
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 				4B0A10861A1ED41400A71B53 /* Menu.swift in Sources */,
 				4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */,
 				4B0A108A1A1ED41400A71B53 /* Order.swift in Sources */,
+				4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */,
 				4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,
 				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,

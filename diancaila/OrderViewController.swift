@@ -101,7 +101,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
          // 订单列表
-        orderListView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight, UIUtil.screenWidth, UIUtil.screenHeight*2))
+        orderListView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight , UIUtil.screenWidth, UIUtil.screenHeight*2))
         orderListView.backgroundColor = UIColor.clearColor()
         self.view.addSubview(orderListView)
         
@@ -115,7 +115,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         // 下单栏
-        countView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight, UIUtil.screenWidth, countViewHeight))
+        countView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight , UIUtil.screenWidth, countViewHeight))
         countView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(countView)
         
@@ -247,7 +247,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if tableView == self.tableView1 {
             return menuType.count
         } else if tableView == self.tableView2 {
-            if menuDetail.count == 0 {
+            if menuDetail.count == 0 || menuDetail.count < menuTypeIndex+1{
                 return 0
             } else {
                 return menuDetail[menuTypeIndex].count
