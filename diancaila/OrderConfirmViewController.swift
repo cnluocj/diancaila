@@ -8,19 +8,21 @@
 
 import UIKit
 
-class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, OrderValuePassDelegate, UIScrollViewDelegate, HttpProtocol {
+class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, HttpProtocol, UIPickerViewDataSource, UIPickerViewDelegate, ActionSheetDeletage {
     
     var deskIdView: UITableView!
     var deskIdCell: UITableViewCell!
     var orderListView: UITableView!
-    
-//    var textLabel: UILabel!
+    var picker: UIPickerView?
     
     var orderList: [Order]!
     
     let cellHeight =  CGFloat(42)
 
-    var deskId: Int = 0
+    var deskId: Int = 1
+    var selectDeskid: Int = 1
+    
+    var numOfDesk: Int = 10
     
     var ehttp: HttpController = HttpController()
     
@@ -64,7 +66,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         } else {
             heightOffset = UIUtil.screenHeight - 160
         }
-        let okButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2-40, heightOffset, radius, radius))
+        let okButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2-35, heightOffset, radius, radius))
         okButton.setTitle("下单", forState: UIControlState.Normal)
         okButton.backgroundColor = UIColor.orangeColor()
         okButton.setTitle("松开～", forState: UIControlState.Highlighted)
@@ -73,8 +75,6 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         scrollView.addSubview(okButton)
         
         
-//        textLabel = UILabel(frame: CGRect(x: 50, y: 200, width: UIUtil.screenWidth, height: 100))
-//        scrollView.addSubview(textLabel)
         
     }
     
@@ -86,12 +86,6 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     // test
     func didReceiveResults(result: NSDictionary) {
         
-    }
-    
-    func gotoDeskPickerViewController() {
-        let controller = DeskPickerViewController()
-        controller.delegate = self
-        self.presentViewController(controller, animated: true, completion: nil)
     }
     
     
@@ -138,10 +132,18 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         if tableView == deskIdView {
-            gotoDeskPickerViewController()
+//            gotoDeskPickerViewController()
             
             tableView.deselectRowAtIndexPath(indexPath, animated: false)
-                
+            
+            if (picker == nil) {
+                picker = UIPickerView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 200))
+                picker?.delegate = self
+                picker?.dataSource = self
+            }
+            let sheet = CustomActionSheet(customView: picker!)
+            sheet.deletage = self
+            sheet.show()
         }
     }
     
@@ -152,12 +154,31 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     
-    // order value pass delegate
-    func value(value: Any) {
-        deskId = Int(value as NSNumber)
-        deskIdView.reloadData()
+    
+    // about picker
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        return 1
     }
     
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return numOfDesk
+    }
+    
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
+        return "第\(row+1)桌"
+    }
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        self.selectDeskid = row+1
+        
+    }
+    
+    // actionsheet deletage
+    func didPressDoneButton() {
+        deskId = selectDeskid
+        deskIdView.reloadData()
+    }
     
     
     /*
