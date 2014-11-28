@@ -23,9 +23,12 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var segmentedItems = ["未完成", "已完成"]
     
+    // 数据源
     var orderList: [[Order]] = []
     var sectionTitles = [String]()
-
+    var searchData = NSMutableArray() // orderList 一维表示
+    var filterData: NSArray?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.whiteColor()
@@ -57,6 +60,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         // 绑定 UISearchDisplayController
         searchController = UISearchDisplayController(searchBar: searchBar, contentsController: self)
         searchController.delegate = self
+        searchController.searchResultsDelegate = self
+        searchController.searchResultsDataSource = self
         
         
         self.view = didNotFinishView
@@ -84,14 +89,31 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         var meatList = [Order]()
         
         for i in 0..<10 {
-            icecreamList.append(Order(menu: Menu(id: "1", name: "icecream\(i)"), deskId: 1))
-            meatList.append(Order(menu: Menu(id: "1", name: "meat\(i)"), deskId: 1))
+            icecreamList.append(Order(menuTypeIndex: 0, menuIndex: i, menu: Menu(id: "1", name: "icecream\(i)"), deskId: 1))
+            meatList.append(Order(menuTypeIndex: 1, menuIndex: i, menu: Menu(id: "1", name: "肉类啊\(i)"), deskId: 1))
         }
         orderList.append(icecreamList)
         orderList.append(meatList)
         sectionTitles.append("icecream")
         sectionTitles.append("meat")
+        
+
+        reloadSearchData(orderList)
     }
+    
+    
+    func reloadSearchData(list: [[Order]]) {
+        searchData.removeAllObjects()
+        
+        // 将orderList 化作一维
+        for sectionData in orderList {
+            for indexData in sectionData {
+                searchData.addObject(indexData)
+            }
+        }
+    }
+    
+    
     
     func segmentAction(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
@@ -110,17 +132,38 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         // Dispose of any resources that can be recreated.
     }
     
-    // tableView 相关
+    
+    // UITableView data source / UITableView Deletage
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return orderList.count
+        if tableView == didNotFinishOrderTableView {
+            return orderList.count
+        } else {
+            return 1
+        }
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return sectionTitles[section]
+        if tableView == didNotFinishOrderTableView {
+            return sectionTitles[section]
+        } else {
+            return nil
+        }
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return orderList[section].count
+        if tableView == didNotFinishOrderTableView {
+            return orderList[section].count
+        } else {
+            
+            // 谓词搜索
+            let predicate = NSPredicate(format: "menu.name contains [cd] %@", searchController.searchBar.text)
+            filterData =  NSArray(array: searchData.filteredArrayUsingPredicate(predicate!))
+            if let fdata = filterData {
+                return fdata.count
+            } else {
+                return 0
+            }
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -131,31 +174,62 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: cellId)
         }
         
+        if tableView == didNotFinishOrderTableView {
+            cell?.textLabel?.text = orderList[indexPath.section][indexPath.row].menu.name
+            cell?.detailTextLabel?.text = "\(orderList[indexPath.section][indexPath.row].deskId)号桌"
+            
+        } else {
+            let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
+            cell?.textLabel?.text = order.menu.name
+            cell?.detailTextLabel?.text = "\(order.deskId)号桌"
+        }
         
-        cell?.textLabel?.text = orderList[indexPath.section][indexPath.row].menu.name
-        cell?.detailTextLabel?.text = "\(orderList[indexPath.section][indexPath.row].deskId)号桌"
         
         return cell!
     }
     
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == UITableViewCellEditingStyle.Delete {
-            
-            orderList[indexPath.section].removeAtIndex(indexPath.row)
-            
-            if orderList[indexPath.section].count == 0 {
-                orderList.removeAtIndex(indexPath.section)
-                tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Top)
-            } else {
+        if tableView == didNotFinishOrderTableView {
+            if editingStyle == UITableViewCellEditingStyle.Delete {
                 
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                orderList[indexPath.section].removeAtIndex(indexPath.row)
+                reloadSearchData(orderList)
+                
+                if orderList[indexPath.section].count == 0 {
+                    orderList.removeAtIndex(indexPath.section)
+                    tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Top)
+                } else {
+                    
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                    
+                }
                 
             }
-            
         }
-        
     }
+    
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        if tableView == didNotFinishOrderTableView {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        
+        if tableView == searchController.searchResultsTableView {
+            searchController.setActive(false, animated: true)
+            
+            let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
+            let outSideIndexPath = NSIndexPath(forRow: order.menuIndex, inSection: order.menuTypeIndex)
+            didNotFinishOrderTableView.scrollToRowAtIndexPath(outSideIndexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+        }
+    }
+    
     
     func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String! {
         return "删除"
@@ -165,10 +239,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         return 60
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: false)
-    }
-
     
     // searchbar 相关
     func searchDisplayControllerWillBeginSearch(controller: UISearchDisplayController) {

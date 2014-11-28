@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Order {
+class Order: NSObject {
     
     var menuTypeIndex: Int = 0
     var menuIndex: Int = 0
@@ -23,6 +23,12 @@ class Order {
         self.menuIndex = menuIndex
         self.menu = menu
         self.count = count
+    }
+    
+    convenience init(menuTypeIndex: Int,  menuIndex: Int, menu: Menu, deskId: Int) {
+        self.init(menu: menu, deskId: deskId)
+        self.menuIndex = menuIndex
+        self.menuTypeIndex = menuTypeIndex
     }
     
     init(menu: Menu, deskId: Int) {

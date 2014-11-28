@@ -8,10 +8,10 @@
 
 import Foundation
 
-class Menu{
+class Menu: NSObject {
     let id: String = ""
     let name: String = ""
-    let description: String = ""
+    let desc: String = ""
     let cover: String = ""
     let price: Double = 0
     let vipPrice: Double = 0
@@ -22,7 +22,7 @@ class Menu{
     init(id: String, name: String, description: String, cover: String, price: Double, vipPrice: Double, typeId: String, shopId: String, pubDate: String) {
         self.id = id
         self.name = name
-        self.description = description
+        self.desc = description
         self.cover = cover
         self.price = price
         self.vipPrice = vipPrice
@@ -36,6 +36,7 @@ class Menu{
         self.name = name
     }
     
-    init() {
+    override init() {
+        super.init()
     }
 }

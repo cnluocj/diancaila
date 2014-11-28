@@ -28,8 +28,9 @@ class CustomActionSheet: UIView {
         
         self.customView = customView
         
-        self.contentView = UIView(frame: CGRectMake(0, UIUtil.screenHeight - 65 - self.customView.frame.height, UIUtil.screenWidth, 65 + self.customView.frame.height))
+        self.contentView = UIView(frame: CGRectMake(0, UIUtil.screenHeight, UIUtil.screenWidth, 65 + self.customView.frame.height))
         self.contentView.backgroundColor = UIColor.whiteColor()
+        self.contentView.alpha = 0
         
         self.contentView.addSubview(self.customView)
         
@@ -69,9 +70,11 @@ class CustomActionSheet: UIView {
     func show() {
         self.userInteractionEnabled = true
         
-        UIView.animateWithDuration(0.2, animations: { () -> Void in
+        UIView.animateWithDuration(0.3, animations: { () -> Void in
             self.alpha = 0.6
             self.contentView.alpha = 1
+            self.contentView.transform = CGAffineTransformMakeTranslation(0, -self.contentView.frame.height)
+            
             }) { (isFinished: Bool) -> Void in
         }
         UIApplication.sharedApplication().keyWindow?.addSubview(self)
@@ -80,9 +83,11 @@ class CustomActionSheet: UIView {
     
     func hide(sender: UIView) {
         
-        UIView.animateWithDuration(0.3, animations: { () -> Void in
+        UIView.animateWithDuration(0.6, animations: { () -> Void in
             self.alpha = 0
             self.contentView.alpha = 0
+            
+            self.contentView.transform = CGAffineTransformMakeTranslation(0, self.contentView.frame.height)
             
             }) { (isFinished: Bool) -> Void in
                 

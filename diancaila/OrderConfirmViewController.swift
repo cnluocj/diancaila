@@ -19,7 +19,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     
     let cellHeight =  CGFloat(42)
 
-    var deskId: Int = 1
+    var deskId: Int = 0
     var selectDeskid: Int = 1
     
     var numOfDesk: Int = 10
