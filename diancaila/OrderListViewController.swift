@@ -11,7 +11,7 @@ import UIKit
 class OrderListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,UISearchDisplayDelegate {
     
     var didNotFinishView: UIView!
-    var didFinishView: UIView!
+    var allOrderView: UIView!
     
     var didNotFinishOrderTableView: UITableView!
     var segmentedControl: UISegmentedControl!
@@ -21,7 +21,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var allOrderTableView: UITableView!
     
-    var segmentedItems = ["未完成", "已完成"]
+    var segmentedItems = ["等待订单", "全部订单"]
     
     // 数据源
     var orderList: [[Order]] = []
@@ -31,7 +31,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.whiteColor()
+//        self.view.backgroundColor = UIColor.whiteColor()
         self.title = "订单"
         
         // 解决searchbar 抖动问题
@@ -46,7 +46,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         segmentedControl.addTarget(self, action: "segmentAction:", forControlEvents: UIControlEvents.ValueChanged)
         self.navigationItem.titleView = segmentedControl
         
-        // 未完成订单界面
+        // 未完成订单界面 ---------------------------------------------------------------------------
         didNotFinishView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         didNotFinishOrderTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         didNotFinishOrderTableView.delegate = self
@@ -54,6 +54,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         didNotFinishView.addSubview(didNotFinishOrderTableView)
         
         searchBar = UISearchBar(frame: CGRectMake(0, 0, self.view.frame.width, 44))
+//        searchBar.backgroundImage = UIUtil.imageFromColor(self.view.frame.width, height: 44, color: UIUtil.gray_system)
         searchBar.placeholder = "搜索"
         didNotFinishOrderTableView.tableHeaderView = searchBar
         
@@ -66,20 +67,45 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.view = didNotFinishView
         
-        // 已完成订单界面
-        didFinishView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
-        didFinishView.backgroundColor = UIColor.whiteColor()
+        // 已完成订单界面 -----------------------------------------------------------------------
+        allOrderView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
+        allOrderView.backgroundColor = UIColor.whiteColor()
         
         
-    
-        allOrderTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
+        // 条件选择按钮组
+        let choseButtonGroupView = UIView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, 40))
+        let dateChoseButton = UIButton(frame: CGRectMake(20, 5, 130, 30))
+        dateChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
+        dateChoseButton.setTitle("今天", forState: UIControlState.Normal)
+        dateChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+        dateChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
+        dateChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
+        dateChoseButton.layer.borderWidth = 2
+        dateChoseButton.layer.cornerRadius = 5
+        
+        let deskChoseButton = UIButton(frame: CGRectMake(170, 5, 130, 30))
+        deskChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
+        deskChoseButton.setTitle("全部", forState: UIControlState.Normal)
+        deskChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+        deskChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
+        deskChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
+        deskChoseButton.layer.borderWidth = 2
+        deskChoseButton.layer.cornerRadius = 5
+        
+        choseButtonGroupView.addSubview(dateChoseButton)
+        choseButtonGroupView.addSubview(deskChoseButton)
+        allOrderView.addSubview(choseButtonGroupView)
+        
+        
+        allOrderTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset + 50, UIUtil.screenWidth, UIUtil.screenHeight))
         // 如果不加这一条，tableview会向上偏移，与手机顶部对齐
-        allOrderTableView.contentInset = UIEdgeInsets(top: UIUtil.contentOffset, left: 0, bottom: 0, right: 0)
+//        allOrderTableView.contentInset = UIEdgeInsets(top: UIUtil.contentOffset + 50, left: 0, bottom: 0, right: 0)
         allOrderTableView.delegate = self
         allOrderTableView.dataSource = self
         
-        didFinishView.addSubview(allOrderTableView)
-        
+        allOrderView.addSubview(allOrderTableView)
+      
+    
        
     }
     
@@ -102,10 +128,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     
+    // 重载提供搜索的数据
     func reloadSearchData(list: [[Order]]) {
         searchData.removeAllObjects()
         
-        // 将orderList 化作一维
+        // 将二维的orderList 化作一维
         for sectionData in orderList {
             for indexData in sectionData {
                 searchData.addObject(indexData)
@@ -120,7 +147,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         case 0:
             self.view = didNotFinishView
         case 1:
-            self.view = didFinishView
+            self.view = allOrderView
         default:
             break
         }
@@ -239,6 +266,24 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         return 60
     }
     
+//    
+//    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        if tableView == didNotFinishOrderTableView {
+//            let view =  UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 40))
+//            view.backgroundColor = UIUtil.gray_system
+//            let titleLabel = UILabel(frame: CGRectMake(0, 3, UIUtil.screenWidth, 20))
+//            titleLabel.font = UIFont.systemFontOfSize(20)
+//            titleLabel.backgroundColor = UIColor.clearColor()
+//            titleLabel.textColor = UIColor.orangeColor()
+//            titleLabel.text = sectionTitles[section]
+//            titleLabel.textAlignment = NSTextAlignment.Center
+//            view.addSubview(titleLabel)
+//            return view
+//        }
+//        
+//        return nil
+//    }
+//    
     
     // searchbar 相关
     func searchDisplayControllerWillBeginSearch(controller: UISearchDisplayController) {

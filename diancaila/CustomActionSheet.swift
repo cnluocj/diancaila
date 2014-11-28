@@ -83,7 +83,7 @@ class CustomActionSheet: UIView {
     
     func hide(sender: UIView) {
         
-        UIView.animateWithDuration(0.6, animations: { () -> Void in
+        UIView.animateWithDuration(0.3, animations: { () -> Void in
             self.alpha = 0
             self.contentView.alpha = 0
             
