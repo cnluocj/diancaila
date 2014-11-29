@@ -140,6 +140,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                 picker = UIPickerView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 200))
                 picker?.delegate = self
                 picker?.dataSource = self
+                picker?.selectRow(numOfDesk, inComponent: 0, animated: true)
             }
             let sheet = CustomActionSheet(customView: picker!)
             sheet.deletage = self
@@ -161,16 +162,18 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return numOfDesk
+        return numOfDesk * 50
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        return "第\(row+1)桌"
+        return "\(row % numOfDesk + 1)号桌"
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
-        self.selectDeskid = row+1
+        self.selectDeskid = row % numOfDesk + 1
+        
+        pickerView.selectRow(numOfDesk * 24 + (row % numOfDesk), inComponent: 0, animated: false)
         
     }
     

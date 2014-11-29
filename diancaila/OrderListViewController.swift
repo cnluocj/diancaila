@@ -29,11 +29,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     var searchData = NSMutableArray() // orderList 一维表示
     var filterData: NSArray?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.view.backgroundColor = UIColor.whiteColor()
         self.title = "订单"
-        
+            
         // 解决searchbar 抖动问题
         self.automaticallyAdjustsScrollViewInsets = true
         self.extendedLayoutIncludesOpaqueBars = true
