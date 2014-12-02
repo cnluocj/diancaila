@@ -16,7 +16,7 @@ class Order: NSObject {
     var count: Int = 0
     var deskId: Int = 0
     var state: Int = 0
-    
+    var customerNum = 0
     
     init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
         self.menuTypeIndex = menuTypeIndex

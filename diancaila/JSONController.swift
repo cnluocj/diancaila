@@ -35,8 +35,8 @@ class JSONController : NSObject {
     }
     
     
-    func parseMenuByTypeId(result: NSDictionary, typeId: String) {
-        let resultArray: NSArray = result[typeId] as NSArray
+    func parseMenu(result: NSDictionary) {
+        let resultArray: NSArray = result["dish"] as NSArray
         var menuArray: NSMutableArray = NSMutableArray()
         
         for menu in resultArray {
@@ -48,7 +48,7 @@ class JSONController : NSObject {
             let price: Double = (menu.objectForKey("dish_origin_price") as NSString).doubleValue
             let vipPrice: Double = (menu.objectForKey("dish_user_price") as NSString).doubleValue
             let shopId: String = menu.objectForKey("dish_shop_id") as NSString
-            let pubDate: String = menu.objectForKey("dish_tiem") as NSString
+            let pubDate: String = menu.objectForKey("dish_time") as NSString
             
             let menu: Menu = Menu(id: id, name: name, description: description, cover: cover, price: price, vipPrice: vipPrice, typeId: typeId, shopId: shopId, pubDate: pubDate)
             menuArray.addObject(menu)
@@ -56,5 +56,6 @@ class JSONController : NSObject {
         
         parseDelegate?.didFinishParseMenuByTypeIdAndReturn!(menuArray)
     }
+    
     
 }

@@ -45,7 +45,8 @@ class MenuDetailTableViewCell: UITableViewCell {
         
         
         
-        nameLabel = UILabel(frame: CGRectMake(15, 0, UIUtil.screenWidth/3*2-20, 50))
+        nameLabel = UILabel(frame: CGRectMake(15, 0, UIUtil.screenWidth/7*5-20, 50))
+        nameLabel.numberOfLines = 0
         self.contentView.addSubview(nameLabel)
         
         priceLabel = UILabel(frame: CGRectMake(15, 40, 100, 50))

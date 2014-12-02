@@ -9,7 +9,7 @@
 import UIKit
 import AudioToolbox
 
-class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol {
+class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol {
     
     var tableView1: UITableView!
     var tableView2: UITableView!
@@ -21,6 +21,9 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var orderListTableView: UITableView!
     var hDivide: UIView!
     
+    // 加载
+    var loadingIndicator: UIActivityIndicatorView!
+    
     let takeOrderButtonWidth = UIUtil.screenWidth/3*2
     
     let menuCellHeight = CGFloat(50)
@@ -31,13 +34,15 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var contentHeight : CGFloat!
     
     // 菜单类型
-    var menuType: NSArray = NSArray()
+    var menuTypeArray: NSArray = NSArray()
     
     // 菜单详细列表
-    var menuDetail: [[Menu]] = []
+    var menuDetail: [String:[Menu]] = [:]
     
-    // 定位菜单类型
+    // 定位菜单类型 (使用 typeid标识)
     var menuTypeIndex = 0
+    
+    var httpController = HttpController()
     
     
     // 订单     key 为 "menuTypeIndex_menuIndex"  用于记录每样订单在表中的位置
@@ -64,9 +69,14 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 除了导航，底下内容的高度
         contentHeight = UIUtil.screenHeight - UIUtil.statusHeight - navHeight
         
+
+        // 获取数据
+        httpController.onSearchMenuType(HttpController.menuTypeAPI)
+        httpController.deletage = self
+        jsonController.parseDelegate = self
         
         // 目录菜单
-        tableView1 = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth/3, contentHeight - countViewHeight))
+        tableView1 = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth/7 * 2, contentHeight - countViewHeight))
         tableView1.delegate = self
         tableView1.dataSource = self
         tableView1.backgroundColor = UIUtil.gray
@@ -74,26 +84,20 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.view.addSubview(tableView1)
         
         
-        let jsonString = "{\"menutype\":[{\"d_type_id\":\"1\",\"d_type_name\":\"热菜\",\"d_type_time\":\"2014-11-18 10:27:55\"},{\"d_type_id\":\"2\",\"d_type_name\":\"凉菜\",\"d_type_time\":\"2014-11-18 10:28:00\"},{\"d_type_id\":\"3\",\"d_type_name\":\"特色菜\",\"d_type_time\":\"2014-11-18 10:28:05\"},{\"d_type_id\":\"4\",\"d_type_name\":\"店铺主推\",\"d_type_time\":\"2014-11-18 10:28:12\"}]}"
-        let data = jsonString.dataUsingEncoding(NSUTF8StringEncoding)
-        var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
-        jsonController.parseDelegate = self
-        jsonController.parseMenuType(jsonResult)
-        
         // 分割线
-        let divide = UIView(frame: CGRectMake(UIUtil.screenWidth/3, 0, 1, contentHeight - countViewHeight))
+        let divide = UIView(frame: CGRectMake(UIUtil.screenWidth/7*2, 0, 1, contentHeight - countViewHeight))
         divide.backgroundColor = UIColor.grayColor()
         divide.alpha = 0.3
         self.view.addSubview(divide)
         
-        
-        menuDetail.append([Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1")])
-        for _ in 0..<10 {
-        menuDetail[0].append(Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1"))
-        }
+//        
+//        menuDetail.append([Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1")])
+//        for _ in 0..<10 {
+//        menuDetail[0].append(Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1"))
+//        }
         
         // 详细菜单
-        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/3+1, 0, (UIUtil.screenWidth/3)*2, contentHeight - countViewHeight))
+        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 0, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight))
         tableView2.delegate = self
         tableView2.dataSource = self
         self.view.addSubview(tableView2)
@@ -171,6 +175,24 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         hDivide.backgroundColor = UIColor.grayColor()
         hDivide.alpha = 0.3
         self.view.addSubview(hDivide)
+        
+        
+
+        // 加载状态
+        loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+        loadingIndicator.backgroundColor = UIColor.grayColor()
+        loadingIndicator.alpha = 0.8
+        loadingIndicator.frame.size = CGSize(width: 150, height: 150)
+        loadingIndicator.layer.cornerRadius = 5
+        // 居中显示
+        loadingIndicator.layer.position = CGPoint(x: UIUtil.screenWidth/2, y: UIUtil.screenHeight/3)
+        loadingIndicator.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+//        loadingIndicator.frame = CGRectMake(UIUtil.screenWidth, UIUtil.screenHeight, 30, 30)
+        loadingIndicator.startAnimating()
+        self.view.addSubview(loadingIndicator)
+        self.view.bringSubviewToFront(loadingIndicator)
+        self.view.userInteractionEnabled = false
+        
     }
     
     func didPressChooseOverButton(sender: UIButton) {
@@ -225,14 +247,64 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     
+    
+    // HttpProtocol
+    func didReceiveMenuTypeResults(result: NSDictionary) {
+        
+        jsonController.parseMenuType(result)
+    }
+    
+    
+    func didReceiveMenuResults(result: NSDictionary) {
+        jsonController.parseMenu(result)
+    }
+    
+    
+    
     // JSONParseProtocol 相关
     func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray) {
         
-        menuType = menuTypeArray ?? NSArray()
+        self.menuTypeArray = menuTypeArray ?? NSArray()
         tableView1.reloadData()
         tableView1.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
+        
+        // 分配空间 menuDetail
+        for menuType in self.menuTypeArray {
+            let type = menuType as MenuType
+            menuDetail[type.id] = []
+        }
+        
+        // 根据获取的type id 继续获取菜单
+        for menuType in self.menuTypeArray {
+            let type = menuType as MenuType
+            httpController.onSearchMenu(HttpController.menuAPI, typeId: type.id)
+            
+        }
+        if self.menuTypeArray.count > 0 {
+            self.menuTypeIndex = NSString(string: self.menuTypeArray[0].id).integerValue
+        }
+        
+        
+        loadingIndicator.removeFromSuperview()
+        self.view.userInteractionEnabled = true
     }
     
+    func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray) {
+        var type = "1"
+        // 获取该组的typeid
+        if menuArray.count > 0 {
+            let menu = menuArray.objectAtIndex(0) as Menu
+            type = menu.typeId
+        }
+        
+        for menu in menuArray {
+            menuDetail[type]?.append(menu as Menu)
+        }
+        
+        tableView2.reloadData()
+    }
+    
+ 
     
     // about tableview delegate
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -245,13 +317,22 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == self.tableView1 {
-            return menuType.count
+            return self.menuTypeArray.count
+            
         } else if tableView == self.tableView2 {
-            if menuDetail.count == 0 || menuDetail.count < menuTypeIndex+1{
+            
+            if menuDetail.count == 0{
                 return 0
             } else {
-                return menuDetail[menuTypeIndex].count
+                
+                if let menuArray = menuDetail["\(menuTypeIndex)"] {
+                    return menuArray.count
+                } else {
+                    return 0
+                }
+                
             }
+            
         } else {
             return orderList.count
         }
@@ -278,7 +359,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if cell == nil {
                 cell = MenuTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuCellStyle)
             }
-            (cell as MenuTableViewCell).setText(menuType[indexPath.row].name)
+            (cell as MenuTableViewCell).setText(self.menuTypeArray[indexPath.row].name)
             
             
             return cell! as UITableViewCell
@@ -286,7 +367,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else if tableView == self .tableView2 {
             
             
-            let menu = menuDetail[menuTypeIndex][indexPath.row]
+            let menu = (menuDetail["\(menuTypeIndex)"] as Array!)[indexPath.row]
             var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, _menuStyleIndex: menuTypeIndex, _menuIndex: indexPath.row, _menu: menu, _viewContriller: self, _superTableView: tableView)
             
             let tempCell  = cell as MenuDetailTableViewCell
@@ -327,7 +408,8 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView == tableView1 {
-            menuTypeIndex = indexPath.row
+            let typeIdIntValue = NSString(string: "\(menuTypeArray[indexPath.row].id)").integerValue
+            menuTypeIndex = typeIdIntValue
             tableView2.reloadData()
             
         } else {
@@ -366,8 +448,6 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.tableFooterView = view
     }
 
-
-    
     
     /*
     // MARK: - Navigation

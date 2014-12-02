@@ -67,7 +67,9 @@ class ViewController: UIViewController {
     }
     
     func gotoOrderListTableView() {
+        
         self.title = ""
+        
         let viewController = OrderListViewController()
         self.navigationController?.pushViewController(viewController, animated: true)
     }

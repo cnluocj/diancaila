@@ -43,6 +43,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         segmentedControl = UISegmentedControl(items: segmentedItems)
         segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.setWidth(UIUtil.screenWidth/3, forSegmentAtIndex: 0)
+        segmentedControl.setWidth(UIUtil.screenWidth/3, forSegmentAtIndex: 1)
         segmentedControl.addTarget(self, action: "segmentAction:", forControlEvents: UIControlEvents.ValueChanged)
         self.navigationItem.titleView = segmentedControl
         
