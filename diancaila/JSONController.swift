@@ -10,9 +10,12 @@ import Foundation
 
 
 @objc protocol JSONParseProtocol {
+    
     optional func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray)
     
     optional func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray)
+    
+    optional func didFinishParseOrderId(orderId: String)
 }
 
 class JSONController : NSObject {
@@ -55,6 +58,13 @@ class JSONController : NSObject {
         }
         
         parseDelegate?.didFinishParseMenuByTypeIdAndReturn!(menuArray)
+    }
+    
+    func parseOrderId(result: NSDictionary) {
+        let orderId = result["order_id"] as String
+        
+        
+        parseDelegate?.didFinishParseOrderId!(orderId)
     }
     
     

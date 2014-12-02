@@ -8,7 +8,11 @@
 
 import UIKit
 
-class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, ActionSheetDeletage {
+protocol OrderConfirmViewControllerDelegate {
+    func OrderDidFinish()
+}
+
+class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, ActionSheetDeletage, HttpProtocol, JSONParseProtocol, UIAlertViewDelegate {
     
     var deskInfoView: UITableView!
     var deskInfoCell: UITableViewCell!
@@ -17,32 +21,43 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     var customerNumPicker: UIPickerView?
     var alertLabel: UILabel!
     var okButton: UIButton!
+    var waitIndicator: UIActivityIndicatorView?
     
     // 值由外面一层传入
     var orderList: [Order]!
     
     let cellHeight =  CGFloat(42)
 
-    var shopId: Int = 2
+    var shopId: Int = 1
     
     // 桌号
     var deskId: Int = 0
     var selectDeskid: Int = 1
-    var numOfDesk: Int = 10
+    var numOfDesk: Int = 20
     
     // 人数
     var customerNum: Int = 0
     var selectCustomerNum: Int = 1
-    var maxNumOfCustom: Int = 50
+    var maxNumOfCustom: Int = 25
+    
+    // 订单号
+    var orderId = ""
     
     // jsonDic
     var jsonDic = NSMutableDictionary()
     
     var ehttp: HttpController = HttpController()
     
+    var jsonController = JSONController()
+    
+    var delegate: OrderConfirmViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        ehttp.deletage = self
+        
+        jsonController.parseDelegate = self
         
         var scrollViewHeight = cellHeight * CGFloat(orderList.count) + 350
         if scrollViewHeight < UIUtil.screenHeight {
@@ -111,7 +126,18 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             
         } else if customerNum == 0 {
         } else {
+            
+            // 等待处理
+            waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+            waitIndicator?.alpha = 0.8
+            waitIndicator?.layer.cornerRadius = 5
+            waitIndicator?.frame = CGRectMake(UIUtil.screenWidth/2 - 75, UIUtil.screenHeight/3 - 75, 150, 150)
+            waitIndicator?.backgroundColor = UIColor.grayColor()
+            waitIndicator?.startAnimating()
+            self.view.addSubview(waitIndicator!)
+            self.view.userInteractionEnabled = false
         
+            // 生成json
             jsonDic["shop_id"] = shopId
             jsonDic["tab_id"] = deskId
             jsonDic["cus_num"] = customerNum
@@ -127,18 +153,16 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                 
                 dishList.addObject(dish)
             }
-            
             jsonDic["dish_list"] = dishList
             
             var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
             var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
             jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
             jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-            
-            println("\(jsonStr?.description)")
             ehttp.submitOrder(HttpController.submitOrderAPI, json: jsonStr!)
         }
     }
+    
     
     func okButtonShake() {
         let moveLeft = CGAffineTransformMakeTranslation(-20, 0)
@@ -323,6 +347,31 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                 okButton.backgroundColor = UIColor.orangeColor()
             }
         }
+    }
+    
+    // HttpProtocol
+    func didReceiveOrderId(result: NSDictionary) {
+        jsonController.parseOrderId(result)
+    }
+    
+    // JSONProtocol
+    func didFinishParseOrderId(orderId: String) {
+        self.orderId = orderId
+        
+        waitIndicator?.stopAnimating()
+        self.view.userInteractionEnabled = true
+        
+        let alert = UIAlertView(title: "下单成功", message: "订单号: \(self.orderId)", delegate: self, cancelButtonTitle: "确定")
+        alert.delegate = self
+        alert.show()
+    }
+    
+    // UIAlertViewDelegate
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        self.delegate?.OrderDidFinish()
+        
+        let controller = OrderViewController()
+        self.navigationController?.popViewControllerAnimated(true)
     }
     
     

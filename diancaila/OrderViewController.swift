@@ -9,7 +9,7 @@
 import UIKit
 import AudioToolbox
 
-class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol {
+class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol, OrderConfirmViewControllerDelegate {
     
     var tableView1: UITableView!
     var tableView2: UITableView!
@@ -198,6 +198,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func didPressChooseOverButton(sender: UIButton) {
         let orderConfirmViewController = OrderConfirmViewController()
         orderConfirmViewController.orderList = orderList.values.array
+        orderConfirmViewController.delegate = self
         self.navigationController?.pushViewController(orderConfirmViewController, animated: true)
     }
     
@@ -448,6 +449,20 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.tableFooterView = view
     }
 
+    
+    // OrderConfirmViewControllerDelegate
+    func OrderDidFinish() {
+        orderList = [:]
+        orderPrice = 0
+        orderCount = 0
+        orderListIsOpen = false
+        
+        tableView2.reloadData()
+        badge.setTitle("\(orderCount)", forState: UIControlState.Normal)
+        badge.hidden = true
+        priceLabel.text = "￥\(orderPrice)"
+        chooseOverButton.enabled = false
+    }
     
     /*
     // MARK: - Navigation
