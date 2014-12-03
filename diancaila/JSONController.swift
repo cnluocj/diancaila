@@ -15,8 +15,11 @@ import Foundation
     
     optional func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray)
     
+<<<<<<< HEAD
     optional func didFinishParseWaitMenu(menuArray: NSMutableArray)
     
+=======
+>>>>>>> parent of 5a8c213... before rename
     optional func didFinishParseOrderId(orderId: String)
 }
 

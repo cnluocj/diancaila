@@ -13,8 +13,11 @@ import Foundation
     
     optional func didReceiveMenuResults(result: NSDictionary)
     
+<<<<<<< HEAD
     optional func didReceiveWaitMenu(result: NSDictionary)
     
+=======
+>>>>>>> parent of 5a8c213... before rename
     optional func didReceiveOrderId(result: NSDictionary)
 }
 
@@ -85,18 +88,4 @@ class HttpController: NSObject {
             }
         }
     }
-    
-    // 发送 已上的菜 给服务器
-    func overOrder(url: String, id: String) {
-        var nsUrl: NSURL! = NSURL(string: url + id)
-        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
-            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-        }
-    }
-    
-    func onSearchDidNotPayOrder() {
-        
-    }
-    
 }
