@@ -8,6 +8,7 @@
 
 import Foundation
 
+// 单个菜品
 class Order: NSObject {
     
     var menuTypeIndex: Int = 0
@@ -17,6 +18,8 @@ class Order: NSObject {
     var deskId: Int = 0
     var state: Int = 0
     var customerNum = 0
+    
+    var id: String = "" // 唯一表示
     
     init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
         self.menuTypeIndex = menuTypeIndex
@@ -31,8 +34,21 @@ class Order: NSObject {
         self.menuTypeIndex = menuTypeIndex
     }
     
+    // 等待上的菜
+    init(id: String, deskId: Int, menu: Menu) {
+        super.init()
+        self.id = id
+        self.deskId = deskId
+        self.menu = menu
+    }
+   
+    
     init(menu: Menu, deskId: Int) {
         self.menu = menu
         self.deskId = deskId
+    }
+    
+    override init() {
+        super.init()
     }
 }

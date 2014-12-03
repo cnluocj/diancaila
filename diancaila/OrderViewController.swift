@@ -20,6 +20,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var orderListView: UIView!
     var orderListTableView: UITableView!
     var hDivide: UIView!
+    var backAlert: UIAlertView?
     
     // 加载
     var loadingIndicator: UIActivityIndicatorView!
@@ -64,6 +65,10 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.title = "点餐"
 
         self.view.backgroundColor = UIColor.whiteColor()
+        
+        // 返回按钮
+//        self.navigationItem.leftBarButtonItem = backButton()
+        
         
         let navHeight = self.navigationController?.navigationBar.frame.height ?? 0
         // 除了导航，底下内容的高度
@@ -125,7 +130,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         // 购物车
         let shoppingCartImg = UIImageView(frame: CGRectMake(20, 15, 30, 30))
-        shoppingCartImg.image = UIImage(named: "shopping_cart")
+        shoppingCartImg.image = UIImage(named: "shopping")
         shoppingCartImg.userInteractionEnabled = true
         let click = UITapGestureRecognizer(target: self, action: "didPressOrderListView:")
         shoppingCartImg.addGestureRecognizer(click)
@@ -194,6 +199,23 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.view.userInteractionEnabled = false
         
     }
+    
+    
+    func backButton() -> UIBarButtonItem {
+        
+        let img: UIImage! = UIImage(named: "back")
+        let btn = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+        btn.frame = CGRectMake(0, 0, 20, 20)
+        btn.setBackgroundImage(img, forState: UIControlState.Normal)
+        btn.addTarget(self, action: "didPressBackButton:", forControlEvents: UIControlEvents.TouchUpInside)
+        let backButton = UIBarButtonItem(customView: btn)
+        return backButton
+    }
+    
+    func didPressBackButton(sender: UIButton) {
+        self.navigationController?.popViewControllerAnimated(true)
+    }
+    
     
     func didPressChooseOverButton(sender: UIButton) {
         let orderConfirmViewController = OrderConfirmViewController()
@@ -464,6 +486,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         chooseOverButton.enabled = false
     }
     
+
     /*
     // MARK: - Navigation
 

@@ -16,6 +16,8 @@ import Foundation
     optional func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray)
     
     optional func didFinishParseOrderId(orderId: String)
+    
+    optional func didFinishParseWaitMenu(menuArray: NSMutableArray)
 }
 
 class JSONController : NSObject {
@@ -65,6 +67,32 @@ class JSONController : NSObject {
         
         
         parseDelegate?.didFinishParseOrderId!(orderId)
+    }
+    
+    func parseWaitMenu(result: NSDictionary) {
+        let resultArray: NSArray = result["wait"] as NSArray
+        
+        
+        var menuArray: NSMutableArray = NSMutableArray()
+        
+        for menu in resultArray {
+            //"id":"1","dish_id":"1","tab_id":"1","dish_name":"肉龙"
+            let id = menu.objectForKey("id") as String
+            let menuId = menu.objectForKey("dish_id") as String
+            let menuName = menu.objectForKey("dish_name") as String
+            let deskId = (menu.objectForKey("tab_id") as NSString).integerValue
+            
+            let menu = Menu(id: menuId, name: menuName)
+            let order = Order()
+            order.id = id
+            order.menu = menu
+            order.deskId = deskId
+            
+            menuArray.addObject(order)
+        }
+        
+        
+        parseDelegate?.didFinishParseWaitMenu!(menuArray)
     }
     
     
