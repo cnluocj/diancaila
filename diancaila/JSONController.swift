@@ -18,6 +18,8 @@ import Foundation
     optional func didFinishParseOrderId(orderId: String)
     
     optional func didFinishParseWaitMenu(menuArray: NSMutableArray)
+    
+    optional func didFinishParseDidNotPayOrder(notPayOrders: NSMutableArray)
 }
 
 class JSONController : NSObject {
@@ -95,5 +97,25 @@ class JSONController : NSObject {
         parseDelegate?.didFinishParseWaitMenu!(menuArray)
     }
     
+    
+    func parseDidNotPayOrder(result: NSDictionary) {
+//       {"wait_orders":[{"ord_id":"1-1-20141203160826-6886","tab_id":"1","ord_time":"2014-12-03 16:08:26","sum":"28"},{"ord_id":"1-1-20141203160832-9905","tab_id":"1","ord_time":"2014-12-03 16:08:32","sum":"266"}]}
+        
+        let resultArray: NSArray = result["wait_orders"] as NSArray
+        var notPayOrder: NSMutableArray = NSMutableArray()
+        
+        for order in resultArray {
+            let id =  order.objectForKey("ord_id") as String
+            let deskId =  (order.objectForKey("tab_id") as NSString).integerValue
+            let time = order.objectForKey("ord_time") as String
+            let sum = (order.objectForKey("sum") as NSString).doubleValue
+            
+            let norder = DOrder(id: id, deskId: deskId, orderTime: time, sum: sum)
+            
+            notPayOrder.addObject(norder)
+        }
+        
+        parseDelegate?.didFinishParseDidNotPayOrder!(notPayOrder)
+    }
     
 }

@@ -30,6 +30,7 @@
 		4B3110521A22CB1000ABDF96 /* JSONController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3110511A22CB1000ABDF96 /* JSONController.swift */; };
 		4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */; };
 		4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3455791A26DB190038C139 /* CustomActionSheet.swift */; };
+		4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3BD4781A2EF9EA00735C07 /* DOrder.swift */; };
 		4BFE5AF91A242F7200CC592E /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFE5AF81A242F7200CC592E /* LoginViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -71,6 +72,7 @@
 		4B3110511A22CB1000ABDF96 /* JSONController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONController.swift; sourceTree = "<group>"; };
 		4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderListViewController.swift; sourceTree = "<group>"; };
 		4B3455791A26DB190038C139 /* CustomActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomActionSheet.swift; sourceTree = "<group>"; };
+		4B3BD4781A2EF9EA00735C07 /* DOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DOrder.swift; sourceTree = "<group>"; };
 		4BFE5AF81A242F7200CC592E /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -137,6 +139,7 @@
 				4BFE5AF81A242F7200CC592E /* LoginViewController.swift */,
 				4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */,
 				4B3455791A26DB190038C139 /* CustomActionSheet.swift */,
+				4B3BD4781A2EF9EA00735C07 /* DOrder.swift */,
 			);
 			path = diancaila;
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,
 				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,
+				4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */,
 				4B0A10851A1ED41400A71B53 /* DeskPickerViewController.swift in Sources */,
 				4B0A10821A1ED41400A71B53 /* CustomGrid.swift in Sources */,
 			);

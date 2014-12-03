@@ -26,12 +26,14 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     var segmentedItems = ["等待上菜", "未结订单", "全部订单"]
     
     // 数据源
-    var orderDic: [String:[Order]] = [:]
-//    var orderList = NSMutableArray() // 二维
-    var orderList = [Order]()
-    var sectionTitles = [String]()
-    var searchData = NSMutableArray() // orderList 一维表示
-    var filterData: NSArray?
+    // 等待上菜 的 数据源
+    var tempData = NSMutableArray()
+    var orderDic: [String:[Order]] = [:] // 转成 dic， 按照菜id分类 方便排序
+    var orderList = [Order]()  // 有序的 tempdata
+    var filterData: NSArray? // 过滤的数据
+    
+    // 未结订单 的 数据源
+    var notPayOrders = NSMutableArray()
     
     let httpController = HttpController()
     let jsonController = JSONController()
@@ -47,7 +49,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         httpController.deletage = self
         jsonController.parseDelegate = self
         
-        loadData()
+        loadWaitOrderData()
 
         
         segmentedControl = UISegmentedControl(items: segmentedItems)
@@ -133,36 +135,52 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
        
     }
     
-    // 测试数据
-    func loadData() {
+    // 加载数据
+    func loadWaitOrderData() {
         httpController.onSearchWaitMenu(HttpController.waitMenuAPI)
 
     }
     
-    
-    func didFinishParseWaitMenu(menuArray: NSMutableArray) {
-        searchData = menuArray
+    func loadNotPayOrderData() {
+        httpController.onSearchDidNotPayOrder(HttpController.notPayOrderAPI)
         
-        for ord in searchData {
+    }
+    
+    
+    // JSONParseDelegate
+    func didFinishParseWaitMenu(menuArray: NSMutableArray) {
+        self.tempData = menuArray
+        
+        for ord in self.tempData {
             let order = ord as Order
-            if orderDic[order.menu.id] == nil {
-                orderDic[order.menu.id] = [Order]()
+            if self.orderDic[order.menu.id] == nil {
+                self.orderDic[order.menu.id] = [Order]()
             }
-            orderDic[order.menu.id]?.append(order)
+            self.orderDic[order.menu.id]?.append(order)
         }
         
         var count = 0
-        for ordlist in orderDic.values {
+        for ordlist in self.orderDic.values {
             for ord in ordlist {
                 ord.menuIndex = count++ // 定位标记
-                orderList.append(ord)
+                self.orderList.append(ord)
             }
         }
         didNotFinishOrderTableView.reloadData()
     }
     
+    func didFinishParseDidNotPayOrder(notPayOrders: NSMutableArray) {
+        self.notPayOrders = notPayOrders
+        didNotPayTableView.reloadData()
+    }
+    
+    // HttpProtocol
     func didReceiveWaitMenu(result: NSDictionary) {
         jsonController.parseWaitMenu(result)
+    }
+    
+    func didReceiveDidNotPayOrder(result: NSDictionary) {
+        jsonController.parseDidNotPayOrder(result)
     }
     
     
@@ -171,6 +189,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         case 0:
             self.view = didNotFinishView
         case 1:
+            loadNotPayOrderData()
             self.view = didNotPayView
         case 2:
             self.view = allOrderView
@@ -195,6 +214,9 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == didNotFinishOrderTableView {
             return orderList.count
+            
+        } else if tableView == didNotPayTableView {
+            return notPayOrders.count
         } else {
             
             // 谓词搜索
@@ -217,13 +239,15 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         if tableView == didNotFinishOrderTableView {
-            if orderList.count > 0 {
-                
-                cell?.textLabel?.text = orderList[indexPath.row].menu.name
-                cell?.detailTextLabel?.text = "\(orderList[indexPath.row].deskId)号桌"
-                cell?.detailTextLabel?.textColor = UIColor.redColor()
-                
-            }
+            
+            cell?.textLabel?.text = orderList[indexPath.row].menu.name
+            cell?.detailTextLabel?.text = "\(orderList[indexPath.row].deskId)号桌"
+            cell?.detailTextLabel?.textColor = UIColor.redColor()
+            
+            
+        } else if tableView == didNotPayTableView {
+            cell?.textLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).deskId)号桌"
+            cell?.detailTextLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).orderTime)"
             
         } else {
             let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
@@ -281,25 +305,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         return 60
     }
     
-//    
-//    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        if tableView == didNotFinishOrderTableView {
-//            let view =  UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 40))
-//            view.backgroundColor = UIUtil.gray_system
-//            let titleLabel = UILabel(frame: CGRectMake(0, 3, UIUtil.screenWidth, 20))
-//            titleLabel.font = UIFont.systemFontOfSize(20)
-//            titleLabel.backgroundColor = UIColor.clearColor()
-//            titleLabel.textColor = UIColor.orangeColor()
-//            titleLabel.text = sectionTitles[section]
-//            titleLabel.textAlignment = NSTextAlignment.Center
-//            view.addSubview(titleLabel)
-//            return view
-//        }
-//        
-//        return nil
-//    }
-//    
-    
+ 
     // searchbar 相关
     func searchDisplayControllerWillBeginSearch(controller: UISearchDisplayController) {
         UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.Default, animated: true)

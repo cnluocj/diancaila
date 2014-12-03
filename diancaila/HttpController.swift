@@ -16,6 +16,8 @@ import Foundation
     optional func didReceiveOrderId(result: NSDictionary)
     
     optional func didReceiveWaitMenu(result: NSDictionary)
+    
+    optional func didReceiveDidNotPayOrder(result: NSDictionary)
 }
 
 class HttpController: NSObject {
@@ -44,6 +46,10 @@ class HttpController: NSObject {
     
     class var overOrderAPI: String {
         return path + "order/change_state?id="
+    }
+    
+    class var notPayOrderAPI: String {
+        return path + "order/re_orders_ios"
     }
     
     
@@ -128,8 +134,20 @@ class HttpController: NSObject {
         }
     }
     
-    func onSearchDidNotPayOrder() {
-        
+    func onSearchDidNotPayOrder(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            //            println("\(string)")
+            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                self.deletage?.didReceiveDidNotPayOrder!(jsonResult)
+            }
+        }
+ 
     }
     
 }
