@@ -13,7 +13,7 @@ import Foundation
     
     optional func didReceiveMenuResults(result: NSDictionary)
     
-    optional func didReceiveOrderId(result: NSDictionary)
+    optional func didReceiveOrderItemId(result: NSDictionary)
     
     optional func didReceiveWaitMenu(result: NSDictionary)
 }
@@ -120,7 +120,7 @@ class HttpController: NSObject {
     }
     
     // 发送 已上的菜 给服务器
-    func overOrder(url: String, id: String) {
+    func overOrderItem(url: String, id: String) {
         var nsUrl: NSURL! = NSURL(string: url + id)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
