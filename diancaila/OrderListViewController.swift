@@ -8,12 +8,10 @@
 
 import UIKit
 
-class OrderListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,UISearchDisplayDelegate, HttpProtocol, JSONParseProtocol {
+class OrderListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,UISearchDisplayDelegate {
     
     var didNotFinishView: UIView!
     var allOrderView: UIView!
-    var didNotPayView: UIView!
-    var didNotPayTableView: UITableView!
     
     var didNotFinishOrderTableView: UITableView!
     var segmentedControl: UISegmentedControl!
@@ -23,18 +21,14 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var allOrderTableView: UITableView!
     
-    var segmentedItems = ["等待上菜", "未结订单", "全部订单"]
+    var segmentedItems = ["等待订单", "全部订单"]
     
     // 数据源
-    var orderDic: [String:[Order]] = [:]
-//    var orderList = NSMutableArray() // 二维
-    var orderList = [Order]()
+    var orderList: [[Order]] = []
     var sectionTitles = [String]()
     var searchData = NSMutableArray() // orderList 一维表示
     var filterData: NSArray?
     
-    let httpController = HttpController()
-    let jsonController = JSONController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,17 +38,13 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         self.automaticallyAdjustsScrollViewInsets = true
         self.extendedLayoutIncludesOpaqueBars = true
         
-        httpController.deletage = self
-        jsonController.parseDelegate = self
-        
         loadData()
 
         
         segmentedControl = UISegmentedControl(items: segmentedItems)
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.setWidth(UIUtil.screenWidth/5, forSegmentAtIndex: 0)
-        segmentedControl.setWidth(UIUtil.screenWidth/5, forSegmentAtIndex: 1)
-        segmentedControl.setWidth(UIUtil.screenWidth/5, forSegmentAtIndex: 2)
+        segmentedControl.setWidth(UIUtil.screenWidth/3, forSegmentAtIndex: 0)
+        segmentedControl.setWidth(UIUtil.screenWidth/3, forSegmentAtIndex: 1)
         segmentedControl.addTarget(self, action: "segmentAction:", forControlEvents: UIControlEvents.ValueChanged)
         self.navigationItem.titleView = segmentedControl
         
@@ -79,19 +69,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.view = didNotFinishView
         
-        
-        // 未结订单界面 ----------------------------------------------------
-        didNotPayView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
-        didNotPayView.backgroundColor = UIColor.whiteColor()
-        
-        didNotPayTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight))
-        didNotPayTableView.delegate = self
-        didNotPayTableView.dataSource = self
-        didNotPayView.addSubview(didNotPayTableView)
-        
-        
-        
-        // 全部订单界面 -----------------------------------------------------------------------
+        // 已完成订单界面 -----------------------------------------------------------------------
         allOrderView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         allOrderView.backgroundColor = UIColor.whiteColor()
         
@@ -135,35 +113,35 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // 测试数据
     func loadData() {
-        httpController.onSearchWaitMenu(HttpController.waitMenuAPI)
+        var icecreamList = [Order]()
+        var meatList = [Order]()
+        
+        for i in 0..<10 {
+            icecreamList.append(Order(menuTypeIndex: 0, menuIndex: i, menu: Menu(id: "1", name: "icecream\(i)"), deskId: 1))
+            meatList.append(Order(menuTypeIndex: 1, menuIndex: i, menu: Menu(id: "1", name: "肉类啊\(i)"), deskId: 1))
+        }
+        orderList.append(icecreamList)
+        orderList.append(meatList)
+        sectionTitles.append("icecream")
+        sectionTitles.append("meat")
+        
 
+        reloadSearchData(orderList)
     }
     
     
-    func didFinishParseWaitMenu(menuArray: NSMutableArray) {
-        searchData = menuArray
+    // 重载提供搜索的数据
+    func reloadSearchData(list: [[Order]]) {
+        searchData.removeAllObjects()
         
-        for ord in searchData {
-            let order = ord as Order
-            if orderDic[order.menu.id] == nil {
-                orderDic[order.menu.id] = [Order]()
-            }
-            orderDic[order.menu.id]?.append(order)
-        }
-        
-        var count = 0
-        for ordlist in orderDic.values {
-            for ord in ordlist {
-                ord.menuIndex = count++ // 定位标记
-                orderList.append(ord)
+        // 将二维的orderList 化作一维
+        for sectionData in orderList {
+            for indexData in sectionData {
+                searchData.addObject(indexData)
             }
         }
-        didNotFinishOrderTableView.reloadData()
     }
     
-    func didReceiveWaitMenu(result: NSDictionary) {
-        jsonController.parseWaitMenu(result)
-    }
     
     
     func segmentAction(sender: UISegmentedControl) {
@@ -171,8 +149,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         case 0:
             self.view = didNotFinishView
         case 1:
-            self.view = didNotPayView
-        case 2:
             self.view = allOrderView
         default:
             break
@@ -188,18 +164,29 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // UITableView data source / UITableView Deletage
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        if tableView == didNotFinishOrderTableView {
+            return orderList.count
+        } else {
+            return 1
+        }
     }
     
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if tableView == didNotFinishOrderTableView {
+            return sectionTitles[section]
+        } else {
+            return nil
+        }
+    }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == didNotFinishOrderTableView {
-            return orderList.count
+            return orderList[section].count
         } else {
             
             // 谓词搜索
             let predicate = NSPredicate(format: "menu.name contains [cd] %@", searchController.searchBar.text)
-            filterData =  NSArray(array: NSMutableArray(array: orderList).filteredArrayUsingPredicate(predicate!))
+            filterData =  NSArray(array: searchData.filteredArrayUsingPredicate(predicate!))
             if let fdata = filterData {
                 return fdata.count
             } else {
@@ -217,13 +204,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         
         if tableView == didNotFinishOrderTableView {
-            if orderList.count > 0 {
-                
-                cell?.textLabel?.text = orderList[indexPath.row].menu.name
-                cell?.detailTextLabel?.text = "\(orderList[indexPath.row].deskId)号桌"
-                cell?.detailTextLabel?.textColor = UIColor.redColor()
-                
-            }
+            cell?.textLabel?.text = orderList[indexPath.section][indexPath.row].menu.name
+            cell?.detailTextLabel?.text = "\(orderList[indexPath.section][indexPath.row].deskId)号桌"
             
         } else {
             let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
@@ -240,12 +222,17 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         if tableView == didNotFinishOrderTableView {
             if editingStyle == UITableViewCellEditingStyle.Delete {
                 
-                httpController.overOrder(HttpController.overOrderAPI, id: orderList[indexPath.row].id)
-                orderList.removeAtIndex(indexPath.row)
-//                reloadSearchData(orderList)
+                orderList[indexPath.section].removeAtIndex(indexPath.row)
+                reloadSearchData(orderList)
                 
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
-                
+                if orderList[indexPath.section].count == 0 {
+                    orderList.removeAtIndex(indexPath.section)
+                    tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Top)
+                } else {
+                    
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                    
+                }
                 
             }
         }

@@ -370,6 +370,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         self.delegate?.OrderDidFinish()
         
+        let controller = OrderViewController()
         self.navigationController?.popViewControllerAnimated(true)
     }
     
