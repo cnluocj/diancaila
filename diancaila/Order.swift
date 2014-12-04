@@ -19,7 +19,7 @@ class Order: NSObject {
     var state: Int = 0
     var customerNum = 0
     
-    var id: String = "" // 唯一表示
+    var id: String = "" // 唯一表示, 无意义
     
     init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
         self.menuTypeIndex = menuTypeIndex

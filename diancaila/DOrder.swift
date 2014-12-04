@@ -16,14 +16,24 @@ class DOrder: NSObject {
     var id: String = ""
     var deskId: Int = 0
     var orderTime: String = ""
-    var sum: Double = 0.0
+    var price: Double = 0.0
+    var vipPrice: Double = 0.0
     var orderList = [Order]()
     
-    init(id: String, deskId: Int, orderTime: String, sum: Double) {
+    init(id: String, deskId: Int, orderTime: String, price: Double, vipPrice: Double) {
         self.id = id
         self.deskId = deskId
         self.orderTime = orderTime
-        self.sum = sum
+        self.price = price
+        self.vipPrice = vipPrice
     }
     
+    init(id: String, deskId: Int, orderTime: String, price: Double, vipPrice: Double, orderList : [Order]) {
+        self.id = id
+        self.deskId = deskId
+        self.orderTime = orderTime
+        self.price = price
+        self.vipPrice = vipPrice
+        self.orderList = orderList
+    }
 }

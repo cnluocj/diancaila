@@ -51,7 +51,8 @@ class JSONController : NSObject {
             let name: String = menu.objectForKey("dish_name") as String
             let description: String = menu.objectForKey("dish_des") as String
             let typeId: String = menu.objectForKey("dish_type_id") as String
-            let cover: String = menu.objectForKey("dish_cover") as String
+//            let cover: String = menu.objectForKey("dish_cover") as String
+            let cover = ""
             let price: Double = (menu.objectForKey("dish_origin_price") as NSString).doubleValue
             let vipPrice: Double = (menu.objectForKey("dish_user_price") as NSString).doubleValue
             let shopId: String = menu.objectForKey("dish_shop_id") as NSString
@@ -99,7 +100,6 @@ class JSONController : NSObject {
     
     
     func parseDidNotPayOrder(result: NSDictionary) {
-//       {"wait_orders":[{"ord_id":"1-1-20141203160826-6886","tab_id":"1","ord_time":"2014-12-03 16:08:26","sum":"28"},{"ord_id":"1-1-20141203160832-9905","tab_id":"1","ord_time":"2014-12-03 16:08:32","sum":"266"}]}
         
         let resultArray: NSArray = result["wait_orders"] as NSArray
         var notPayOrder: NSMutableArray = NSMutableArray()
@@ -108,14 +108,30 @@ class JSONController : NSObject {
             let id =  order.objectForKey("ord_id") as String
             let deskId =  (order.objectForKey("tab_id") as NSString).integerValue
             let time = order.objectForKey("ord_time") as String
-            let sum = (order.objectForKey("sum") as NSString).doubleValue
+            let price = (order.objectForKey("price") as NSString).doubleValue
+            let vipPrice = (order.objectForKey("vip_price") as NSString).doubleValue
             
-            let norder = DOrder(id: id, deskId: deskId, orderTime: time, sum: sum)
+            let norder = DOrder(id: id, deskId: deskId, orderTime: time, price: price, vipPrice: vipPrice)
             
             notPayOrder.addObject(norder)
         }
         
         parseDelegate?.didFinishParseDidNotPayOrder!(notPayOrder)
+    }
+    
+    
+    // 由于麻烦，不转成本地的数据结构了，直接用dic了
+    func parseOrderDetail(result: NSDictionary) {
+        //{"order":{"order_id":"1-1-20141203165755-6910","list":[{"dish_id":"9","dish_name":"肉龙","num":"1","totalprice":"28"},{"dish_id":"10","dish_name":"三不馆er招牌香香骨（小）","num":"1","totalprice":"68"},{"dish_id":"11","dish_name":"三不馆er招牌香香骨（中）","num":"1","totalprice":"102"}]}}
+        
+//        let orderDetail = result["order"] as NSDictionary
+//        let orderId = orderDetail["order_id"] as String
+//        
+//        let orderList = orderDetail["list"] as NSArray
+//        let orderArray = [Order]()
+//        for order in orderList {
+//            orderList[dish_id]
+//        }
     }
     
 }

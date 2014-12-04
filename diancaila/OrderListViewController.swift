@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OrderListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,UISearchDisplayDelegate, HttpProtocol, JSONParseProtocol {
+class OrderListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,UISearchDisplayDelegate, HttpProtocol, JSONParseProtocol, UIAlertViewDelegate {
     
     var didNotFinishView: UIView!
     var allOrderView: UIView!
@@ -23,6 +23,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var allOrderTableView: UITableView!
     
+    var foodStateAlert: UIAlertView!
+    
     var segmentedItems = ["等待上菜", "未结订单", "全部订单"]
     
     // 数据源
@@ -34,6 +36,9 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // 未结订单 的 数据源
     var notPayOrders = NSMutableArray()
+    
+    
+    var tableViewCellEditingIndexPath: NSIndexPath!
     
     let httpController = HttpController()
     let jsonController = JSONController()
@@ -60,7 +65,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         segmentedControl.addTarget(self, action: "segmentAction:", forControlEvents: UIControlEvents.ValueChanged)
         self.navigationItem.titleView = segmentedControl
         
-        // 未完成订单界面 ---------------------------------------------------------------------------
+        // 等待上菜订单界面 ---------------------------------------------------------------------------
         didNotFinishView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         didNotFinishOrderTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         didNotFinishOrderTableView.delegate = self
@@ -86,7 +91,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         didNotPayView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         didNotPayView.backgroundColor = UIColor.whiteColor()
         
-        didNotPayTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight))
+        didNotPayTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
         didNotPayTableView.delegate = self
         didNotPayTableView.dataSource = self
         didNotPayView.addSubview(didNotPayTableView)
@@ -137,12 +142,12 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // 加载数据
     func loadWaitOrderData() {
-        httpController.onSearchWaitMenu(HttpController.waitMenuAPI)
+        httpController.onSearchWaitMenu(HttpController.apiWaitMenu)
 
     }
     
     func loadNotPayOrderData() {
-        httpController.onSearchDidNotPayOrder(HttpController.notPayOrderAPI)
+        httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder)
         
     }
     
@@ -244,6 +249,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             cell?.detailTextLabel?.text = "\(orderList[indexPath.row].deskId)号桌"
             cell?.detailTextLabel?.textColor = UIColor.redColor()
             
+            let view  =  UIView(frame: CGRectMake(0, 0, 100, cell!.frame.height))
+            view.backgroundColor = UIColor.orangeColor()
+
+            cell?.editingAccessoryView = view
             
         } else if tableView == didNotPayTableView {
             cell?.textLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).deskId)号桌"
@@ -264,16 +273,16 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         if tableView == didNotFinishOrderTableView {
             if editingStyle == UITableViewCellEditingStyle.Delete {
                 
-                httpController.overOrder(HttpController.overOrderAPI, id: orderList[indexPath.row].id)
-                orderList.removeAtIndex(indexPath.row)
-//                reloadSearchData(orderList)
+                tableViewCellEditingIndexPath = indexPath
                 
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Top)
-                
+                foodStateAlert = UIAlertView(title: "选择状态", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "上菜", "退菜")
+
+                foodStateAlert.show()
                 
             }
         }
     }
+    
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         if tableView == didNotFinishOrderTableView {
@@ -282,6 +291,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             return false
         }
     }
+    
+    func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String! {
+        return "编辑状态"
+    }
+    
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
@@ -293,17 +307,47 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
             let outSideIndexPath = NSIndexPath(forRow: order.menuIndex, inSection: order.menuTypeIndex)
             didNotFinishOrderTableView.scrollToRowAtIndexPath(outSideIndexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+            
+        } else if tableView == didNotPayTableView {
+            
+            let controller = OrderDetailViewController()
+            let orderDesc = notPayOrders[indexPath.row] as DOrder
+            controller.orderId = orderDesc.id
+            controller.price = orderDesc.price
+            controller.vipPrice = orderDesc.vipPrice
+            self.navigationController?.pushViewController(controller, animated: true)
         }
     }
     
     
-    func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String! {
-        return "删除"
-    }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 60
     }
+    
+    // UIAlertViewDelegate
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        
+        if alertView == foodStateAlert {
+            
+            switch buttonIndex {
+            case 2:
+                httpController.overOrder(HttpController.apiOverOrder(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2))
+                orderList.removeAtIndex(tableViewCellEditingIndexPath.row)
+                
+                didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                return
+            case 1:
+                httpController.overOrder(HttpController.apiOverOrder(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1))
+                orderList.removeAtIndex(tableViewCellEditingIndexPath.row)
+                
+                didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
+            default:
+                return
+            }
+        }
+    }
+    
     
  
     // searchbar 相关

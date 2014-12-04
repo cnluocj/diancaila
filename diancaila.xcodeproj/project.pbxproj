@@ -27,6 +27,7 @@
 		4B0A108F1A1ED41400A71B53 /* UIUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A107F1A1ED41400A71B53 /* UIUtil.swift */; };
 		4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0A10801A1ED41400A71B53 /* ViewController.swift */; };
 		4B2E43101A1F1E82008D75BD /* HttpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2E430F1A1F1E82008D75BD /* HttpController.swift */; };
+		4B30DE681A303D21009D2721 /* OrderDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B30DE671A303D21009D2721 /* OrderDetailViewController.swift */; };
 		4B3110521A22CB1000ABDF96 /* JSONController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3110511A22CB1000ABDF96 /* JSONController.swift */; };
 		4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */; };
 		4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3455791A26DB190038C139 /* CustomActionSheet.swift */; };
@@ -69,6 +70,7 @@
 		4B0A107F1A1ED41400A71B53 /* UIUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIUtil.swift; sourceTree = "<group>"; };
 		4B0A10801A1ED41400A71B53 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4B2E430F1A1F1E82008D75BD /* HttpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpController.swift; sourceTree = "<group>"; };
+		4B30DE671A303D21009D2721 /* OrderDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderDetailViewController.swift; sourceTree = "<group>"; };
 		4B3110511A22CB1000ABDF96 /* JSONController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONController.swift; sourceTree = "<group>"; };
 		4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderListViewController.swift; sourceTree = "<group>"; };
 		4B3455791A26DB190038C139 /* CustomActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomActionSheet.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */,
 				4B3455791A26DB190038C139 /* CustomActionSheet.swift */,
 				4B3BD4781A2EF9EA00735C07 /* DOrder.swift */,
+				4B30DE671A303D21009D2721 /* OrderDetailViewController.swift */,
 			);
 			path = diancaila;
 			sourceTree = "<group>";
@@ -274,6 +277,7 @@
 				4B0A108B1A1ED41400A71B53 /* OrderConfirmViewController.swift in Sources */,
 				4B3110521A22CB1000ABDF96 /* JSONController.swift in Sources */,
 				4B0A10891A1ED41400A71B53 /* MenuType.swift in Sources */,
+				4B30DE681A303D21009D2721 /* OrderDetailViewController.swift in Sources */,
 				4B0A108F1A1ED41400A71B53 /* UIUtil.swift in Sources */,
 				4B0A108D1A1ED41400A71B53 /* OrderViewController.swift in Sources */,
 				4B0A10831A1ED41400A71B53 /* CustomStepper.swift in Sources */,
@@ -412,7 +416,6 @@
 		4B0A106C1A1ED3D000A71B53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = diancaila/Info.plist;
@@ -425,7 +428,6 @@
 		4B0A106D1A1ED3D000A71B53 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = diancaila/Info.plist;

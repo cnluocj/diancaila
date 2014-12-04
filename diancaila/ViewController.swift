@@ -68,8 +68,6 @@ class ViewController: UIViewController {
     
     func gotoOrderListTableView() {
         
-        self.title = ""
-        
         let viewController = OrderListViewController()
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -113,6 +111,10 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         self.title = "点菜啦"
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.title = ""
     }
     
 

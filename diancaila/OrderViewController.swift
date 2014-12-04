@@ -76,7 +76,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
 
         // 获取数据
-        httpController.onSearchMenuType(HttpController.menuTypeAPI)
+        httpController.onSearchMenuType(HttpController.apiMenuType)
         httpController.deletage = self
         jsonController.parseDelegate = self
         
@@ -300,7 +300,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 根据获取的type id 继续获取菜单
         for menuType in self.menuTypeArray {
             let type = menuType as MenuType
-            httpController.onSearchMenu(HttpController.menuAPI, typeId: type.id)
+            httpController.onSearchMenu(HttpController.apiMenu, typeId: type.id)
             
         }
         if self.menuTypeArray.count > 0 {

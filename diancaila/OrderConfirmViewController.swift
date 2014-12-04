@@ -159,7 +159,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
             jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
             jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-            ehttp.submitOrder(HttpController.submitOrderAPI, json: jsonStr!)
+            ehttp.submitOrder(HttpController.apiSubmitOrder, json: jsonStr!)
         }
     }
     
