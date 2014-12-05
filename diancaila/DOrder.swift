@@ -18,6 +18,7 @@ class DOrder: NSObject {
     var orderTime: String = ""
     var price: Double = 0.0
     var vipPrice: Double = 0.0
+    var truePrice: Double = 0.0
     var orderList = [Order]()
     
     init(id: String, deskId: Int, orderTime: String, price: Double, vipPrice: Double) {
@@ -35,5 +36,13 @@ class DOrder: NSObject {
         self.price = price
         self.vipPrice = vipPrice
         self.orderList = orderList
+    }
+    
+    
+    init(id: String, deskId: Int, orderTime: String, truePrice: Double) {
+        self.id = id
+        self.deskId = deskId
+        self.orderTime = orderTime
+        self.truePrice = truePrice
     }
 }

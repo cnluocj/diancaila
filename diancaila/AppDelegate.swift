@@ -13,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    var rootView: LoginViewController!
+    var rootView: ViewController!
     var navController: UINavigationController!
     
 
@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
 //        self.rootView = ViewController()
-        self.rootView = LoginViewController()
+        self.rootView = ViewController()
         
         self.navController = getNavController()
         navController.pushViewController(rootView, animated: true)

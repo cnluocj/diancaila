@@ -19,6 +19,8 @@ import Foundation
     
     optional func didReceiveDidNotPayOrder(result: NSDictionary)
     
+    optional func didReceiveDidPayOrder(result: NSDictionary)
+    
     optional func didReceiveOrderDetail(result: NSMutableDictionary)
     
 }
@@ -58,6 +60,10 @@ class HttpController: NSObject {
         return path + "order/re_orders_ios"
     }
     
+    class func apiDidPayOrder() -> String {
+        return path + "order/re_payorders_ios"
+    }
+    
     class var apiOrderDetail: String {
         return path + "order/re_order_detail?oid="
     }
@@ -69,6 +75,7 @@ class HttpController: NSObject {
     class func apiAddFood() -> String {
         return path + "order/add_order_dish"
     }
+    
     
     // todo 重构这个类
     func onSearch() {
@@ -164,6 +171,22 @@ class HttpController: NSObject {
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 self.deletage?.didReceiveDidNotPayOrder!(jsonResult)
+            }
+        }
+ 
+    }
+    
+    func onSearchDidPayOrder(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                                    println("\(string)")
+//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                self.deletage?.didReceiveDidPayOrder!(jsonResult)
             }
         }
  

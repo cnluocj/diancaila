@@ -16,9 +16,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     // 由上一层传入
     var orderId: String!
-    var price: Double!
-    var vipPrice: Double!
     var deskId: Int!
+    var price: Double?
+    var vipPrice: Double?
+    var truePrice: Double?
     
     // 数据源
     var orderDetail = NSMutableDictionary()
@@ -32,7 +33,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         loadData()
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "加菜", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressAddFoodButton:")
+        if truePrice == nil {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "加菜", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressAddFoodButton:")
+            
+        }
 
         orderListTableView  = UITableView(frame: CGRectMake(0, 0, self.view.frame.width, UIUtil.screenHeight - UIUtil.contentOffset - 60), style: UITableViewStyle.Grouped)
         orderListTableView.delegate = self
@@ -44,24 +48,38 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         let settleView = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 60 , UIUtil.screenWidth, 60))
         settleView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(settleView)
-        // 原价
-        let priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
-        priceLabel.textAlignment = NSTextAlignment.Center
-        priceLabel.text = "原: \(price)"
-        settleView.addSubview(priceLabel)
-        // 会员价
-        let vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
-        vipPriceLabel.textAlignment = NSTextAlignment.Center
-        vipPriceLabel.text = "VIP: \(vipPrice)"
-        settleView.addSubview(vipPriceLabel)
-        // 结账
+        
+        // 结账按钮 / 显示结账后金额
         let settleButton = UIButton(frame: CGRectMake(220, 0, UIUtil.screenWidth - 220, 60))
         let color = UIColor(red: 0.98431, green: 0.31764, blue: 0.03137, alpha: 0.9)
         settleButton.backgroundColor = color
-        settleButton.setTitle("结账", forState: UIControlState.Normal)
-        settleButton.addTarget(self, action: "didPressSettleButton:", forControlEvents: UIControlEvents.TouchUpInside)
         settleView.addSubview(settleButton)
         
+        if (truePrice != nil) {
+            settleButton.setTitle("\(truePrice!)", forState: UIControlState.Normal)
+            
+            // 订单号
+            let priceLabel = UILabel(frame: CGRectMake(10, 0, 200, 60))
+            priceLabel.textAlignment = NSTextAlignment.Center
+            priceLabel.text = "订单号: \(orderId)"
+            settleView.addSubview(priceLabel)
+            
+        } else {
+            // 原价
+            let priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
+            priceLabel.textAlignment = NSTextAlignment.Center
+            priceLabel.text = "原: \(price!)"
+            settleView.addSubview(priceLabel)
+            // 会员价
+            let vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
+            vipPriceLabel.textAlignment = NSTextAlignment.Center
+            vipPriceLabel.text = "VIP: \(vipPrice!)"
+            settleView.addSubview(vipPriceLabel)
+
+            
+            settleButton.setTitle("结账", forState: UIControlState.Normal)
+            settleButton.addTarget(self, action: "didPressSettleButton:", forControlEvents: UIControlEvents.TouchUpInside)
+        }
         
         // 横分割线
         let hDivide = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 60, UIUtil.screenWidth, 1))
