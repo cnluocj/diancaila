@@ -25,6 +25,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var foodStateAlert: UIAlertView!
     
+    var refreshButton: UIButton!
+    
     var segmentedItems = ["等待上菜", "未结订单", "全部订单"]
     
     // 数据源
@@ -54,7 +56,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         httpController.deletage = self
         jsonController.parseDelegate = self
         
-        loadWaitOrderData()
 
         
         segmentedControl = UISegmentedControl(items: segmentedItems)
@@ -64,6 +65,17 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         segmentedControl.setWidth(UIUtil.screenWidth/5, forSegmentAtIndex: 2)
         segmentedControl.addTarget(self, action: "segmentAction:", forControlEvents: UIControlEvents.ValueChanged)
         self.navigationItem.titleView = segmentedControl
+        
+        
+        var radius = CGFloat(70)
+        refreshButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight - UIUtil.contentOffset - 20, radius, radius))
+        refreshButton.setTitle("刷新", forState: UIControlState.Normal)
+        refreshButton.backgroundColor = UIColor.orangeColor()
+        refreshButton.setTitle("松开～", forState: UIControlState.Highlighted)
+        refreshButton.layer.cornerRadius = radius/2
+        refreshButton.addTarget(self, action: "didPressRefreshButton:", forControlEvents: UIControlEvents.TouchUpInside)
+        UIApplication.sharedApplication().keyWindow?.addSubview(refreshButton)
+        
         
         // 等待上菜订单界面 ---------------------------------------------------------------------------
         didNotFinishView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
@@ -136,17 +148,37 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         allOrderView.addSubview(allOrderTableView)
       
+        
+        // 先加载 第一个界面的数据
+        loadWaitOrderData()
+    }
     
-       
+    func didPressRefreshButton(sender: UIButton) {
+        switch segmentedControl.selectedSegmentIndex {
+        case 0:
+            loadWaitOrderData()
+        case 1:
+            loadNotPayOrderData()
+        case 2:
+            return
+        default:
+            return
+        }
     }
     
     // 加载数据
     func loadWaitOrderData() {
+        // 取数据前，清空数据
+        tempData.removeAllObjects()
+        didNotFinishOrderTableView.reloadData()
         httpController.onSearchWaitMenu(HttpController.apiWaitMenu)
 
     }
     
     func loadNotPayOrderData() {
+        // 取数据前，清空数据
+        notPayOrders.removeAllObjects()
+        didNotPayTableView.reloadData()
         httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder)
         
     }
@@ -315,6 +347,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             controller.orderId = orderDesc.id
             controller.price = orderDesc.price
             controller.vipPrice = orderDesc.vipPrice
+            controller.deskId = orderDesc.deskId
             self.navigationController?.pushViewController(controller, animated: true)
         }
     }
@@ -358,6 +391,16 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func searchDisplayControllerWillEndSearch(controller: UISearchDisplayController) {
         UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.LightContent, animated: true)
     }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        loadNotPayOrderData()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        refreshButton.removeFromSuperview()
+    }
+    
     
     /*
     // MARK: - Navigation

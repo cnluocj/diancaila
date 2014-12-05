@@ -78,6 +78,7 @@ class CustomActionSheet: UIView {
             }) { (isFinished: Bool) -> Void in
         }
         UIApplication.sharedApplication().keyWindow?.addSubview(self)
+        //  分开加载 ，使contentview 覆盖在上面，才能没有透明效果
         UIApplication.sharedApplication().keyWindow?.addSubview(self.contentView)
     }
     

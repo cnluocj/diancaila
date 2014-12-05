@@ -9,8 +9,12 @@
 import UIKit
 import AudioToolbox
 
+@objc protocol OrderViewControllerDeletage {
+    optional func didAddFood()
+}
+
 class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol, OrderConfirmViewControllerDelegate {
-    
+
     var tableView1: UITableView!
     var tableView2: UITableView!
     var countView: UIView!
@@ -59,10 +63,19 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // json解析器
     let jsonController = JSONController()
     
+    
+    // 加菜------------------
+    var orderId: String?
+    var delegate: OrderViewControllerDeletage?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "点餐"
+        if orderId == nil {
+            self.title = "点餐"
+        } else {
+            self.title = "加菜"
+        }
 
         self.view.backgroundColor = UIColor.whiteColor()
         
@@ -166,7 +179,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         chooseOverButton.setBackgroundImage(img, forState: UIControlState.Normal)
         chooseOverButton.setBackgroundImage(img_high, forState: UIControlState.Highlighted)
         chooseOverButton.setBackgroundImage(img_disable, forState: UIControlState.Disabled)
-        chooseOverButton.setTitle("选好了", forState: UIControlState.Normal)
+        if orderId == nil {
+            chooseOverButton.setTitle("选好了", forState: UIControlState.Normal)
+        } else {
+            chooseOverButton.setTitle("加菜", forState: UIControlState.Normal)
+        }
         chooseOverButton.titleLabel?.font = UIFont.systemFontOfSize(20)
         chooseOverButton.tintColor = UIColor.whiteColor()
         chooseOverButton.contentVerticalAlignment = UIControlContentVerticalAlignment.Center
@@ -213,15 +230,51 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func didPressBackButton(sender: UIButton) {
-        self.navigationController?.popViewControllerAnimated(true)
+            self.navigationController?.popViewControllerAnimated(true)
     }
     
     
     func didPressChooseOverButton(sender: UIButton) {
-        let orderConfirmViewController = OrderConfirmViewController()
-        orderConfirmViewController.orderList = orderList.values.array
-        orderConfirmViewController.delegate = self
-        self.navigationController?.pushViewController(orderConfirmViewController, animated: true)
+        if orderId == nil {
+            let orderConfirmViewController = OrderConfirmViewController()
+            orderConfirmViewController.orderList = orderList.values.array
+            orderConfirmViewController.delegate = self
+            self.navigationController?.pushViewController(orderConfirmViewController, animated: true)
+        } else {
+            
+            // 等待处理
+            let waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+            waitIndicator?.alpha = 0.8
+            waitIndicator?.layer.cornerRadius = 5
+            waitIndicator?.frame = CGRectMake(UIUtil.screenWidth/2 - 75, UIUtil.screenHeight/3 - 75, 150, 150)
+            waitIndicator?.backgroundColor = UIColor.grayColor()
+            waitIndicator?.startAnimating()
+            self.view.addSubview(waitIndicator!)
+            self.view.userInteractionEnabled = false
+            
+            // 生成json
+            var jsonDic = NSMutableDictionary()
+            jsonDic["order_id"] = orderId
+            
+            var dishList = NSMutableArray()
+            
+            for order in orderList.values.array {
+                var dish: NSMutableDictionary = NSMutableDictionary()
+                
+                dish["dish_id"] = order.menu.id
+                dish["dish_num"] = order.count
+                
+                dishList.addObject(dish)
+            }
+            jsonDic["dish_list"] = dishList
+            
+            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+            var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
+            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
+            httpController.submitOrder(HttpController.apiAddFood(), json: jsonStr!)
+            
+        }
     }
     
     // 点击底部订单时，把订单详情展示出来
@@ -280,6 +333,14 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func didReceiveMenuResults(result: NSDictionary) {
         jsonController.parseMenu(result)
+    }
+    
+    // 加菜成功
+    func didReceiveOrderId(result: NSDictionary) {
+        
+        delegate?.didAddFood!()
+        
+        self.navigationController?.popViewControllerAnimated(false)
     }
     
     
