@@ -13,7 +13,7 @@ import AudioToolbox
     optional func didAddFood()
 }
 
-class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol, OrderConfirmViewControllerDelegate {
+class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol, OrderConfirmViewControllerDelegate, UISearchBarDelegate {
 
     var tableView1: UITableView!
     var tableView2: UITableView!
@@ -25,6 +25,13 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var orderListTableView: UITableView!
     var hDivide: UIView!
     var backAlert: UIAlertView?
+    var searchBar: UISearchBar!
+    
+    var searchBarTableView: UITableView!
+    
+    var filterData: NSArray?
+    
+    var searchBarIsEmpty = true
     
     // 加载
     var loadingIndicator: UIActivityIndicatorView!
@@ -108,19 +115,24 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         divide.alpha = 0.3
         self.view.addSubview(divide)
         
-//        
-//        menuDetail.append([Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1")])
-//        for _ in 0..<10 {
-//        menuDetail[0].append(Menu(id: "1", name: "icecream", description: "nice", cover: "", price: 12, vipPrice: 12, typeId: "1", shopId: "1", pubDate: "1"))
-//        }
         
         // 详细菜单
-        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 0, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight))
+        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight))
         tableView2.delegate = self
         tableView2.dataSource = self
         self.view.addSubview(tableView2)
         setExtraCellLineHidden(tableView2)
         
+        searchBar = UISearchBar(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 0, (UIUtil.screenWidth/7)*5, 44))
+        searchBar.placeholder = "搜索"
+        searchBar.delegate = self
+        self.view.addSubview(searchBar)
+        
+        // 搜索列表
+        searchBarTableView = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight))
+        searchBarTableView.delegate = self
+        searchBarTableView.dataSource = self
+   
         
          // 订单列表
         orderListView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight , UIUtil.screenWidth, UIUtil.screenHeight*2))
@@ -374,15 +386,17 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray) {
-        var type = "1"
+        var typeId = "1"
         // 获取该组的typeid
         if menuArray.count > 0 {
             let menu = menuArray.objectAtIndex(0) as Menu
-            type = menu.typeId
+            typeId = menu.typeId
         }
         
+        var count = 0
         for menu in menuArray {
-            menuDetail[type]?.append(menu as Menu)
+            (menu as Menu).index = count++ // 标示在tableview中的位置
+            menuDetail[typeId]?.append(menu as Menu)
         }
         
         tableView2.reloadData()
@@ -411,15 +425,32 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 
                 if let menuArray = menuDetail["\(menuTypeIndex)"] {
                     return menuArray.count
+                    
+                } else {
+                    return 0
+                }
+            }
+            
+        } else if tableView == searchBarTableView {
+            // 谓词搜索
+            if let menuArray = menuDetail["\(menuTypeIndex)"] {
+                let predicate = NSPredicate(format: "name contains [cd] %@", searchBar.text)
+                filterData =  NSArray(array: NSMutableArray(array: menuArray).filteredArrayUsingPredicate(predicate!))
+                if let fData = filterData {
+                    return fData.count
                 } else {
                     return 0
                 }
                 
+            } else {
+                return 0
             }
             
-        } else {
+       } else {
+            // 订单列表
             return orderList.count
         }
+        
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -450,8 +481,8 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
         } else if tableView == self .tableView2 {
             
-            
-            let menu = (menuDetail["\(menuTypeIndex)"] as Array!)[indexPath.row]
+            var menu = (menuDetail["\(menuTypeIndex)"] as Array!)[indexPath.row]
+        
             var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, _menuStyleIndex: menuTypeIndex, _menuIndex: indexPath.row, _menu: menu, _viewContriller: self, _superTableView: tableView)
             
             let tempCell  = cell as MenuDetailTableViewCell
@@ -468,10 +499,15 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 tempCell.badge.hidden = true
                 tempCell.steper.value = 0.0
             }
-            
             return tempCell
             
-        } else {
+        } else if tableView == searchBarTableView {
+            var menu = filterData?.objectAtIndex(indexPath.row) as Menu
+            
+            var cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "")
+            cell.textLabel?.text = menu.name
+            return cell
+        }else {
             let order = orderList.values.array[indexPath.row]
             var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, _menuStyleIndex: order.menuTypeIndex, _menuIndex: order.menuIndex, _menu: order.menu, _viewContriller: self, _superTableView: tableView)
             
@@ -496,8 +532,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             menuTypeIndex = typeIdIntValue
             tableView2.reloadData()
             
-        } else {
+        } else if tableView == searchBarTableView {
+            searchBar.text = ""
             
+            var searchIndex = (filterData?.objectAtIndex(indexPath.row) as Menu).index
+            tableView2.scrollToRowAtIndexPath(NSIndexPath(forRow: searchIndex, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+            searchBarTableView.removeFromSuperview()
         }
         
     }
@@ -505,7 +545,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
 
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if tableView == self.tableView1 {
+        if tableView == tableView1 || tableView == searchBarTableView {
             return menuCellHeight
         } else {
             return menuDetailCellHeight
@@ -513,7 +553,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
   
     func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if tableView == self.tableView2 || tableView == self.orderListTableView {
+        if (tableView == self.tableView2 && searchBarIsEmpty) || tableView == self.orderListTableView {
             return false
         } else {
             return true
@@ -547,6 +587,18 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         chooseOverButton.enabled = false
     }
     
+    // UISearchBarDelegate
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText == "" {
+            searchBarTableView.removeFromSuperview()
+            searchBarIsEmpty = true
+        } else {
+            searchBarIsEmpty = false
+            self.view.addSubview(searchBarTableView)
+        }
+        searchBarTableView.reloadData()
+    }
 
     /*
     // MARK: - Navigation

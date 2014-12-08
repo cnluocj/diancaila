@@ -12,13 +12,18 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     var orderListTableView: UITableView!
     
+    var priceLabel: UILabel!
+    var vipPriceLabel:UILabel!
+    
     let httpController = HttpController()
     
     // 由上一层传入
     var orderId: String!
     var deskId: Int!
-    var price: Double?
-    var vipPrice: Double?
+    
+    // 当前获取
+//    var price = 0.0
+//    var vipPrice = 0.0
     var truePrice: Double?
     
     // 数据源
@@ -66,14 +71,14 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             
         } else {
             // 原价
-            let priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
+            priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
             priceLabel.textAlignment = NSTextAlignment.Center
-            priceLabel.text = "原: \(price!)"
+            priceLabel.text = "原: 0"
             settleView.addSubview(priceLabel)
             // 会员价
-            let vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
+            vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
             vipPriceLabel.textAlignment = NSTextAlignment.Center
-            vipPriceLabel.text = "VIP: \(vipPrice!)"
+            vipPriceLabel.text = "VIP: 0"
             settleView.addSubview(vipPriceLabel)
 
             
@@ -134,8 +139,14 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
 //        }
         //{"order_id":"1-1-20141203165755-6910","list":[{"dish_id":"9","dish_name":"肉龙","num":"1","totalprice":"28"},{"dish_id":"10","dish_name":"三不馆er招牌香香骨（小）","num":"1","totalprice":"68"},{"dish_id":"11","dish_name":"三不馆er招牌香香骨（中）","num":"1","totalprice":"102"}]}
         
-        cell.textLabel?.text = ((orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary)["dish_name"] as? String
-        cell.detailTextLabel?.text = "x " + (((orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary)["num"] as? String)!
+        let orderItem = (orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary
+//        cell.textLabel?.text = ((orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary)["dish_name"] as? String
+        cell.textLabel?.text = orderItem["dish_name"] as? String
+//        cell.detailTextLabel?.text = "x " + (((orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary)["num"] as? String)!
+        let price = orderItem["price"] as String
+        let vipPrice = orderItem["vip_price"] as String
+        let num = orderItem["num"] as String
+        cell.detailTextLabel?.text = "\(price) / \(vipPrice)   x \(num)"
         return cell
     }
     
@@ -156,6 +167,13 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         orderDetail = result
         
         orderListTableView.reloadData()
+        
+        if (truePrice == nil) {
+            let totalPrice = orderDetail["totalprice"] as String
+            let vipPrice = orderDetail["vip_totalprice"] as String
+            priceLabel.text =   "原: \(totalPrice)"
+            vipPriceLabel.text = "VIP: \(vipPrice)"
+        }
     }
     
 

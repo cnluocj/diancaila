@@ -21,6 +21,8 @@ class Order: NSObject {
     
     var id: String = "" // 唯一表示, 无意义
     
+    var isSelected = false // 是否在table中被选中了
+    
     init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
         self.menuTypeIndex = menuTypeIndex
         self.menuIndex = menuIndex

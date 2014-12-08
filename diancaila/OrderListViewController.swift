@@ -10,42 +10,40 @@ import UIKit
 
 class OrderListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate,UISearchDisplayDelegate, HttpProtocol, JSONParseProtocol, UIAlertViewDelegate {
     
-    var didNotFinishView: UIView!
-    var allOrderView: UIView!
-    var didNotPayView: UIView!
-    var didNotPayTableView: UITableView!
-    
-    var didNotFinishOrderTableView: UITableView!
     var segmentedControl: UISegmentedControl!
-    
-    var searchBar: UISearchBar!
-    var searchController: UISearchDisplayController!
-    
-    var allOrderTableView: UITableView!
-    
-    var foodStateAlert: UIAlertView!
-    
-    var foodMoreStateAlert: UIAlertView!
-    
-    var refreshButton: UIButton!
     
     var segmentedItems = ["等待上菜", "未结订单", "全部订单"]
     
-    // 数据源
-    // 等待上菜 的 数据源
-    var tempData = NSMutableArray()
+    var refreshButton: UIButton!
+    
+    // 等待上菜界面相关 -----------------------------------
+    var didNotFinishView: UIView!
+    var didNotFinishOrderTableView: UITableView!
+    var searchBar: UISearchBar!
+    var searchController: UISearchDisplayController!
+    var foodStateAlert: UIAlertView!
+    var foodMoreStateAlert: UIAlertView!
+    var opButton: UIButton!
+    var tableViewCellEditingIndexPath: NSIndexPath! // 正在编辑的菜 index
+    // 等待上菜 table 的 数据源
     var orderDic: [String:[Order]] = [:] // 转成 dic， 按照菜id分类 方便排序
     var orderList = [Order]()  // 有序的 tempdata
     var filterData: NSArray? // 过滤的数据
+    var numOfDidSelected = 0 // 被选中的个数
     
+    // 未结订单相关 ------------------------------------------
+    var didNotPayView: UIView!
+    var didNotPayTableView: UITableView!
     // 未结订单 的 数据源
     var notPayOrders = NSMutableArray()
     
+    // 全部订单相关 -------------------------------------------
+    var allOrderView: UIView!
+    var allOrderTableView: UITableView!
     // 全部订单 数据源 (暂时显示今天已结账订单)
     var allOrder = NSMutableArray()
     
     
-    var tableViewCellEditingIndexPath: NSIndexPath!
     
     let httpController = HttpController()
     let jsonController = JSONController()
@@ -72,14 +70,24 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         self.navigationItem.titleView = segmentedControl
         
         
+//        var radius = CGFloat(70)
+//        refreshButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight - UIUtil.contentOffset - 20, radius, radius))
+//        refreshButton.setTitle("刷新", forState: UIControlState.Normal)
+//        refreshButton.backgroundColor = UIColor.orangeColor()
+//        refreshButton.setTitle("松开～", forState: UIControlState.Highlighted)
+//        refreshButton.layer.cornerRadius = radius/2
+//        refreshButton.addTarget(self, action: "didPressRefreshButton:", forControlEvents: UIControlEvents.TouchUpInside)
+//        UIApplication.sharedApplication().keyWindow?.addSubview(refreshButton)
+        
+        
+        // deleteButton -- didNotFinishView
         var radius = CGFloat(70)
-        refreshButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight - UIUtil.contentOffset - 20, radius, radius))
-        refreshButton.setTitle("刷新", forState: UIControlState.Normal)
-        refreshButton.backgroundColor = UIColor.orangeColor()
-        refreshButton.setTitle("松开～", forState: UIControlState.Highlighted)
-        refreshButton.layer.cornerRadius = radius/2
-        refreshButton.addTarget(self, action: "didPressRefreshButton:", forControlEvents: UIControlEvents.TouchUpInside)
-        UIApplication.sharedApplication().keyWindow?.addSubview(refreshButton)
+        opButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight - UIUtil.contentOffset - 20, radius, radius))
+        opButton.setTitle("刷新", forState: UIControlState.Normal)
+        opButton.backgroundColor = UIColor.orangeColor()
+        opButton.setTitle("松开～", forState: UIControlState.Highlighted)
+        opButton.layer.cornerRadius = radius/2
+        opButton.addTarget(self, action: "didPressOpButton:", forControlEvents: UIControlEvents.TouchUpInside)
         
         
         // 等待上菜订单界面 ---------------------------------------------------------------------------
@@ -156,6 +164,68 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         // 先加载 第一个界面的数据
         loadWaitOrderData()
+        
+        
+        opButton.removeFromSuperview()
+        self.view.addSubview(opButton)
+    }
+    
+    
+    
+    func segmentAction(sender: UISegmentedControl) {
+        numOfDidSelected = 0
+        
+        switch sender.selectedSegmentIndex {
+        case 0:
+            loadWaitOrderData()
+            self.view = didNotFinishView
+            
+            opButton.removeFromSuperview()
+            self.view.addSubview(opButton)
+            
+        case 1:
+            loadNotPayOrderData()
+            opButton.setTitle("刷新", forState: UIControlState.Normal)
+            self.view = didNotPayView
+            
+            opButton.removeFromSuperview()
+            self.view.addSubview(opButton)
+            
+        case 2:
+            loadAllOrder()
+            opButton.setTitle("刷新", forState: UIControlState.Normal)
+            self.view = allOrderView
+            
+            opButton.removeFromSuperview()
+            self.view.addSubview(opButton)
+            
+        default:
+            break
+        }
+        
+    }
+    
+    
+    
+    func didPressOpButton(sender: UIButton) {
+        if numOfDidSelected > 0 {
+            
+        } else {
+            switch segmentedControl.selectedSegmentIndex {
+            case 0:
+                loadWaitOrderData()
+            case 1:
+                loadNotPayOrderData()
+            case 2:
+                loadAllOrder()
+            default:
+                return
+            }
+        }
+    }
+    
+    func didPressDeleteButton() {
+        
     }
     
     func didPressRefreshButton(sender: UIButton) {
@@ -174,11 +244,12 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     // 加载数据
     func loadWaitOrderData() {
         // 取数据前，清空数据
-        tempData = NSMutableArray()
         orderDic = [:] // 转成 dic， 按照菜id分类 方便排序
         orderList = [Order]()  // 有序的 tempdata
         filterData = NSArray() // 过滤的数据
         didNotFinishOrderTableView.reloadData()
+        numOfDidSelected = 0
+        
         httpController.onSearchWaitMenu(HttpController.apiWaitMenu)
 
     }
@@ -199,9 +270,9 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // JSONParseDelegate
     func didFinishParseWaitMenu(menuArray: NSMutableArray) {
-        self.tempData = menuArray
+        let tempData = menuArray
         
-        for ord in self.tempData {
+        for ord in tempData {
             let order = ord as Order
             if self.orderDic[order.menu.id] == nil {
                 self.orderDic[order.menu.id] = [Order]()
@@ -244,22 +315,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     
-    func segmentAction(sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            loadWaitOrderData()
-            self.view = didNotFinishView
-        case 1:
-            loadNotPayOrderData()
-            self.view = didNotPayView
-        case 2:
-            loadAllOrder()
-            self.view = allOrderView
-        default:
-            break
-        }
-        
-    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -302,16 +358,22 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: cellId)
         }
         
+        
         if tableView == didNotFinishOrderTableView {
+            let orderItem = orderList[indexPath.row]
             
-            cell?.textLabel?.text = orderList[indexPath.row].menu.name
-            cell?.detailTextLabel?.text = "\(orderList[indexPath.row].deskId)号桌"
+            cell?.textLabel?.text = orderItem.menu.name
+            cell?.detailTextLabel?.text = "\(orderItem.deskId)号桌"
             cell?.detailTextLabel?.textColor = UIColor.redColor()
             
-            let view  =  UIView(frame: CGRectMake(0, 0, 100, cell!.frame.height))
-            view.backgroundColor = UIColor.orangeColor()
-
-            cell?.editingAccessoryView = view
+            // 点击时不高亮
+            cell?.selectionStyle = UITableViewCellSelectionStyle.None
+            
+            if orderItem.isSelected {
+                cell?.accessoryType = UITableViewCellAccessoryType.Checkmark
+            } else {
+                cell?.accessoryType = UITableViewCellAccessoryType.None
+            }
             
         } else if tableView == didNotPayTableView {
             cell?.textLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).deskId)号桌"
@@ -376,8 +438,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             let controller = OrderDetailViewController()
             let orderDesc = notPayOrders[indexPath.row] as DOrder
             controller.orderId = orderDesc.id
-            controller.price = orderDesc.price
-            controller.vipPrice = orderDesc.vipPrice
             controller.deskId = orderDesc.deskId
             self.navigationController?.pushViewController(controller, animated: true)
             
@@ -389,6 +449,22 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             controller.deskId = orderDesc.deskId
             controller.truePrice = orderDesc.truePrice
             self.navigationController?.pushViewController(controller, animated: true)
+            
+        } else if tableView == didNotFinishOrderTableView {
+            
+            orderList[indexPath.row].isSelected = !orderList[indexPath.row].isSelected
+            if (orderList[indexPath.row].isSelected) {
+                numOfDidSelected++
+            } else {
+                numOfDidSelected--
+            }
+            
+            if numOfDidSelected > 0 {
+                opButton.setTitle("上菜", forState: UIControlState.Normal)
+            } else {
+                opButton.setTitle("刷新", forState: UIControlState.Normal)
+            }
+            tableView.reloadData()
         }
     }
     
@@ -447,7 +523,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewWillDisappear(animated: Bool) {
-        refreshButton.removeFromSuperview()
+//        refreshButton.removeFromSuperview()
     }
     
     

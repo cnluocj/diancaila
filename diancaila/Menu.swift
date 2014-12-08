@@ -19,6 +19,9 @@ class Menu: NSObject {
     let shopId: String = ""
     let pubDate: String = ""
     
+    // 在列表中的位置，搜索时候用
+    var index = 0
+    
     init(id: String, name: String, description: String, cover: String, price: Double, vipPrice: Double, typeId: String, shopId: String, pubDate: String) {
         self.id = id
         self.name = name
