@@ -49,10 +49,10 @@ class ViewController: UIViewController {
         orderBtn.addTarget(self, action: "didPressOrderButton:", forControlEvents: UIControlEvents.TouchUpInside)
         self.view.addSubview(orderBtn)
         
-        // 外卖按钮
+        // 外卖按钮 （暂做 订单 按钮）
         let img2 = UIUtil.scaleToSize(UIImage(named: "regular_biking-100")!, size: CGSize(width: 50, height: 50))
-        initHeadBtn(takeawayBtn, title: "外卖", img: img2, x: UIUtil.screenWidth/2, y: 0)
-        takeawayBtn.addTarget(self, action: "gotoTakeawayView:", forControlEvents: UIControlEvents.TouchUpInside)
+        initHeadBtn(takeawayBtn, title: "订单", img: img2, x: UIUtil.screenWidth/2, y: 0)
+        takeawayBtn.addTarget(self, action: "didPressOrderBarItem:", forControlEvents: UIControlEvents.TouchUpInside)
         self.view.addSubview(takeawayBtn)
         
         
@@ -62,7 +62,7 @@ class ViewController: UIViewController {
     }
     
     
-    func didPressOrderBarItem(sender: UIBarButtonItem) {
+    func didPressOrderBarItem(sender: UIView) {
         gotoOrderListTableView()
     }
     

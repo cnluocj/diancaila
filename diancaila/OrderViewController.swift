@@ -117,7 +117,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         // 详细菜单
-        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight))
+        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight - 44))
         tableView2.delegate = self
         tableView2.dataSource = self
         self.view.addSubview(tableView2)
@@ -129,7 +129,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.view.addSubview(searchBar)
         
         // 搜索列表
-        searchBarTableView = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight))
+        searchBarTableView = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight - 44))
         searchBarTableView.delegate = self
         searchBarTableView.dataSource = self
    
