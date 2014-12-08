@@ -132,13 +132,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         searchBarTableView = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight - 44))
         searchBarTableView.delegate = self
         searchBarTableView.dataSource = self
-   
+        
         
          // 订单列表
         orderListView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight , UIUtil.screenWidth, UIUtil.screenHeight*2))
         orderListView.backgroundColor = UIColor.clearColor()
         self.view.addSubview(orderListView)
-        
         
         orderListTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, contentHeight - countViewHeight))
         setExtraCellLineHidden(orderListTableView)
@@ -538,6 +537,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             var searchIndex = (filterData?.objectAtIndex(indexPath.row) as Menu).index
             tableView2.scrollToRowAtIndexPath(NSIndexPath(forRow: searchIndex, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
             searchBarTableView.removeFromSuperview()
+            
         }
         
     }
@@ -588,6 +588,17 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     // UISearchBarDelegate
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {

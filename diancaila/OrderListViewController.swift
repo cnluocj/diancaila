@@ -28,8 +28,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     // 等待上菜 table 的 数据源
     var orderDic: [String:[Order]] = [:] // 转成 dic， 按照菜id分类 方便排序
     var orderList = [Order]()  // 有序的 tempdata
+//    var orderList = NSMutableArray()
     var filterData: NSArray? // 过滤的数据
-    var numOfDidSelected = 0 // 被选中的个数
+    var numOfDidSelected = 0 // 被选中的个数  todo 需废弃
+    var selectedItem = [Int : Order]()
     
     // 未结订单相关 ------------------------------------------
     var didNotPayView: UIView!
@@ -210,6 +212,30 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func didPressOpButton(sender: UIButton) {
         if numOfDidSelected > 0 {
             
+            // 先把服务器那边的状态改了，再改本地
+            for key in selectedItem.keys {
+                httpController.overOrder(HttpController.apiOverOrder(id: orderList[key].id, stat: 1))
+            }
+            
+            var array = NSMutableArray(array: orderList)
+            array.removeObjectsInArray(selectedItem.keys.array)
+            orderList.removeAll(keepCapacity: false)
+            for a in array {
+                orderList.append(a as Order)
+            }
+            
+            var rows = [NSIndexPath]()
+            for key in selectedItem.keys {
+                rows.append(NSIndexPath(forRow: key, inSection: 0))
+            }
+            didNotFinishOrderTableView.deleteRowsAtIndexPaths(rows, withRowAnimation: UITableViewRowAnimation.Top)
+            
+            
+            selectedItem.removeAll(keepCapacity: false)
+            numOfDidSelected = 0
+            opButton.setTitle("刷新", forState: UIControlState.Normal)
+            
+            
         } else {
             switch segmentedControl.selectedSegmentIndex {
             case 0:
@@ -222,10 +248,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 return
             }
         }
-    }
-    
-    func didPressDeleteButton() {
-        
     }
     
     func didPressRefreshButton(sender: UIButton) {
@@ -249,6 +271,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         filterData = NSArray() // 过滤的数据
         didNotFinishOrderTableView.reloadData()
         numOfDidSelected = 0
+        selectedItem.removeAll(keepCapacity: false)
         
         httpController.onSearchWaitMenu(HttpController.apiWaitMenu)
 
@@ -455,13 +478,17 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             orderList[indexPath.row].isSelected = !orderList[indexPath.row].isSelected
             if (orderList[indexPath.row].isSelected) {
                 numOfDidSelected++
+                selectedItem[indexPath.row] = orderList[indexPath.row]
             } else {
                 numOfDidSelected--
+                selectedItem.removeValueForKey(indexPath.row)
             }
             
             if numOfDidSelected > 0 {
+                opButton.backgroundColor = UIColor.blueColor()
                 opButton.setTitle("上菜", forState: UIControlState.Normal)
             } else {
+                opButton.backgroundColor = UIColor.orangeColor()
                 opButton.setTitle("刷新", forState: UIControlState.Normal)
             }
             tableView.reloadData()
