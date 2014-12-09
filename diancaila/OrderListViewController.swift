@@ -27,8 +27,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     var tableViewCellEditingIndexPath: NSIndexPath! // 正在编辑的菜 index
     // 等待上菜 table 的 数据源
     var orderDic: [String:[Order]] = [:] // 转成 dic， 按照菜id分类 方便排序
-    var orderList = [Order]()  // 有序的 tempdata
-//    var orderList = NSMutableArray()
+//    var orderList = [Order]()  // 有序的 tempdata
+    var orderList = NSMutableArray()
     var filterData: NSArray? // 过滤的数据
     var numOfDidSelected = 0 // 被选中的个数  todo 需废弃
     var selectedItem = [Int : Order]()
@@ -70,16 +70,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         segmentedControl.setWidth(UIUtil.screenWidth/5, forSegmentAtIndex: 2)
         segmentedControl.addTarget(self, action: "segmentAction:", forControlEvents: UIControlEvents.ValueChanged)
         self.navigationItem.titleView = segmentedControl
-        
-        
-//        var radius = CGFloat(70)
-//        refreshButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight - UIUtil.contentOffset - 20, radius, radius))
-//        refreshButton.setTitle("刷新", forState: UIControlState.Normal)
-//        refreshButton.backgroundColor = UIColor.orangeColor()
-//        refreshButton.setTitle("松开～", forState: UIControlState.Highlighted)
-//        refreshButton.layer.cornerRadius = radius/2
-//        refreshButton.addTarget(self, action: "didPressRefreshButton:", forControlEvents: UIControlEvents.TouchUpInside)
-//        UIApplication.sharedApplication().keyWindow?.addSubview(refreshButton)
         
         
         // deleteButton -- didNotFinishView
@@ -214,26 +204,25 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             
             // 先把服务器那边的状态改了，再改本地
             for key in selectedItem.keys {
-                httpController.overOrder(HttpController.apiOverOrder(id: orderList[key].id, stat: 1))
+                let orderItem = orderList.objectAtIndex(key) as Order
+                httpController.overOrder(HttpController.apiOverOrder(id: orderItem.id, stat: 1))
             }
             
-            var array = NSMutableArray(array: orderList)
-            array.removeObjectsInArray(selectedItem.keys.array)
-            orderList.removeAll(keepCapacity: false)
-            for a in array {
-                orderList.append(a as Order)
+            let array = NSMutableArray()
+            let set = NSMutableIndexSet()
+            for a in selectedItem.keys.array {
+                array.addObject(NSIndexPath(forRow: a, inSection: 0))
+                set.addIndex(a)
             }
-            
-            var rows = [NSIndexPath]()
-            for key in selectedItem.keys {
-                rows.append(NSIndexPath(forRow: key, inSection: 0))
-            }
-            didNotFinishOrderTableView.deleteRowsAtIndexPaths(rows, withRowAnimation: UITableViewRowAnimation.Top)
+            orderList.removeObjectsAtIndexes(set)
+            didNotFinishOrderTableView.deleteRowsAtIndexPaths(NSArray(array: array), withRowAnimation: UITableViewRowAnimation.Top)
             
             
+            // 清空选中的数据源
             selectedItem.removeAll(keepCapacity: false)
             numOfDidSelected = 0
             opButton.setTitle("刷新", forState: UIControlState.Normal)
+            opButton.backgroundColor = UIColor.orangeColor()
             
             
         } else {
@@ -250,24 +239,12 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func didPressRefreshButton(sender: UIButton) {
-        switch segmentedControl.selectedSegmentIndex {
-        case 0:
-            loadWaitOrderData()
-        case 1:
-            loadNotPayOrderData()
-        case 2:
-            loadAllOrder()
-        default:
-            return
-        }
-    }
     
     // 加载数据
     func loadWaitOrderData() {
         // 取数据前，清空数据
         orderDic = [:] // 转成 dic， 按照菜id分类 方便排序
-        orderList = [Order]()  // 有序的 tempdata
+        orderList.removeAllObjects()  // 有序的 tempdata
         filterData = NSArray() // 过滤的数据
         didNotFinishOrderTableView.reloadData()
         numOfDidSelected = 0
@@ -307,7 +284,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         for ordlist in self.orderDic.values {
             for ord in ordlist {
                 ord.menuIndex = count++ // 定位标记
-                self.orderList.append(ord)
+                self.orderList.addObject(ord)
             }
         }
         didNotFinishOrderTableView.reloadData()
@@ -383,7 +360,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         if tableView == didNotFinishOrderTableView {
-            let orderItem = orderList[indexPath.row]
+            let orderItem = orderList.objectAtIndex(indexPath.row) as Order
             
             cell?.textLabel?.text = orderItem.menu.name
             cell?.detailTextLabel?.text = "\(orderItem.deskId)号桌"
@@ -474,11 +451,13 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             self.navigationController?.pushViewController(controller, animated: true)
             
         } else if tableView == didNotFinishOrderTableView {
+            let orderItem = orderList.objectAtIndex(indexPath.row) as Order
             
-            orderList[indexPath.row].isSelected = !orderList[indexPath.row].isSelected
-            if (orderList[indexPath.row].isSelected) {
+//            orderList[indexPath.row].isSelected = !orderList[indexPath.row].isSelected
+            orderItem.isSelected = !orderItem.isSelected
+            if (orderItem.isSelected) {
                 numOfDidSelected++
-                selectedItem[indexPath.row] = orderList[indexPath.row]
+                selectedItem[indexPath.row] = orderItem
             } else {
                 numOfDidSelected--
                 selectedItem.removeValueForKey(indexPath.row)
@@ -512,7 +491,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 foodMoreStateAlert.show()
             case 1:
                 httpController.overOrder(HttpController.apiOverOrder(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1))
-                orderList.removeAtIndex(tableViewCellEditingIndexPath.row)
+                orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
                 
                 didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
             default:
@@ -524,7 +503,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             switch buttonIndex {
             case 1:
                 httpController.overOrder(HttpController.apiOverOrder(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2))
-                orderList.removeAtIndex(tableViewCellEditingIndexPath.row)
+                orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
                 
                 didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
             default:
