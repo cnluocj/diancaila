@@ -16,6 +16,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var refreshButton: UIButton!
     
+    let waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.White)
+    
     // 等待上菜界面相关 -----------------------------------
     var didNotFinishView: UIView!
     var didNotFinishOrderTableView: UITableView!
@@ -61,6 +63,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         httpController.deletage = self
         jsonController.parseDelegate = self
         
+        
+        waitIndicator.frame = CGRectMake(0, 0, 30, 30)
+        let rightButtonItem = UIBarButtonItem(customView: waitIndicator)
+        self.navigationItem.rightBarButtonItem = rightButtonItem
 
         
         segmentedControl = UISegmentedControl(items: segmentedItems)
@@ -240,8 +246,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     
-    // 加载数据
+    // 加载数据 ---------------------------------------------------------
     func loadWaitOrderData() {
+        waitIndicator.startAnimating()
+        
         // 取数据前，清空数据
         orderDic = [:] // 转成 dic， 按照菜id分类 方便排序
         orderList.removeAllObjects()  // 有序的 tempdata
@@ -255,15 +263,20 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func loadNotPayOrderData() {
+        waitIndicator.startAnimating()
+        
         // 取数据前，清空数据
         notPayOrders.removeAllObjects()
         didNotPayTableView.reloadData()
+        
         httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder)
         
     }
     
     
     func loadAllOrder() {
+        waitIndicator.startAnimating()
+        
         httpController.onSearchDidPayOrder(HttpController.apiDidPayOrder())
     }
     
@@ -287,16 +300,25 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.orderList.addObject(ord)
             }
         }
+        
+        waitIndicator.stopAnimating()
+        
         didNotFinishOrderTableView.reloadData()
     }
     
     func didFinishParseDidNotPayOrder(notPayOrders: NSMutableArray) {
         self.notPayOrders = notPayOrders
+        
+        waitIndicator.stopAnimating()
+        
         didNotPayTableView.reloadData()
     }
     
     func didFinishParseDidPayOrder(payOrders: NSMutableArray) {
         self.allOrder = payOrders
+        
+        waitIndicator.stopAnimating()
+        
         allOrderTableView.reloadData()
     }
     
