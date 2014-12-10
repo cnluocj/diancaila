@@ -86,9 +86,6 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
         self.view.backgroundColor = UIColor.whiteColor()
         
-        // 返回按钮
-//        self.navigationItem.leftBarButtonItem = backButton()
-        
         
         let navHeight = self.navigationController?.navigationBar.frame.height ?? 0
         // 除了导航，底下内容的高度
@@ -229,27 +226,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     
-    func backButton() -> UIBarButtonItem {
-        
-        let img: UIImage! = UIImage(named: "back")
-        let btn = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
-        btn.frame = CGRectMake(0, 0, 20, 20)
-        btn.setBackgroundImage(img, forState: UIControlState.Normal)
-        btn.addTarget(self, action: "didPressBackButton:", forControlEvents: UIControlEvents.TouchUpInside)
-        let backButton = UIBarButtonItem(customView: btn)
-        return backButton
-    }
-    
-    func didPressBackButton(sender: UIButton) {
-            self.navigationController?.popViewControllerAnimated(true)
-    }
-    
-    
     func didPressChooseOverButton(sender: UIButton) {
         if orderId == nil {
             let orderConfirmViewController = OrderConfirmViewController()
             orderConfirmViewController.orderList = orderList.values.array
             orderConfirmViewController.delegate = self
+            self.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(orderConfirmViewController, animated: true)
         } else {
             
@@ -403,7 +385,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
  
     
-    // about tableview delegate
+    // UITableViewDelegate
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if tableView == self.tableView1 {
             return 1
@@ -432,6 +414,15 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
         } else if tableView == searchBarTableView {
             // 谓词搜索
+            
+            // todo
+//            var menuArray = NSMutableArray()
+//            for t in menuTypeArray {
+//                let type = t as MenuType
+//                if let array = menuDetail["\(menuTypeIndex)"] {
+//                }
+//            }
+            
             if let menuArray = menuDetail["\(menuTypeIndex)"] {
                 let predicate = NSPredicate(format: "name contains [cd] %@", searchBar.text)
                 filterData =  NSArray(array: NSMutableArray(array: menuArray).filteredArrayUsingPredicate(predicate!))
@@ -610,7 +601,24 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         searchBarTableView.reloadData()
     }
-
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        self.hidesBottomBarWhenPushed = false
+        
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        self.navigationController?.interactivePopGestureRecognizer.enabled = false
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.navigationController?.interactivePopGestureRecognizer.enabled = true
+    }
+    
+    
+    
+    
     /*
     // MARK: - Navigation
 

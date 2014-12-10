@@ -30,6 +30,8 @@ class ViewController: UIViewController {
     /* 大方块高度 */
     let HEAD_BTN_FONT_HEIGHT = CGFloat(120)
     
+    var isNextLevel = false // 半段是否跳转到下一层，如果是，把title改为空
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -68,8 +70,12 @@ class ViewController: UIViewController {
     
     func gotoOrderListTableView() {
         
+        isNextLevel = true
+        self.hidesBottomBarWhenPushed = true
+        
         let viewController = OrderListViewController()
         self.navigationController?.pushViewController(viewController, animated: true)
+        
     }
     
     func didPressOrderButton(sender: UIButton) {
@@ -77,6 +83,9 @@ class ViewController: UIViewController {
     }
     
     func gotoOrderView() {
+        
+        isNextLevel = true
+        self.hidesBottomBarWhenPushed = true
         
         let orderViewController = OrderViewController()
         self.navigationController?.pushViewController(orderViewController, animated: true)
@@ -111,13 +120,18 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         self.title = "点菜啦"
+        self.isNextLevel = false
     }
     
     override func viewWillDisappear(animated: Bool) {
-        self.title = ""
+        
+        if isNextLevel {
+            self.title = ""
+        }
+        self.hidesBottomBarWhenPushed = false
+        
     }
     
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

@@ -33,6 +33,10 @@
 		4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3455791A26DB190038C139 /* CustomActionSheet.swift */; };
 		4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3BD4781A2EF9EA00735C07 /* DOrder.swift */; };
 		4B4C2C9C1A31402A00CF0209 /* SettleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */; };
+		4B5549301A36D6A5008D51A6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4B5549321A36D6A5008D51A6 /* InfoPlist.strings */; };
+		4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */; };
+		4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */; };
+		4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B81A37EEE20051B0F6 /* MeViewController.swift */; };
 		4BFE5AF91A242F7200CC592E /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFE5AF81A242F7200CC592E /* LoginViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +81,10 @@
 		4B3455791A26DB190038C139 /* CustomActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomActionSheet.swift; sourceTree = "<group>"; };
 		4B3BD4781A2EF9EA00735C07 /* DOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DOrder.swift; sourceTree = "<group>"; };
 		4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettleViewController.swift; sourceTree = "<group>"; };
+		4B5549311A36D6A5008D51A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
+		4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
+		4B7561B81A37EEE20051B0F6 /* MeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeViewController.swift; sourceTree = "<group>"; };
 		4BFE5AF81A242F7200CC592E /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,6 +154,9 @@
 				4B3BD4781A2EF9EA00735C07 /* DOrder.swift */,
 				4B30DE671A303D21009D2721 /* OrderDetailViewController.swift */,
 				4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */,
+				4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */,
+				4B7561B81A37EEE20051B0F6 /* MeViewController.swift */,
+				4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */,
 			);
 			path = diancaila;
 			sourceTree = "<group>";
@@ -154,6 +165,7 @@
 			isa = PBXGroup;
 			children = (
 				4B0A104D1A1ED3CF00A71B53 /* Info.plist */,
+				4B5549321A36D6A5008D51A6 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -257,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B0A10571A1ED3CF00A71B53 /* Main.storyboard in Resources */,
+				4B5549301A36D6A5008D51A6 /* InfoPlist.strings in Resources */,
 				4B0A105C1A1ED3CF00A71B53 /* LaunchScreen.xib in Resources */,
 				4B0A10591A1ED3CF00A71B53 /* Images.xcassets in Resources */,
 			);
@@ -281,6 +294,7 @@
 				4B3110521A22CB1000ABDF96 /* JSONController.swift in Sources */,
 				4B0A10891A1ED41400A71B53 /* MenuType.swift in Sources */,
 				4B30DE681A303D21009D2721 /* OrderDetailViewController.swift in Sources */,
+				4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */,
 				4B0A108F1A1ED41400A71B53 /* UIUtil.swift in Sources */,
 				4B0A108D1A1ED41400A71B53 /* OrderViewController.swift in Sources */,
 				4B0A10831A1ED41400A71B53 /* CustomStepper.swift in Sources */,
@@ -294,9 +308,11 @@
 				4B0A108A1A1ED41400A71B53 /* Order.swift in Sources */,
 				4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */,
 				4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */,
+				4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,
 				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,
 				4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */,
+				4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */,
 				4B0A10851A1ED41400A71B53 /* DeskPickerViewController.swift in Sources */,
 				4B0A10821A1ED41400A71B53 /* CustomGrid.swift in Sources */,
 			);
@@ -335,6 +351,14 @@
 				4B0A105B1A1ED3CF00A71B53 /* Base */,
 			);
 			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+		4B5549321A36D6A5008D51A6 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4B5549311A36D6A5008D51A6 /* Base */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

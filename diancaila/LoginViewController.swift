@@ -8,55 +8,53 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var userLabel: UILabel!
-    var pwdLabel: UILabel!
-    var userTextField: UITextField!
-    var pwdTextField: UITextField!
+    var loginTableView: UITableView!
     
-    // 点五次login可以登录
-    var count = 0
-
+    // tableview 数据源
+    let tableTitles = ["账号", "密码"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.whiteColor()
         self.title = "Login"
         
+//        let loginButton = UIBarButtonItem(title: "登陆", style: UIBarButtonItemStyle.Bordered, target: self, action: nil)
+        let loginButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: nil)
+        self.navigationItem.rightBarButtonItem = loginButton
         
-        userLabel = UILabel(frame: CGRectMake(50, 50, 100, 30))
-        userLabel.text = "username"
-        self.view.addSubview(userLabel)
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: nil)
+        self.navigationItem.leftBarButtonItem = cancelButton
         
-        userTextField = UITextField(frame: CGRectMake(150, 45, 100, 40))
-        userTextField.borderStyle = UITextBorderStyle.RoundedRect
-        userTextField.clearButtonMode = UITextFieldViewMode.Always
-        self.view.addSubview(userTextField)
-        
-        pwdLabel = UILabel(frame: CGRectMake(50, 100, 100, 30))
-        pwdLabel.text = "password"
-        self.view.addSubview(pwdLabel)
-        
-        pwdTextField = UITextField(frame: CGRectMake(150, 95, 100, 40))
-        pwdTextField.clearButtonMode = UITextFieldViewMode.Always
-        pwdTextField.borderStyle = UITextBorderStyle.RoundedRect
-        self.view.addSubview(pwdTextField)
-        
-        let loginButton: UIButton = UIButton(frame: CGRectMake(50, 150, UIUtil.screenWidth - 100,40))
-        loginButton.backgroundColor = UIColor.orangeColor()
-        loginButton.layer.cornerRadius = 10
-        loginButton.setTitle("Login", forState: UIControlState.Normal)
-        loginButton.addTarget(self, action: "didPressLoginButton:", forControlEvents: UIControlEvents.TouchUpInside)
-        self.view.addSubview(loginButton)
+        loginTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
+        loginTableView.scrollEnabled = false
+        loginTableView.delegate = self
+        loginTableView.dataSource = self
+        self.view.addSubview(loginTableView)
         
     }
     
-    func didPressLoginButton(sender: UIButton) {
-        if ++count >= 5 {
-            let viewController = ViewController()
-            self.navigationController?.pushViewController(viewController, animated: true)
-        }
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
     }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tableTitles.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let loginCell = "loginCell"
+        
+        let cell = TextFieldTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: loginCell)
+        
+        cell.titleLabel.text = tableTitles[indexPath.row]
+        if indexPath.row == 1 {
+            cell.textField.secureTextEntry = true
+        }
+        return cell
+    }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

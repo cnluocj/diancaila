@@ -106,6 +106,7 @@ class JSONController : NSObject {
         let resultArray: NSArray = result["wait_orders"] as NSArray
         var notPayOrder: NSMutableArray = NSMutableArray()
         
+        
         for order in resultArray {
             let id =  order.objectForKey("ord_id") as String
             let deskId =  (order.objectForKey("tab_id") as NSString).integerValue

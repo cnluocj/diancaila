@@ -13,9 +13,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    var rootView: ViewController!
-    var navController: UINavigationController!
+    var mainNavController: UINavigationController!
     
+    var discoverNavController: UINavigationController!
+    
+    var meNavController: UINavigationController!
+    
+    var tabbarController: UITabBarController!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -23,15 +27,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 改变状态栏字体颜色
         UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.LightContent, animated: true)
         
-        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
-//        self.rootView = ViewController()
-        self.rootView = ViewController()
+        window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
-        self.navController = getNavController()
-        navController.pushViewController(rootView, animated: true)
+        tabbarController = UITabBarController()
+        tabbarController.tabBar.tintColor = UIColor.orangeColor()
         
-        self.window?.addSubview(navController.view)
-        self.window?.makeKeyAndVisible()
+        // 首页
+        let mainViewController = ViewController()
+        mainNavController = getNavController()
+        mainNavController.pushViewController(mainViewController, animated: true)
+        let mainTabItem = UITabBarItem(title: "首页", image: UIImage(named: "restaurant"), selectedImage: UIImage(named: "restaurant_selected"))
+        mainViewController.tabBarItem = mainTabItem
+        
+        // 发现
+        let discoverViewController = DiscoverViewController()
+        discoverNavController = getNavController()
+        discoverNavController.pushViewController(discoverViewController, animated: true)
+        let discoverTabItem = UITabBarItem(title: "发现", image: UIImage(named: "discover"), selectedImage: UIImage(named: "discover_selected"))
+        discoverViewController.tabBarItem = discoverTabItem
+        
+        // 我
+        let meViewController = MeViewController()
+        meNavController = getNavController()
+        meNavController.pushViewController(meViewController, animated: true)
+        let meTabItem = UITabBarItem(title: "我", image: UIImage(named: "me"), selectedImage: UIImage(named: "me_selected"))
+        meViewController.tabBarItem = meTabItem
+        
+        tabbarController.viewControllers = NSArray(objects: mainNavController, discoverNavController, meNavController)
+        
+//        self.window?.addSubview(navController.view)
+        
+        window?.addSubview(tabbarController.view)
+        window?.makeKeyAndVisible()
         
         return true
     }

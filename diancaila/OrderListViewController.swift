@@ -461,6 +461,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             let orderDesc = notPayOrders[indexPath.row] as DOrder
             controller.orderId = orderDesc.id
             controller.deskId = orderDesc.deskId
+            self.hidesBottomBarWhenPushed  = true // 隐藏tabbar
             self.navigationController?.pushViewController(controller, animated: true)
             
         } else if tableView == allOrderTableView{
@@ -470,6 +471,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             controller.orderId = orderDesc.id
             controller.deskId = orderDesc.deskId
             controller.truePrice = orderDesc.truePrice
+            self.hidesBottomBarWhenPushed  = true // 隐藏tabbar
             self.navigationController?.pushViewController(controller, animated: true)
             
         } else if tableView == didNotFinishOrderTableView {
@@ -548,6 +550,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewWillAppear(animated: Bool) {
         loadNotPayOrderData()
+        
+        self.hidesBottomBarWhenPushed = false
     }
     
     override func viewWillDisappear(animated: Bool) {
