@@ -62,4 +62,19 @@ class UIUtil {
     }
     
     
+    class func navBar() ->UINavigationBar{
+        let navBar = UINavigationBar(frame: CGRectMake(0, 0, UIUtil.screenWidth, 64))
+        //20为iphone状态栏高度
+        let navImage = UIUtil.imageFromColor(UIUtil.screenWidth, height: 64, color: UIUtil.navColor)
+        // 改变背景颜色，使用生成的纯色图片
+        navBar.setBackgroundImage(navImage, forBarMetrics: UIBarMetrics.Default)
+        // 主体是否从顶部开始/是否透明
+        navBar.translucent = false
+        // 改变title颜色
+        navBar.titleTextAttributes = NSDictionary(object: UIColor.whiteColor(), forKey: NSForegroundColorAttributeName)
+        // 改变导航栏上字体颜色，除了title
+        navBar.tintColor = UIColor.whiteColor()
+        return navBar
+    }
+    
 }

@@ -34,6 +34,7 @@
 		4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3BD4781A2EF9EA00735C07 /* DOrder.swift */; };
 		4B4C2C9C1A31402A00CF0209 /* SettleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */; };
 		4B5549301A36D6A5008D51A6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4B5549321A36D6A5008D51A6 /* InfoPlist.strings */; };
+		4B5C390B1A3956A2007DAA3F /* CustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C390A1A3956A2007DAA3F /* CustomView.swift */; };
 		4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */; };
 		4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */; };
 		4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B81A37EEE20051B0F6 /* MeViewController.swift */; };
@@ -82,6 +83,7 @@
 		4B3BD4781A2EF9EA00735C07 /* DOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DOrder.swift; sourceTree = "<group>"; };
 		4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettleViewController.swift; sourceTree = "<group>"; };
 		4B5549311A36D6A5008D51A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4B5C390A1A3956A2007DAA3F /* CustomView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomView.swift; sourceTree = "<group>"; };
 		4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
 		4B7561B81A37EEE20051B0F6 /* MeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeViewController.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */,
 				4B7561B81A37EEE20051B0F6 /* MeViewController.swift */,
 				4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */,
+				4B5C390A1A3956A2007DAA3F /* CustomView.swift */,
 			);
 			path = diancaila;
 			sourceTree = "<group>";
@@ -310,6 +313,7 @@
 				4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */,
 				4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,
+				4B5C390B1A3956A2007DAA3F /* CustomView.swift in Sources */,
 				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,
 				4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */,
 				4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */,

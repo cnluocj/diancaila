@@ -29,8 +29,8 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-//return "http://114.215.105.93/"
-return "http://dclweixin.diancai.la/"
+return "http://114.215.105.93/"
+//return "http://dclweixin.diancai.la/"
     }
     
     class var apiMenuType: String {
@@ -131,7 +131,6 @@ return "http://dclweixin.diancai.la/"
     
     
     func submitOrder(url: String, json: String) {
-        println(json)
         var nsUrl: NSURL! = NSURL(string: url)
         var request = NSMutableURLRequest(URL: nsUrl)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -149,7 +148,7 @@ return "http://dclweixin.diancai.la/"
         }
     }
     
-    // 发送 已上的菜 给服务器
+    // 发送 已上的菜/退菜 给服务器
     func overOrder(url: String) {
         var nsUrl: NSURL! = NSURL(string: url)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)

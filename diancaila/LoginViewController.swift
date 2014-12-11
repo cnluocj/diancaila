@@ -18,16 +18,23 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.whiteColor()
-        self.title = "Login"
+        self.title = "登陆"
         
-//        let loginButton = UIBarButtonItem(title: "登陆", style: UIBarButtonItemStyle.Bordered, target: self, action: nil)
-        let loginButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: nil)
-        self.navigationItem.rightBarButtonItem = loginButton
+        let navBar = UIUtil.navBar()
+        self.view.addSubview(navBar)
         
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: nil)
-        self.navigationItem.leftBarButtonItem = cancelButton
+        let loginButton = UIBarButtonItem(title: "GO", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressLoginButton:")
         
-        loginTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "didPressCancelButton:")
+        
+        let navItem = UINavigationItem()
+        navItem.title = "登陆"
+        navItem.setLeftBarButtonItem(cancelButton, animated: false)
+        navItem.setRightBarButtonItem(loginButton, animated: false)
+        navBar.pushNavigationItem(navItem, animated: false)
+        
+            
+        loginTableView = UITableView(frame: CGRectMake(0, 60, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
         loginTableView.scrollEnabled = false
         loginTableView.delegate = self
         loginTableView.dataSource = self
@@ -35,6 +42,32 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
     }
     
+    
+    func didPressCancelButton(sender: UIBarButtonItem) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func didPressLoginButton(sender: UIBarButtonItem) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    func getNavController() ->UINavigationController{
+        let navController = UINavigationController()
+        //20为iphone状态栏高度
+        let navImage = UIUtil.imageFromColor(UIUtil.screenWidth, height: navController.navigationBar.frame.height+20, color: UIUtil.navColor)
+        // 改变背景颜色，使用生成的纯色图片
+        navController.navigationBar.setBackgroundImage(navImage, forBarMetrics: UIBarMetrics.Default)
+        // 主体是否从顶部开始/是否透明
+        navController.navigationBar.translucent = false
+        // 改变title颜色
+        navController.navigationBar.titleTextAttributes = NSDictionary(object: UIColor.whiteColor(), forKey: NSForegroundColorAttributeName)
+        // 改变导航栏上字体颜色，除了title
+        navController.navigationBar.tintColor = UIColor.whiteColor()
+        return navController
+    }
+    
+    // MARK: - Table view data source
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
