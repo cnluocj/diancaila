@@ -27,7 +27,8 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     let HEAD_BTN_FONT_SIZE = CGFloat(20)
     
     /* 大方块高度 */
-    let headButtonHeight = CGFloat(120)
+//    let headButtonHeight = CGFloat(120)
+    let headButtonHeight = UIUtil.screenHeight/5
     
     var isNextLevel = false // 半段是否跳转到下一层，如果是，把title改为空
     
@@ -72,11 +73,12 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         self.view.addSubview(takeawayBtn)
         
         
-        let scrollView = UIScrollView(frame: CGRectMake(0, headButtonHeight, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - headButtonHeight))
+        let scrollView = CustomScrollView(frame: CGRectMake(0, headButtonHeight, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - headButtonHeight))
         scrollView.delegate = self
         scrollView.contentSize = CGSize(width: UIUtil.screenWidth, height: UIUtil.screenHeight - UIUtil.contentOffset - headButtonHeight+1)
         scrollView.scrollEnabled = true
         scrollView.bounces = true
+        scrollView.delaysContentTouches = false // 解决里面的按钮点击迟缓bug
         self.view.addSubview(scrollView)
         
         

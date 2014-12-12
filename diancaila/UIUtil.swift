@@ -62,6 +62,16 @@ class UIUtil {
     }
     
     
+    class func imageFromView(view: UIView) -> UIImage {
+        
+        UIGraphicsBeginImageContext(view.bounds.size)
+        view.layer.renderInContext(UIGraphicsGetCurrentContext())
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    
     class func navBar() ->UINavigationBar{
         let navBar = UINavigationBar(frame: CGRectMake(0, 0, UIUtil.screenWidth, 64))
         //20为iphone状态栏高度
