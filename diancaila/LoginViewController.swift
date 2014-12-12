@@ -8,49 +8,80 @@
 
 import UIKit
 
-class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class LoginViewController: UIViewController {
     
-    var loginTableView: UITableView!
+    var accountTextField: UITextField!
+    
+    var pwdTextField: UITextField!
+    
+    let httpController = HttpController()
     
     // tableview 数据源
     let tableTitles = ["账号", "密码"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIUtil.gray_system
         self.title = "登陆"
         
         let navBar = UIUtil.navBar()
         self.view.addSubview(navBar)
         
-        let loginButton = UIBarButtonItem(title: "GO", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressLoginButton:")
+//        let loginButton = UIBarButtonItem(title: "GO", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressLoginButton:")
+//        
+//        let navItem = UINavigationItem()
+//        navItem.title = "登陆"
+//        navItem.setRightBarButtonItem(loginButton, animated: false)
+//        navBar.pushNavigationItem(navItem, animated: false)
         
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "didPressCancelButton:")
         
-        let navItem = UINavigationItem()
-        navItem.title = "登陆"
-        navItem.setLeftBarButtonItem(cancelButton, animated: false)
-        navItem.setRightBarButtonItem(loginButton, animated: false)
-        navBar.pushNavigationItem(navItem, animated: false)
+        let accountLabel = UILabel(frame: CGRectMake(15, 10, 50, 24))
+        accountLabel.textAlignment = NSTextAlignment.Center
+        accountLabel.text = "账号"
         
-            
-        loginTableView = UITableView(frame: CGRectMake(0, 60, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
-        loginTableView.scrollEnabled = false
-        loginTableView.delegate = self
-        loginTableView.dataSource = self
-        self.view.addSubview(loginTableView)
+        accountTextField = UITextField(frame: CGRectMake(70, 10, UIUtil.screenWidth - 70, 24))
         
+        let accountView = UIView(frame: CGRectMake(0, 64, UIUtil.screenWidth, 44))
+        accountView.backgroundColor = UIColor.whiteColor()
+        accountView.addSubview(accountLabel)
+        accountView.addSubview(accountTextField)
+        
+        let pwdLabel = UILabel(frame: CGRectMake(15, 10, 50, 24))
+        pwdLabel.textAlignment = NSTextAlignment.Center
+        pwdLabel.text = "密码"
+        
+        pwdTextField = UITextField(frame: CGRectMake(70, 10, UIUtil.screenWidth - 70, 24))
+        
+        let pwdView = UIView(frame: CGRectMake(0, 64 + 44 + 1, UIUtil.screenWidth, 44))
+        pwdView.backgroundColor = UIColor.whiteColor()
+        pwdView.addSubview(pwdLabel)
+        pwdView.addSubview(pwdTextField)
+        
+        self.view.addSubview(accountView)
+        self.view.addSubview(pwdView)
+        
+        
+        
+        let loginButton = UIButton(frame: CGRectMake(130, 130, 100, 100))
+        loginButton.setTitle("login", forState: UIControlState.Normal)
+        loginButton.addTarget(self, action: "didPressLoginButton:", forControlEvents: UIControlEvents.TouchUpInside)
+        loginButton.titleLabel?.textColor = UIColor.blackColor()
+        self.view.addSubview(loginButton)
     }
     
     
-    func didPressCancelButton(sender: UIBarButtonItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func didPressLoginButton(sender: UIButton) {
+//        let account = accountTextField.text
+//        let pwd = pwdTextField.text
+//        //{"name":"15122529222","pwd":"123456"}
+//        var jsonDic = [String:String]()
+//        jsonDic["name"] = account
+//        jsonDic["pwd"] = pwd
+//        var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+//        httpController.post(HttpController.apiLogin(), json: data!)
+        
+        println("hello")
     }
-    
-    func didPressLoginButton(sender: UIBarButtonItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
     
     func getNavController() ->UINavigationController{
         let navController = UINavigationController()
@@ -65,27 +96,6 @@ class LoginViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 改变导航栏上字体颜色，除了title
         navController.navigationBar.tintColor = UIColor.whiteColor()
         return navController
-    }
-    
-    // MARK: - Table view data source
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableTitles.count
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let loginCell = "loginCell"
-        
-        let cell = TextFieldTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: loginCell)
-        
-        cell.titleLabel.text = tableTitles[indexPath.row]
-        if indexPath.row == 1 {
-            cell.textField.secureTextEntry = true
-        }
-        return cell
     }
     
 

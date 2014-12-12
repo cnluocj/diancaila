@@ -8,15 +8,48 @@
 
 import UIKit
 
-class DiscoverViewController: UIViewController {
+class DiscoverViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    var tableView: UITableView!
+    
+    let titles = ["附近", "吃货圈", "游戏"]
+    
+    let imageNames = ["location", "waiter", "game"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "发现"
         
-        self.view.backgroundColor = UIColor.whiteColor()
-
+        self.view.backgroundColor = UIUtil.gray_system
+        
+        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        self.view.addSubview(tableView)
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return titles.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let mcell = "mcell"
+        let cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: mcell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row], detailTitle: "后厨正在备菜，敬请期待...")
+        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+        
+        cell.mDetailTitleLabel?.textColor = UIColor.grayColor()
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 90
     }
 
     override func didReceiveMemoryWarning() {

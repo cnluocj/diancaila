@@ -13,13 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    var mainNavController: UINavigationController!
+
     
-    var discoverNavController: UINavigationController!
-    
-    var meNavController: UINavigationController!
-    
-    var tabbarController: UITabBarController!
+    var homeCV: UITabBarController!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -29,35 +25,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
-        tabbarController = UITabBarController()
-        tabbarController.tabBar.tintColor = UIColor.orangeColor()
+        homeCV = HomeViewController()
         
-        // 首页
-        let mainViewController = ViewController()
-        mainNavController = getNavController()
-        mainNavController.pushViewController(mainViewController, animated: true)
-        let mainTabItem = UITabBarItem(title: "首页", image: UIImage(named: "restaurant"), selectedImage: UIImage(named: "restaurant_selected"))
-        mainViewController.tabBarItem = mainTabItem
+        let loginCV = LoginViewController()
         
-        // 发现
-        let discoverViewController = DiscoverViewController()
-        discoverNavController = getNavController()
-        discoverNavController.pushViewController(discoverViewController, animated: true)
-        let discoverTabItem = UITabBarItem(title: "发现", image: UIImage(named: "discover"), selectedImage: UIImage(named: "discover_selected"))
-        discoverViewController.tabBarItem = discoverTabItem
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let accout = defaults.stringForKey("account")
         
-        // 我
-        let meViewController = MeViewController()
-        meNavController = getNavController()
-        meNavController.pushViewController(meViewController, animated: true)
-        let meTabItem = UITabBarItem(title: "我", image: UIImage(named: "me"), selectedImage: UIImage(named: "me_selected"))
-        meViewController.tabBarItem = meTabItem
+//        if accout == nil {
+//            window?.addSubview(loginCV.view)
+//        } else {
+            window?.addSubview(homeCV.view)
+//        }
         
-        tabbarController.viewControllers = NSArray(objects: mainNavController, discoverNavController, meNavController)
-        
-//        self.window?.addSubview(navController.view)
-        
-        window?.addSubview(tabbarController.view)
         window?.makeKeyAndVisible()
         
         return true

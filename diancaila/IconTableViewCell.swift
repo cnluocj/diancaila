@@ -14,6 +14,8 @@ class IconTableViewCell: UITableViewCell {
     
     var mTitleLabel: UILabel?
     
+    var mDetailTitleLabel: UILabel?
+    
     init(style: UITableViewCellStyle, reuseIdentifier: String?, image: UIImage, title: String) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -25,6 +27,26 @@ class IconTableViewCell: UITableViewCell {
         
         self.addSubview(mImageView!)
         self.addSubview(mTitleLabel!)
+    }
+    
+    
+    init(style: UITableViewCellStyle, reuseIdentifier: String?, image: UIImage, title: String, detailTitle: String) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        mImageView = UIImageView(image: image)
+        mImageView?.frame = CGRectMake(25, 15, 60, 60)
+        self.addSubview(mImageView!)
+        
+        mTitleLabel = UILabel(frame: CGRectMake(110, 20, UIUtil.screenWidth - 90, 25))
+        mTitleLabel?.text = title
+        mTitleLabel?.font = UIFont.boldSystemFontOfSize(18)
+        self.addSubview(mTitleLabel!)
+        
+        mDetailTitleLabel = UILabel(frame: CGRectMake(110, 50, UIUtil.screenWidth - 90, 20))
+        mDetailTitleLabel?.text = detailTitle
+        mDetailTitleLabel?.font = UIFont.boldSystemFontOfSize(15)
+        self.addSubview(mDetailTitleLabel!)
+        
     }
 
     required init(coder aDecoder: NSCoder) {

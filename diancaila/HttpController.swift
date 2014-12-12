@@ -29,8 +29,12 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-return "http://114.215.105.93/"
-//return "http://dclweixin.diancai.la/"
+//return "http://114.215.105.93/"
+return "http://dclweixin.diancai.la/"
+    }
+    
+    class func apiLogin() -> String {
+        return path + "user/login"
     }
     
     class var apiMenuType: String {
@@ -80,6 +84,25 @@ return "http://114.215.105.93/"
     // todo 重构这个类
     func onSearch() {
         
+    }
+    
+    
+    func post(url: String, json: NSData) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request = NSMutableURLRequest(URL: nsUrl)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPMethod = "POST"
+//        request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding)
+        request.HTTPBody = json
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+            }
+        }
     }
     
     

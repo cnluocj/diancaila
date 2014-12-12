@@ -35,11 +35,14 @@ class CustomGrid: UIButton {
         mTitleLabel?.font = UIFont.boldSystemFontOfSize(15)
         mTitleLabel!.textAlignment = NSTextAlignment.Center
         
+        
         // 把 imageview 和 title 之间的间隔计算进去，所以加5
         let customView = CustomView(frame: CGRectMake(0, 0, customViewWidth, customVIewHeight + 5), whenTouchBegan: didTouch, whenTouchEnd: didTouchUpInside)
         customView.userInteractionEnabled = true
         customView.addSubview(mImageView!)
         customView.addSubview(mTitleLabel!)
+        let tap = UITapGestureRecognizer(target: self, action: "tapGesture:")
+        customView.addGestureRecognizer(tap)
         
         centerFrameForView(customView)
         
@@ -71,6 +74,10 @@ class CustomGrid: UIButton {
         
         let customView = CustomView(frame: CGRectMake(0, 0, customViewWidth, customVIewHeight + 13), whenTouchBegan: didTouch, whenTouchEnd: didTouchUpInside)
         customView.userInteractionEnabled = true
+        
+        let tap = UITapGestureRecognizer(target: self, action: "tapGesture:")
+        customView.addGestureRecognizer(tap)
+        
         customView.addSubview(mImageView!)
         customView.addSubview(mTitleLabel!)
         customView.addSubview(mDetailTitleLabel!)
@@ -88,13 +95,17 @@ class CustomGrid: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func tapGesture(sender: UIView) {
+        self.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+        self.highlighted = false
+    }
+    
     func didTouch() {
         self.highlighted = true
     }
     
     func didTouchUpInside() {
         self.highlighted = false
-        self.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
     }
     
     func centerFrameForView(view: UIView) {

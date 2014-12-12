@@ -69,7 +69,7 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         var cell: UITableViewCell!
         
         if indexPath.section == 0 && indexPath.row == 0 {
-            cell = UserInfoTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: userInfoCell, image: UIImage(named: "vip")!, title: "陈奕迅", detailTitle: "啦号: 1234567890")
+            cell = UserInfoTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: userInfoCell, image: UIImage(named: "iron_man")!, title: "钢铁侠", detailTitle: "啦号: 1234567890")
             
         } else if indexPath.section == 2 && indexPath.row == 0 {
             cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: "settings")!, title: "设置")
