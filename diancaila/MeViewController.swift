@@ -11,6 +11,10 @@ import UIKit
 class MeViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var tableView: UITableView!
+    
+    let titles = ["相册", "收藏", "钱包"]
+    
+    let imageNames = ["picture", "box", "wallet"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,31 +46,57 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 1
+        return 3
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return 1
+        if section == 0 {
+            return 1
+        } else if section == 2 {
+            return 1
+        } else {
+            return titles.count
+        }
     }
     
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let meCell = "meCell"
-        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: meCell)
+        let userInfoCell = "userInfoCell"
+        let imageCell = "imageCell"
         
-        cell.textLabel?.text = "登陆"
+        var cell: UITableViewCell!
         
+        if indexPath.section == 0 && indexPath.row == 0 {
+            cell = UserInfoTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: userInfoCell, image: UIImage(named: "vip")!, title: "陈奕迅", detailTitle: "啦号: 1234567890")
+            
+        } else if indexPath.section == 2 && indexPath.row == 0 {
+            cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: "settings")!, title: "设置")
+            
+        }else {
+            cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row])
+            
+        }
+        
+        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
         return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
         
-        gotoLogin()
+//        gotoLogin()
     }
     
+    
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath.section == 0 && indexPath.row == 0 {
+            return 90
+        } else {
+            return 44
+        }
+    }
     
 
     /*
