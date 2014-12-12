@@ -30,6 +30,10 @@ class UIUtil {
         return UIColor(red: 0.99607, green: 0.97647, blue: 0.63137, alpha: 1)
     }
     
+    class func flatBlue() -> UIColor {
+        return UIColor(red: 52/255, green: 152/255, blue: 219/255, alpha: 1)
+    }
+    
     // 导航栏是否透明的偏移量
     class var contentOffset: CGFloat{
         return CGFloat(64)
@@ -87,4 +91,17 @@ class UIUtil {
         return navBar
     }
     
+    
+    class func waitIndicator() -> UIActivityIndicatorView {
+        let waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+        waitIndicator.backgroundColor = UIColor.grayColor()
+        waitIndicator.alpha = 0.8
+        waitIndicator.frame.size = CGSize(width: 150, height: 150)
+        waitIndicator.layer.cornerRadius = 5
+        // 居中显示
+        waitIndicator.layer.position = CGPoint(x: UIUtil.screenWidth/2, y: UIUtil.screenHeight/3)
+        waitIndicator.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        
+        return waitIndicator
+    }
 }

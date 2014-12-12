@@ -35,7 +35,8 @@ class CustomGrid: UIButton {
         mTitleLabel?.font = UIFont.boldSystemFontOfSize(15)
         mTitleLabel!.textAlignment = NSTextAlignment.Center
         
-        let customView = CustomView(frame: CGRectMake(0, 0, customViewWidth, customVIewHeight), whenTouchBegan: didTouch, whenTouchEnd: didTouchUpInside)
+        // 把 imageview 和 title 之间的间隔计算进去，所以加5
+        let customView = CustomView(frame: CGRectMake(0, 0, customViewWidth, customVIewHeight + 5), whenTouchBegan: didTouch, whenTouchEnd: didTouchUpInside)
         customView.userInteractionEnabled = true
         customView.addSubview(mImageView!)
         customView.addSubview(mTitleLabel!)
@@ -68,7 +69,7 @@ class CustomGrid: UIButton {
         mDetailTitleLabel!.textAlignment = NSTextAlignment.Center
         
         
-        let customView = CustomView(frame: CGRectMake(0, 0, customViewWidth, customVIewHeight), whenTouchBegan: didTouch, whenTouchEnd: didTouchUpInside)
+        let customView = CustomView(frame: CGRectMake(0, 0, customViewWidth, customVIewHeight + 13), whenTouchBegan: didTouch, whenTouchEnd: didTouchUpInside)
         customView.userInteractionEnabled = true
         customView.addSubview(mImageView!)
         customView.addSubview(mTitleLabel!)

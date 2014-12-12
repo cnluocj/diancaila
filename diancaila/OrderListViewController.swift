@@ -18,6 +18,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     let waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.White)
     
+    let waitIndicator2 = UIUtil.waitIndicator()
+    
     // 等待上菜界面相关 -----------------------------------
     var didNotFinishView: UIView!
     var didNotFinishOrderTableView: UITableView!
@@ -213,6 +215,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 let orderItem = orderList.objectAtIndex(key) as Order
                 httpController.overOrder(HttpController.apiOverOrder(id: orderItem.id, stat: 1))
             }
+            
+            // todo 服务器传回数据后，再对表进行修改
             
             let array = NSMutableArray()
             let set = NSMutableIndexSet()
@@ -488,7 +492,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             if numOfDidSelected > 0 {
-                opButton.backgroundColor = UIColor.blueColor()
+                opButton.backgroundColor = UIUtil.flatBlue()
                 opButton.setTitle("上菜", forState: UIControlState.Normal)
             } else {
                 opButton.backgroundColor = UIColor.orangeColor()

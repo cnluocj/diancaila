@@ -209,15 +209,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
 
         // 加载状态
-        loadingIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
-        loadingIndicator.backgroundColor = UIColor.grayColor()
-        loadingIndicator.alpha = 0.8
-        loadingIndicator.frame.size = CGSize(width: 150, height: 150)
-        loadingIndicator.layer.cornerRadius = 5
-        // 居中显示
-        loadingIndicator.layer.position = CGPoint(x: UIUtil.screenWidth/2, y: UIUtil.screenHeight/3)
-        loadingIndicator.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-//        loadingIndicator.frame = CGRectMake(UIUtil.screenWidth, UIUtil.screenHeight, 30, 30)
+        loadingIndicator = UIUtil.waitIndicator()
         loadingIndicator.startAnimating()
         self.view.addSubview(loadingIndicator)
         self.view.bringSubviewToFront(loadingIndicator)

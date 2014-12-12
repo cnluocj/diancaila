@@ -12,7 +12,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     var orderListTableView: UITableView!
     
+    var waitIndicator = UIUtil.waitIndicator()
+    
     var priceLabel: UILabel!
+    
     var vipPriceLabel:UILabel!
     
     let httpController = HttpController()
@@ -22,8 +25,6 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     var deskId: Int!
     
     // 当前获取
-//    var price = 0.0
-//    var vipPrice = 0.0
     var truePrice: Double?
     
     // 数据源
@@ -36,7 +37,6 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         httpController.deletage = self
         
-        loadData()
         
         if truePrice == nil {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "加菜", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressAddFoodButton:")
@@ -60,6 +60,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         settleButton.backgroundColor = color
         settleView.addSubview(settleButton)
         
+        // 判断已结账还是未结账
         if (truePrice != nil) {
             settleButton.setTitle("\(truePrice!)", forState: UIControlState.Normal)
             
@@ -91,6 +92,9 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         hDivide.backgroundColor = UIColor.grayColor()
         hDivide.alpha = 0.3
         self.view.addSubview(hDivide)
+        
+        loadData()
+       
     }
     
     func didPressAddFoodButton(sender: UIBarButtonItem) {
@@ -109,6 +113,11 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     
     func loadData() {
+        waitIndicator.startAnimating()
+        self.view.addSubview(waitIndicator)
+        self.view.bringSubviewToFront(waitIndicator)
+        self.view.userInteractionEnabled = false
+        
         // 获取前 清空
         orderDetail.removeAllObjects()
         
@@ -137,12 +146,12 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
 //        if cell == nil {
         let cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: orderDetailCell)
 //        }
+        
+        //* json 模版 ------------------------------------------------------------------------------------------------
         //{"order_id":"1-1-20141203165755-6910","list":[{"dish_id":"9","dish_name":"肉龙","num":"1","totalprice":"28"},{"dish_id":"10","dish_name":"三不馆er招牌香香骨（小）","num":"1","totalprice":"68"},{"dish_id":"11","dish_name":"三不馆er招牌香香骨（中）","num":"1","totalprice":"102"}]}
         
         let orderItem = (orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary
-//        cell.textLabel?.text = ((orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary)["dish_name"] as? String
         cell.textLabel?.text = orderItem["dish_name"] as? String
-//        cell.detailTextLabel?.text = "x " + (((orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary)["num"] as? String)!
         let price = orderItem["price"] as String
         let vipPrice = orderItem["vip_price"] as String
         let num = orderItem["num"] as String
@@ -167,6 +176,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         orderDetail = result
         
         orderListTableView.reloadData()
+        
+        waitIndicator.stopAnimating()
+        waitIndicator.removeFromSuperview()
+        self.view.userInteractionEnabled = true
         
         if (truePrice == nil) {
             let totalPrice = orderDetail["totalprice"] as String
