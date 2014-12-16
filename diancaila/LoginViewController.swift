@@ -18,6 +18,8 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
     
     var loginButton: UIButton!
     
+    var registerButton: UIButton!
+    
     var waitIndicator = UIUtil.waitIndicator()
     
     let httpController = HttpController()
@@ -38,21 +40,48 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         
         jsonController.parseDelegate = self
 
-        accountTF = UITextField(frame: CGRectMake(0, 0, UIUtil.screenWidth, 44))
+        accountTF = UITextField(frame: CGRectMake(15, 10, UIUtil.screenWidth - 30, 44))
         accountTF.text = "15122529222"
+        accountTF.textAlignment = NSTextAlignment.Center
+        accountTF.placeholder = "请输入手机号"
+        accountTF.clearButtonMode = UITextFieldViewMode.WhileEditing
+        accountTF.layer.borderWidth = 2
+        accountTF.layer.borderColor = UIUtil.flatBlue().CGColor
+        accountTF.layer.cornerRadius = 5
         self.view.addSubview(accountTF)
         
-        pwdTF = UITextField(frame: CGRectMake(0, 45, UIUtil.screenWidth, 44))
+        pwdTF = UITextField(frame: CGRectMake(15, 65, UIUtil.screenWidth - 30, 44))
         pwdTF.text = "123456"
+        pwdTF.secureTextEntry = true
+        pwdTF.placeholder = "请输入密码"
+        pwdTF.clearButtonMode = UITextFieldViewMode.WhileEditing
+        pwdTF.textAlignment = NSTextAlignment.Center
+        pwdTF.layer.borderWidth = 2
+        pwdTF.layer.borderColor = UIUtil.flatBlue().CGColor
+        pwdTF.layer.cornerRadius = 5
         self.view.addSubview(pwdTF)
         
-        loginButton = UIButton(frame: CGRectMake(15, 110, UIUtil.screenWidth - 30, 44))
+        loginButton = UIButton(frame: CGRectMake(15, 120, UIUtil.screenWidth - 30, 44))
         loginButton.addTarget(self, action: "loginButtonDidPress:", forControlEvents: UIControlEvents.TouchUpInside)
         loginButton.backgroundColor = UIUtil.flatBlue()
         loginButton.setTitle("登录", forState: UIControlState.Normal)
+        loginButton.layer.cornerRadius = 5
         self.view.addSubview(loginButton)
+        
+        
+        registerButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - 75, 174, 150, 30))
+        registerButton.titleLabel?.textAlignment = NSTextAlignment.Center
+        registerButton.titleLabel?.font = UIFont.boldSystemFontOfSize(15)
+        registerButton.setTitle("没有账号？注册吧", forState: UIControlState.Normal)
+        registerButton.setTitleColor(UIUtil.flatBlue(), forState: UIControlState.Normal)
+        registerButton.addTarget(self, action: "registerButtonDidPress:", forControlEvents: UIControlEvents.TouchUpInside)
+        self.view.addSubview(registerButton)
     }
     
+    func registerButtonDidPress(sender: UIButton) {
+        let registerVC = RegisterViewController()
+        self.navigationController?.pushViewController(registerVC, animated: true)
+    }
     
     func loginButtonDidPress(sender: UIButton) {
         let dic = NSMutableDictionary()
@@ -70,6 +99,11 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
     func didReceiveResults(result: NSDictionary) {
         if let error = result["error"] as? String {
             println(error)
+            
+            waitIndicator.userInteractionEnabled = true
+            waitIndicator.stopAnimating()
+            waitIndicator.removeFromSuperview()
+            
         } else {
             let defaults = NSUserDefaults.standardUserDefaults()
             defaults.setObject(accountTF.text, forKey: "account")

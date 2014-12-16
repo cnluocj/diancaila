@@ -35,6 +35,7 @@
 		4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3BD4781A2EF9EA00735C07 /* DOrder.swift */; };
 		4B3ECDDC1A3FCBB00054188A /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */; };
 		4B3ECDDE1A3FDECD0054188A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ECDDD1A3FDECD0054188A /* LoginViewController.swift */; };
+		4B3ECDE01A3FF0980054188A /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ECDDF1A3FF0980054188A /* RegisterViewController.swift */; };
 		4B4C2C9C1A31402A00CF0209 /* SettleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */; };
 		4B5549301A36D6A5008D51A6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4B5549321A36D6A5008D51A6 /* InfoPlist.strings */; };
 		4B57931C1A3AAB63000850AB /* UserInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B57931B1A3AAB63000850AB /* UserInfoTableViewCell.swift */; };
@@ -90,6 +91,7 @@
 		4B3BD4781A2EF9EA00735C07 /* DOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DOrder.swift; sourceTree = "<group>"; };
 		4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		4B3ECDDD1A3FDECD0054188A /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		4B3ECDDF1A3FF0980054188A /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		4B4C2C9B1A31402A00CF0209 /* SettleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettleViewController.swift; sourceTree = "<group>"; };
 		4B5549311A36D6A5008D51A6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4B57931B1A3AAB63000850AB /* UserInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */,
 				4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */,
 				4B3ECDDD1A3FDECD0054188A /* LoginViewController.swift */,
+				4B3ECDDF1A3FF0980054188A /* RegisterViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -363,6 +366,7 @@
 				4B0A10831A1ED41400A71B53 /* CustomStepper.swift in Sources */,
 				4B0A108E1A1ED41400A71B53 /* TakeawayViewController.swift in Sources */,
 				4B2E43101A1F1E82008D75BD /* HttpController.swift in Sources */,
+				4B3ECDE01A3FF0980054188A /* RegisterViewController.swift in Sources */,
 				4B3ECDDC1A3FCBB00054188A /* SettingsTableViewController.swift in Sources */,
 				4B0A10811A1ED41400A71B53 /* AppDelegate.swift in Sources */,
 				4B0A10861A1ED41400A71B53 /* Menu.swift in Sources */,

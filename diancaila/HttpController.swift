@@ -40,6 +40,9 @@ class HttpController: NSObject {
         return path + "user/login"
     }
     
+    class func apiRegister() -> String {
+        return path + "user/register"
+    }
     
     class func apiMenuType(shopId: String) -> String {
         return path + "welcome/typeapi?clerk_shop_id=\(shopId)"
@@ -109,9 +112,9 @@ class HttpController: NSObject {
         request.HTTPBody = json
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                        println(string)
-//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
@@ -153,6 +156,7 @@ class HttpController: NSObject {
     
     // 等待上的菜
     func onSearchWaitMenu(url: String) {
+        println(url)
         var nsUrl: NSURL! = NSURL(string: url)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
