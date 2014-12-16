@@ -71,6 +71,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     let jsonController = JSONController()
     
     
+    var user: User!
+    
+    var shopId: String!
+    
+    
     // 加菜------------------
     var orderId: String?
     var delegate: OrderViewControllerDeletage?
@@ -91,9 +96,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 除了导航，底下内容的高度
         contentHeight = UIUtil.screenHeight - UIUtil.statusHeight - navHeight
         
-
+        let defaults = NSUserDefaults.standardUserDefaults()
+        shopId = defaults.objectForKey("shopId") as String
+        
         // 获取数据
-        httpController.onSearchMenuType(HttpController.apiMenuType)
+        httpController.onSearchMenuType(HttpController.apiMenuType(shopId))
         httpController.deletage = self
         jsonController.parseDelegate = self
         
@@ -221,6 +228,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func didPressChooseOverButton(sender: UIButton) {
         if orderId == nil {
             let orderConfirmViewController = OrderConfirmViewController()
+            orderConfirmViewController.user = user
             orderConfirmViewController.orderList = orderList.values.array
             orderConfirmViewController.delegate = self
             self.hidesBottomBarWhenPushed = true
@@ -346,7 +354,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 根据获取的type id 继续获取菜单
         for menuType in self.menuTypeArray {
             let type = menuType as MenuType
-            httpController.onSearchMenu(HttpController.apiMenu, typeId: type.id)
+            httpController.onSearchMenu(HttpController.apiMenu(type.id, shopId: shopId))
             
         }
         if self.menuTypeArray.count > 0 {

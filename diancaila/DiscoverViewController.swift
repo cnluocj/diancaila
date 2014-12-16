@@ -40,10 +40,16 @@ class DiscoverViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let mcell = "mcell"
-        let cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: mcell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row], detailTitle: "后厨正在备菜，敬请期待...")
+//        let cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: mcell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row], detailTitle: "后厨正在备菜，敬请期待...")
+        
+        let cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "mcell")
+        cell.textLabel?.text = titles[indexPath.row]
+        cell.detailTextLabel?.text = "后厨正在备菜，敬请期待..."
+        cell.imageView?.image = UIImage(named: imageNames[indexPath.row])
+        
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
         
-        cell.mDetailTitleLabel?.textColor = UIColor.grayColor()
+//        cell.mDetailTitleLabel?.textColor = UIColor.grayColor()
         
         return cell
     }

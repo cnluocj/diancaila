@@ -20,6 +20,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     let waitIndicator2 = UIUtil.waitIndicator()
     
+    var user: User!
+    
     // 等待上菜界面相关 -----------------------------------
     var didNotFinishView: UIView!
     var didNotFinishOrderTableView: UITableView!
@@ -262,7 +264,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         numOfDidSelected = 0
         selectedItem.removeAll(keepCapacity: false)
         
-        httpController.onSearchWaitMenu(HttpController.apiWaitMenu)
+        httpController.onSearchWaitMenu(HttpController.apiWaitMenu(user.shopId))
 
     }
     
@@ -273,7 +275,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         notPayOrders.removeAllObjects()
         didNotPayTableView.reloadData()
         
-        httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder)
+        httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder(user.shopId))
         
     }
     
@@ -281,7 +283,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func loadAllOrder() {
         waitIndicator.startAnimating()
         
-        httpController.onSearchDidPayOrder(HttpController.apiDidPayOrder())
+        httpController.onSearchDidPayOrder(HttpController.apiDidPayOrder(user.shopId))
     }
     
     

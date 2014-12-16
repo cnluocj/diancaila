@@ -12,7 +12,7 @@ protocol OrderConfirmViewControllerDelegate {
     func OrderDidFinish()
 }
 
-class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, ActionSheetDeletage, HttpProtocol, JSONParseProtocol, UIAlertViewDelegate {
+class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, CustomActionSheetDelegate, HttpProtocol, JSONParseProtocol, UIAlertViewDelegate {
     
     var deskInfoView: UITableView!
     var deskInfoCell: UITableViewCell!
@@ -28,7 +28,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     
     let cellHeight =  CGFloat(42)
 
-    var shopId: Int = 1
+    var user: User!
     
     // 桌号
     var deskId: Int = 0
@@ -138,7 +138,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             self.view.userInteractionEnabled = false
         
             // 生成json
-            jsonDic["shop_id"] = shopId
+            jsonDic["shop_id"] = user.shopId
             jsonDic["tab_id"] = deskId
             jsonDic["cus_num"] = customerNum
             jsonDic["card_id"] = 0
@@ -322,8 +322,8 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     // actionsheet deletage
-    func didPressDoneButton(picker: UIView) {
-        if picker == deskIdPicker {
+    func didPressDoneButton(view: UIView) {
+        if view == deskIdPicker {
             deskId = selectDeskid
             deskInfoView.reloadData()
             

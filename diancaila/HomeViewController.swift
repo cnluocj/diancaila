@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeViewController: UITabBarController {
+class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
 
     var mainNavController: UINavigationController!
     
@@ -16,33 +16,72 @@ class HomeViewController: UITabBarController {
     
     var meNavController: UINavigationController!
     
+    var user: User!
+    
+    var isFirstLogin = false
+    
+    var mainViewController: ViewController!
+    
+    var discoverViewController: DiscoverViewController!
+    
+    var meViewController: MeViewController!
+    
+    var waitIndication = UIUtil.waitIndicator()
+    
+    var httpController = HttpController()
+    
+    var jsonController = JSONController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.tabBar.tintColor = UIColor.orangeColor()
         
+        if !isFirstLogin {
+            
+            let defaults = NSUserDefaults.standardUserDefaults()
+            let account = defaults.objectForKey("account") as String
+            let pwd = defaults.objectForKey("password") as String
+            
+            var jsonDic = [String:String]()
+            jsonDic["name"] = account
+            jsonDic["pwd"] = pwd
+            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+            
+            httpController.post(HttpController.apiLogin(), json: data!)
+            httpController.deletage = self
+            jsonController.parseDelegate = self
+        
+        }
+        
+        
         // 首页
-        let mainViewController = ViewController()
+        mainViewController = ViewController()
         mainNavController = getNavController()
         mainNavController.pushViewController(mainViewController, animated: true)
         let mainTabItem = UITabBarItem(title: "首页", image: UIImage(named: "restaurant"), selectedImage: UIImage(named: "restaurant_selected"))
         mainViewController.tabBarItem = mainTabItem
         
         // 发现
-        let discoverViewController = DiscoverViewController()
+        discoverViewController = DiscoverViewController()
         discoverNavController = getNavController()
         discoverNavController.pushViewController(discoverViewController, animated: true)
         let discoverTabItem = UITabBarItem(title: "发现", image: UIImage(named: "discover"), selectedImage: UIImage(named: "discover_selected"))
         discoverViewController.tabBarItem = discoverTabItem
         
         // 我
-        let meViewController = MeViewController()
+        meViewController = MeViewController()
         meNavController = getNavController()
         meNavController.pushViewController(meViewController, animated: true)
         let meTabItem = UITabBarItem(title: "我", image: UIImage(named: "me"), selectedImage: UIImage(named: "me_selected"))
         meViewController.tabBarItem = meTabItem
         
         self.viewControllers = NSArray(objects: mainNavController, discoverNavController, meNavController)
+        
+        
+        waitIndication.startAnimating()
+        self.view.addSubview(waitIndication)
+        self.view.userInteractionEnabled = false
     }
     
     func getNavController() ->UINavigationController{
@@ -59,13 +98,38 @@ class HomeViewController: UITabBarController {
         navController.navigationBar.tintColor = UIColor.whiteColor()
         return navController
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    
+    func setUser(user: User) {
+        self.user = user
+        
+        mainViewController.isFirstLogin = self.isFirstLogin
+        
+        mainViewController.setUser(user)
+        
+        meViewController.setUser(user)
     }
     
-
+    
+    func didReceiveResults(result: NSDictionary) {
+        jsonController.parseUserInfo(result)
+    }
+    
+    func didFinishParseUserInfo(user: User) {
+        
+        waitIndication.stopAnimating()
+        waitIndication.removeFromSuperview()
+        self.view.userInteractionEnabled = true
+        
+        self.user = user
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject(user.shopId, forKey: "shopId")
+        
+        setUser(user)
+    }
+    
+    
     /*
     // MARK: - Navigation
 

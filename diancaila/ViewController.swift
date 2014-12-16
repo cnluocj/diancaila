@@ -17,6 +17,11 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     /* 外卖按钮 */
     var takeawayBtn: CustomGrid!
     
+    
+    var balanceButton: CustomGrid!
+    var backMoneyButton: CustomGrid!
+    
+    
     /* 导航栏高度 */
     var navHeight: CGFloat!
     
@@ -31,6 +36,10 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     let headButtonHeight = UIUtil.screenHeight/5
     
     var isNextLevel = false // 半段是否跳转到下一层，如果是，把title改为空
+    
+    var user: User!
+    
+    var isFirstLogin = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,12 +96,13 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         let smailBgimg1 = UIUtil.imageFromColor(UIUtil.screenWidth/3, height: 130, color: UIColor.whiteColor())
         let smailBgimgSelected1 = UIUtil.imageFromColor(UIUtil.screenWidth/3, height: 130, color: UIUtil.gray_system)
         
-        let balanceButton = CustomGrid(frame: CGRectMake(0, 0, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "money")!, title: "余额", detailTitle: "￥30")
+        balanceButton = CustomGrid(frame: CGRectMake(0, 0, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "money")!, title: "余额", detailTitle: "￥?")
+        balanceButton.addTarget(self, action: "didPressOrderButton:", forControlEvents: UIControlEvents.TouchUpInside)
         balanceButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
         balanceButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
         scrollView.addSubview(balanceButton)
         
-        let backMoneyButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3, 0, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "moneybox")!, title: "返现", detailTitle: "￥30")
+        backMoneyButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3, 0, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "moneybox")!, title: "返现", detailTitle: "￥?")
         backMoneyButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
         backMoneyButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
         scrollView.addSubview(backMoneyButton)
@@ -118,6 +128,11 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         scrollView.addSubview(takeawayButton)
         
         
+        if isFirstLogin {
+            balanceButton.mDetailTitleLabel?.text = "\(user.balance)"
+            backMoneyButton.mDetailTitleLabel?.text = "\(user.backMoney)"
+        }
+        
     }
     
     
@@ -131,6 +146,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         self.hidesBottomBarWhenPushed = true
         
         let viewController = OrderListViewController()
+        viewController.user = self.user
         self.navigationController?.pushViewController(viewController, animated: true)
         
     }
@@ -145,6 +161,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         self.hidesBottomBarWhenPushed = true
         
         let orderViewController = OrderViewController()
+        orderViewController.user = self.user
         self.navigationController?.pushViewController(orderViewController, animated: true)
         
     }
@@ -187,6 +204,15 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         }
         self.hidesBottomBarWhenPushed = false
         
+    }
+    
+    func setUser(user : User) {
+        self.user = user
+        
+        if !isFirstLogin {
+            balanceButton.mDetailTitleLabel?.text = "\(user.balance)"
+            backMoneyButton.mDetailTitleLabel?.text = "\(user.backMoney)"
+        }
     }
     
     override func didReceiveMemoryWarning() {

@@ -13,9 +13,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-
-    
     var homeCV: UITabBarController!
+    
+    var loginCV: LoginViewController!
+    
+    var nav: UINavigationController!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -25,18 +27,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
-        homeCV = HomeViewController()
         
-        let loginCV = LoginViewController()
+        loginCV = LoginViewController()
+        nav = UIUtil.navController()
+        nav.pushViewController(loginCV, animated: false)
         
         let defaults = NSUserDefaults.standardUserDefaults()
         let accout = defaults.stringForKey("account")
         
-//        if accout == nil {
-//            window?.addSubview(loginCV.view)
-//        } else {
+        if accout == nil {
+            window?.addSubview(nav.view)
+        } else {
+            homeCV = HomeViewController()
             window?.addSubview(homeCV.view)
-//        }
+        }
         
         window?.makeKeyAndVisible()
         

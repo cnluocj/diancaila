@@ -9,6 +9,9 @@
 import Foundation
 
 @objc protocol HttpProtocol {
+    
+    optional func didReceiveResults(result: NSDictionary)
+    
     optional func didReceiveMenuTypeResults(result: NSDictionary)
     
     optional func didReceiveMenuResults(result: NSDictionary)
@@ -29,29 +32,36 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-//return "http://114.215.105.93/"
-return "http://dclweixin.diancai.la/"
+    return "http://114.215.105.93/"
+//return "http://dclweixin.diancai.la/"
     }
     
     class func apiLogin() -> String {
         return path + "user/login"
     }
     
-    class var apiMenuType: String {
-        return path + "welcome/typeapi"
+    
+    class func apiMenuType(shopId: String) -> String {
+        return path + "welcome/typeapi?clerk_shop_id=\(shopId)"
     }
     
-    class var apiMenu: String {
-        return path + "welcome/dishapi?id="
+    
+    class func apiMenu(typeId:String, shopId: String) -> String {
+        return path + "welcome/dishapi?id=\(typeId)&clerk_shop_id=\(shopId)"
     }
+    
     
     class var apiSubmitOrder: String {
 //        return path + "order/add_or?order="
         return path + "order/add_or"
     }
     
-    class var apiWaitMenu: String {
-        return path + "order/re_all_ios"
+//    class var apiWaitMenu: String {
+//        return path + "order/re_all_ios"
+//    }
+    
+    class func apiWaitMenu(shopId: String) -> String {
+        return path + "order/re_all_ios?clerk_shop_id=\(shopId)"
     }
     
     // stat 上菜 1 ，退菜 2
@@ -60,15 +70,18 @@ return "http://dclweixin.diancai.la/"
         return path + "order/change_state?id=" + id + "&stat=" + "\(stat)"
     }
     
-    class var apiNotPayOrder: String {
-        return path + "order/re_orders_ios"
+//    class var apiNotPayOrder: String {
+//        return path + "order/re_orders_ios"
+//    }
+    class func apiNotPayOrder(shopId: String) -> String {
+        return path + "order/re_orders_ios?clerk_shop_id=\(shopId)"
     }
     
-    class func apiDidPayOrder() -> String {
-        return path + "order/re_payorders_ios"
+    class func apiDidPayOrder(shopId: String) -> String {
+        return path + "order/re_payorders_ios?clerk_shop_id=\(shopId)"
     }
     
-    class var apiOrderDetail: String {
+    class func apiOrderDetail() -> String {
         return path + "order/re_order_detail?oid="
     }
     
@@ -96,11 +109,13 @@ return "http://dclweixin.diancai.la/"
         request.HTTPBody = json
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-                        println(string)
-                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                        println(string)
+//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                
+                self.deletage?.didReceiveResults!(jsonResult)
             }
         }
     }
@@ -121,8 +136,8 @@ return "http://dclweixin.diancai.la/"
         }
     }
     
-    func onSearchMenu(url: String, typeId: String) {
-        var nsUrl: NSURL! = NSURL(string: url + typeId)
+    func onSearchMenu(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
@@ -154,6 +169,7 @@ return "http://dclweixin.diancai.la/"
     
     
     func submitOrder(url: String, json: String) {
+        println(json)
         var nsUrl: NSURL! = NSURL(string: url)
         var request = NSMutableURLRequest(URL: nsUrl)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

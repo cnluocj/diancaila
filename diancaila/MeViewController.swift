@@ -15,6 +15,8 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     let titles = ["相册", "收藏", "钱包"]
     
     let imageNames = ["picture", "box", "wallet"]
+    
+    var user: User?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,17 +31,13 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         
         self.view.addSubview(tableView)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
-    func gotoLogin() {
-        let loginCV = LoginViewController()
-//        let nav = UIUtil.navController(loginCV)
-        self.presentViewController(loginCV, animated: true, completion: nil)
+    
+    func gotoSettingsVC() {
+        let settingsVC = SettingsTableViewController()
+        self.navigationController?.pushViewController(settingsVC, animated: true)
     }
+
     
     // MARK: - Table view data source
     
@@ -69,14 +67,19 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         var cell: UITableViewCell!
         
         if indexPath.section == 0 && indexPath.row == 0 {
-            cell = UserInfoTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: userInfoCell, image: UIImage(named: "iron_man")!, title: "钢铁侠", detailTitle: "啦号: 1234567890")
+            cell = UserInfoTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: userInfoCell, image: UIImage(named: "iron_man")!, title: "\(user!.name)", detailTitle: "啦号: \(user!.phoneNumber)")
             
         } else if indexPath.section == 2 && indexPath.row == 0 {
-            cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: "settings")!, title: "设置")
+            cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
+            cell.imageView?.image = UIImage(named: "settings")
+            cell.textLabel?.text = "设置"
             
         }else {
-            cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row])
+//            cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row])
             
+            cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
+            cell.imageView?.image = UIImage(named: imageNames[indexPath.row])
+            cell.textLabel?.text = titles[indexPath.row]
         }
         
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
@@ -86,7 +89,9 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
         
-//        gotoLogin()
+        if indexPath.section == 2 && indexPath.row == 0 {
+            gotoSettingsVC()
+        }
     }
     
     
@@ -96,6 +101,20 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         } else {
             return 44
         }
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 18
+    }
+    
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
+    
+    func setUser(user: User) {
+        self.user = user
+        
     }
     
 

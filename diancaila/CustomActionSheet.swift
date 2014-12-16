@@ -8,8 +8,8 @@
 
 import UIKit
 
-protocol ActionSheetDeletage {
-    func didPressDoneButton(picker: UIView)
+protocol CustomActionSheetDelegate {
+    func didPressDoneButton(view: UIView)
 }
 
 class CustomActionSheet: UIView {
@@ -17,7 +17,7 @@ class CustomActionSheet: UIView {
     var customView: UIView!
     var doneButton: UIButton!
     
-    var deletage: ActionSheetDeletage?
+    var deletage: CustomActionSheetDelegate?
     
     init(customView: UIView) {
         super.init(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))

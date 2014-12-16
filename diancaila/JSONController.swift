@@ -11,6 +11,8 @@ import Foundation
 
 @objc protocol JSONParseProtocol {
     
+    optional func didFinishParseUserInfo(user: User)
+    
     optional func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray)
     
     optional func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray)
@@ -26,6 +28,23 @@ import Foundation
 
 class JSONController : NSObject {
     var parseDelegate: JSONParseProtocol?
+    
+    
+    func parseUserInfo(result: NSDictionary) {
+        let dic = result["info"] as NSDictionary
+        
+        let id = dic["id"] as String
+        let name = dic["name"] as String
+        let auth = dic["auth"] as String
+        let balance = (dic["money"] as NSString).doubleValue
+        let backMoney = (dic["money2"] as NSString).doubleValue
+        let shopId = dic["clerk_shop_id"] as String
+        let phoneNumber = dic["phone"] as String
+        
+        let user = User(id: id, name: name, auth: auth, balance: balance, backMoney: backMoney, shopId: shopId, phoneNumber: phoneNumber)
+        
+        parseDelegate?.didFinishParseUserInfo!(user)
+    }
     
     func parseMenuType(result: NSDictionary) {
         let resultArray: NSArray = result["menutype"] as NSArray

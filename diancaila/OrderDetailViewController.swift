@@ -121,7 +121,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         // 获取前 清空
         orderDetail.removeAllObjects()
         
-        httpController.onSearchOrderDetailById(orderId, url: HttpController.apiOrderDetail)
+        httpController.onSearchOrderDetailById(orderId, url: HttpController.apiOrderDetail())
     }
     
     // UITableViewDelegate  UITableViewDataSource
