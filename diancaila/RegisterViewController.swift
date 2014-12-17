@@ -30,6 +30,7 @@ class RegisterViewController: UIViewController, HttpProtocol {
         self.title = "注册"
 
         phoneNumberTF = UITextField(frame: CGRectMake(15, 10, UIUtil.screenWidth - 30, 44))
+        phoneNumberTF.keyboardType = UIKeyboardType.PhonePad
         changeStyleForTextField(phoneNumberTF, placeholder: "请输入手机号")
         self.view.addSubview(phoneNumberTF)
         
@@ -38,10 +39,12 @@ class RegisterViewController: UIViewController, HttpProtocol {
         self.view.addSubview(nameTF)
         
         pwdTF = UITextField(frame: CGRectMake(15, 118, UIUtil.screenWidth - 30, 44))
+        pwdTF.secureTextEntry = true
         changeStyleForTextField(pwdTF, placeholder: "请输入密码")
         self.view.addSubview(pwdTF)
         
         pwdTF2 = UITextField(frame: CGRectMake(15, 172, UIUtil.screenWidth - 30, 44))
+        pwdTF2.secureTextEntry = true
         changeStyleForTextField(pwdTF2, placeholder: "请再次输入密码")
         self.view.addSubview(pwdTF2)
         

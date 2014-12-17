@@ -32,7 +32,7 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-    return "http://114.215.105.93/"
+return "http://114.215.105.93/"
 //return "http://dclweixin.diancai.la/"
     }
     
@@ -181,9 +181,9 @@ class HttpController: NSObject {
         request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//            println(string)
-//            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            println(string)
+            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 self.deletage?.didReceiveOrderId!(jsonResult)
@@ -255,8 +255,8 @@ class HttpController: NSObject {
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                        println(string)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
         }
     }
     

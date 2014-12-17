@@ -41,6 +41,7 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         jsonController.parseDelegate = self
 
         accountTF = UITextField(frame: CGRectMake(15, 10, UIUtil.screenWidth - 30, 44))
+        accountTF.keyboardType = UIKeyboardType.PhonePad
         accountTF.text = "15122529222"
         accountTF.textAlignment = NSTextAlignment.Center
         accountTF.placeholder = "请输入手机号"
@@ -100,9 +101,9 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         if let error = result["error"] as? String {
             println(error)
             
-            waitIndicator.userInteractionEnabled = true
             waitIndicator.stopAnimating()
             waitIndicator.removeFromSuperview()
+            self.view.userInteractionEnabled = true
             
         } else {
             let defaults = NSUserDefaults.standardUserDefaults()

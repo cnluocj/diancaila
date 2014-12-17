@@ -58,12 +58,15 @@ class DiscoverViewController: UIViewController, UITableViewDelegate, UITableView
         return 90
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 18
     }
     
-
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
     /*
     // MARK: - Navigation
 
