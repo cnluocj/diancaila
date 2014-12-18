@@ -408,17 +408,32 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
         } else if tableView == didNotPayTableView {
-            cell?.textLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).deskId)号桌"
+            if (notPayOrders[indexPath.row] as DOrder).deskId == 0 {
+                cell?.textLabel?.text = "外带"
+                
+            } else {
+                cell?.textLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).deskId)号桌"
+            }
             cell?.detailTextLabel?.text = "\((notPayOrders[indexPath.row] as DOrder).orderTime)"
             
         } else if tableView == allOrderTableView {
-            cell?.textLabel?.text = "\((allOrder[indexPath.row] as DOrder).deskId)号桌"
+            if (allOrder[indexPath.row] as DOrder).deskId == 0 {
+                cell?.textLabel?.text = "外带"
+                
+            } else {
+                cell?.textLabel?.text = "\((allOrder[indexPath.row] as DOrder).deskId)号桌"
+                
+            }
             cell?.detailTextLabel?.text = "\((allOrder[indexPath.row] as DOrder).orderTime)"
             
         } else {
             let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
             cell?.textLabel?.text = order.menu.name
-            cell?.detailTextLabel?.text = "\(order.deskId)号桌"
+            if order.deskId == 0 {
+                cell?.detailTextLabel?.text = "外带"
+            } else {
+                cell?.detailTextLabel?.text = "\(order.deskId)号桌"
+            }
         }
         
         

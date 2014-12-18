@@ -257,7 +257,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                 cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
                 
             } else {
-                cell.textLabel?.text = "是否外卖"
+                cell.textLabel?.text = "是否外带"
                 cell.selectionStyle = UITableViewCellSelectionStyle.None
                 
                 let takeawaySwitch = UISwitch()
