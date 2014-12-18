@@ -391,7 +391,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             let orderItem = orderList.objectAtIndex(indexPath.row) as Order
             
             cell?.textLabel?.text = orderItem.menu.name
-            cell?.detailTextLabel?.text = "\(orderItem.deskId)号桌"
+            if orderItem.deskId == 0 {
+                cell?.detailTextLabel?.text = "外带"
+            } else {
+                cell?.detailTextLabel?.text = "\(orderItem.deskId)号桌"
+            }
             cell?.detailTextLabel?.textColor = UIColor.redColor()
             
             // 点击时不高亮

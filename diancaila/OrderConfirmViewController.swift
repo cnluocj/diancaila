@@ -14,8 +14,9 @@ protocol OrderConfirmViewControllerDelegate {
 
 class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, CustomActionSheetDelegate, HttpProtocol, JSONParseProtocol, UIAlertViewDelegate {
     
+    var tableView: UITableView!
+    
     var deskInfoView: UITableView!
-    var deskInfoCell: UITableViewCell!
     var orderListView: UITableView!
     var deskIdPicker: UIPickerView?
     var customerNumPicker: UIPickerView?
@@ -30,6 +31,10 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
 
     var user: User!
     
+    // deskInfoView 数据源 
+    var deskInfoViewTitles = ["是否外面", "请选择桌号", "请选择人数"]
+    
+    
     // 桌号
     var deskId: Int = 0
     var selectDeskid: Int = 1
@@ -39,6 +44,9 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     var customerNum: Int = 0
     var selectCustomerNum: Int = 1
     var maxNumOfCustom: Int = 25
+    
+    // 是否外面
+    var isTakeaway = false
     
     // 订单号
     var orderId = ""
@@ -59,108 +67,117 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         
         jsonController.parseDelegate = self
         
-        var scrollViewHeight = cellHeight * CGFloat(orderList.count) + 350
-        if scrollViewHeight < UIUtil.screenHeight {
-            // 为了当 scrollview没有超出界的时候拖动也有动画效果
-            scrollViewHeight = UIUtil.screenHeight+1
-        }
-        let scrollView = UIScrollView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
-        scrollView.delegate = self
-        scrollView.contentSize = CGSize(width: UIUtil.screenWidth, height: scrollViewHeight)
-        scrollView.scrollEnabled = true
-        scrollView.bounces = true
-        self.view.addSubview(scrollView)
+//        var scrollViewHeight = cellHeight * CGFloat(orderList.count) + 350
+//        if scrollViewHeight < UIUtil.screenHeight {
+//            // 为了当 scrollview没有超出界的时候拖动也有动画效果
+//            scrollViewHeight = UIUtil.screenHeight+1
+//        }
+//        let scrollView = UIScrollView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
+//        scrollView.delegate = self
+//        scrollView.contentSize = CGSize(width: UIUtil.screenWidth, height: scrollViewHeight)
+//        scrollView.scrollEnabled = true
+//        scrollView.bounces = true
+//        self.view.addSubview(scrollView)
         
         
         
-        self.view.backgroundColor = UIUtil.gray_system
-        self.title = "下单确认"
-
-        self.deskInfoView = UITableView(frame: CGRectMake(0, 40, UIUtil.screenWidth, cellHeight*2))
-        self.deskInfoView.delegate = self
-        self.deskInfoView.dataSource = self
-        self.deskInfoView.scrollEnabled = false
-        scrollView.addSubview(deskInfoView)
+//        self.view.backgroundColor = UIUtil.gray_system
+//        self.title = "下单确认"
+//
+//        self.deskInfoView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, cellHeight*4), style: UITableViewStyle.Grouped)
+//        self.deskInfoView.delegate = self
+//        self.deskInfoView.dataSource = self
+//        self.deskInfoView.scrollEnabled = false
+//        scrollView.addSubview(deskInfoView)
         
-        self.orderListView = UITableView(frame: CGRectMake(0, 130 + cellHeight, UIUtil.screenWidth, 44 * CGFloat(orderList.count) - 1))
-        self.orderListView.scrollEnabled = false
-        self.orderListView.delegate = self
-        self.orderListView.dataSource = self
-        scrollView.addSubview(orderListView)
+//        self.orderListView = UITableView(frame: CGRectMake(0, cellHeight * 5, UIUtil.screenWidth, 44 * CGFloat(orderList.count) - 1))
+//        self.orderListView.scrollEnabled = false
+//        self.orderListView.delegate = self
+//        self.orderListView.dataSource = self
+//        scrollView.addSubview(orderListView)
         
         
         // 下方偏移量
-        var heightOffset = CGFloat(0)
-        var radius = CGFloat(70)
-        if scrollViewHeight > UIUtil.screenHeight + 1 {
-            heightOffset =  scrollViewHeight - 150
-        } else {
-            heightOffset = UIUtil.screenHeight - 160
-        }
+//        var heightOffset = CGFloat(0)
+//        var radius = CGFloat(70)
+//        if scrollViewHeight > UIUtil.screenHeight + 1 {
+//            heightOffset =  scrollViewHeight - 150
+//        } else {
+//            heightOffset = UIUtil.screenHeight - 160
+//        }
+//        
+       
         
-        // 下单按钮
+        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
+        tableView.dataSource = self
+        tableView.delegate = self
+        self.view.addSubview(tableView)
+        
+         // 下单按钮
 
-        okButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2-35, heightOffset, radius, radius))
+        okButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - 35, UIUtil.screenHeight - UIUtil.contentOffset - 112, 70, 70))
         okButton.setTitle("下单", forState: UIControlState.Normal)
         okButton.backgroundColor = UIColor.orangeColor()
         okButton.setTitle("松开～", forState: UIControlState.Highlighted)
-        okButton.layer.cornerRadius = radius/2
+        okButton.layer.cornerRadius = 70/2
         okButton.addTarget(self, action: "didPressOkButton:", forControlEvents: UIControlEvents.TouchUpInside)
-        scrollView.addSubview(okButton)
-        
-        
+        self.view.addSubview(okButton)
         
     }
     
     func didPressOkButton(sender: UIButton) {
         
-        if deskId == 0 {
-            okButton.setTitle("没桌号", forState: UIControlState.Normal)
-            okButton.backgroundColor = UIColor.redColor()
-            okButtonShake()
+        if !isTakeaway {
             
-        } else if customerNum == 0 {
-            okButton.setTitle("没人数", forState: UIControlState.Normal)
-            okButton.backgroundColor = UIColor.redColor()
-            okButtonShake()
-            
-        } else if customerNum == 0 {
-        } else {
-            
-            // 等待处理
-            waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
-            waitIndicator?.alpha = 0.8
-            waitIndicator?.layer.cornerRadius = 5
-            waitIndicator?.frame = CGRectMake(UIUtil.screenWidth/2 - 75, UIUtil.screenHeight/3 - 75, 150, 150)
-            waitIndicator?.backgroundColor = UIColor.grayColor()
-            waitIndicator?.startAnimating()
-            self.view.addSubview(waitIndicator!)
-            self.view.userInteractionEnabled = false
-        
-            // 生成json
-            jsonDic["shop_id"] = user.shopId
-            jsonDic["tab_id"] = deskId
-            jsonDic["cus_num"] = customerNum
-            jsonDic["card_id"] = 0
-            
-            var dishList = NSMutableArray()
-            
-            for order in orderList {
-                var dish: NSMutableDictionary = NSMutableDictionary()
+            if deskId == 0 {
+                okButton.setTitle("没桌号", forState: UIControlState.Normal)
+                okButton.backgroundColor = UIColor.redColor()
+                okButtonShake()
                 
-                dish["dish_id"] = order.menu.id
-                dish["dish_num"] = order.count
+                return
                 
-                dishList.addObject(dish)
+            } else if customerNum == 0 {
+                okButton.setTitle("没人数", forState: UIControlState.Normal)
+                okButton.backgroundColor = UIColor.redColor()
+                okButtonShake()
+                
+                return
             }
-            jsonDic["dish_list"] = dishList
-            
-            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
-            var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
-            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
-            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-            ehttp.submitOrder(HttpController.apiSubmitOrder, json: jsonStr!)
         }
+            
+        // 等待处理
+        waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+        waitIndicator?.alpha = 0.8
+        waitIndicator?.layer.cornerRadius = 5
+        waitIndicator?.frame = CGRectMake(UIUtil.screenWidth/2 - 75, UIUtil.screenHeight/3 - 75, 150, 150)
+        waitIndicator?.backgroundColor = UIColor.grayColor()
+        waitIndicator?.startAnimating()
+        self.view.addSubview(waitIndicator!)
+        self.view.userInteractionEnabled = false
+    
+        // 生成json
+        jsonDic["shop_id"] = user.shopId
+        jsonDic["tab_id"] = deskId
+        jsonDic["cus_num"] = customerNum
+        jsonDic["card_id"] = 0
+        
+        var dishList = NSMutableArray()
+        
+        for order in orderList {
+            var dish: NSMutableDictionary = NSMutableDictionary()
+            
+            dish["dish_id"] = order.menu.id
+            dish["dish_num"] = order.count
+            
+            dishList.addObject(dish)
+        }
+        jsonDic["dish_list"] = dishList
+        
+        var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+        var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
+        jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
+        jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
+        ehttp.submitOrder(HttpController.apiSubmitOrder, json: jsonStr!)
     }
     
     
@@ -192,19 +209,19 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     
     // about tableview
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == orderListView {
+        if section == 1 {
             return orderList.count
         } else {
-            return 2
+            return deskInfoViewTitles.count
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if tableView == orderListView {
+        if indexPath.section == 1 {
             let orderCell = "orderCell"
             var cell: AnyObject? = tableView.dequeueReusableCellWithIdentifier(orderCell)
             if cell == nil {
@@ -219,39 +236,70 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             
         } else {
             
-            deskInfoCell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: "cell")
+            let cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: "cell")
             
-            if indexPath.row == 0 {
-                deskInfoCell.textLabel?.text = "桌号"
+            if indexPath.row == 1 {
+                cell.textLabel?.text = "桌号"
                 if deskId == 0 {
-                    deskInfoCell.detailTextLabel?.text = "请选择桌号"
+                    cell.detailTextLabel?.text = deskInfoViewTitles[indexPath.row]
                 } else {
-                    deskInfoCell.detailTextLabel?.text = "\(deskId)号桌"
+                    cell.detailTextLabel?.text = "\(deskId)号桌"
                 }
-                deskInfoCell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
-                return deskInfoCell
+                cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+                
+            } else if indexPath.row == 2 {
+                cell.textLabel?.text = "人数"
+                if customerNum == 0 {
+                    cell.detailTextLabel?.text = deskInfoViewTitles[indexPath.row]
+                } else {
+                    cell.detailTextLabel?.text = "\(customerNum)人"
+                }
+                cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
                 
             } else {
-                deskInfoCell.textLabel?.text = "人数"
-                if customerNum == 0 {
-                    deskInfoCell.detailTextLabel?.text = "请选择人数"
-                } else {
-                    deskInfoCell.detailTextLabel?.text = "\(customerNum)人"
-                }
-                deskInfoCell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
-                return deskInfoCell
+                cell.textLabel?.text = "是否外卖"
+                cell.selectionStyle = UITableViewCellSelectionStyle.None
+                
+                let takeawaySwitch = UISwitch()
+                takeawaySwitch.on = isTakeaway
+                takeawaySwitch.addTarget(self, action: "switchAction:", forControlEvents: UIControlEvents.ValueChanged)
+                cell.accessoryView = takeawaySwitch
             }
+            
+            return cell
         }
     }
     
+    
+    func switchAction(sender: UISwitch) {
+        if sender.on {
+            deskInfoViewTitles.removeAtIndex(1)
+            deskInfoViewTitles.removeAtIndex(1)
+            tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: 1, inSection: 0), NSIndexPath(forRow: 2, inSection: 0)], withRowAnimation: UITableViewRowAnimation.Top)
+            deskId = 0
+            customerNum = 0
+            
+            isTakeaway = true
+        } else {
+            isTakeaway = false
+            
+            deskInfoViewTitles = ["是否外面", "请选择桌号", "请选择人数"]
+            
+            tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: 1, inSection: 0), NSIndexPath(forRow: 2, inSection: 0)], withRowAnimation: UITableViewRowAnimation.Top)
+            
+            
+        }
+    }
+    
+    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        if tableView == deskInfoView {
+        if indexPath.section == 0{
             
             tableView.deselectRowAtIndexPath(indexPath, animated: false)
             
             
-            if indexPath.row == 0 {
+            if indexPath.row == 1 {
                 if (deskIdPicker == nil) {
                     deskIdPicker = UIPickerView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 200))
                     deskIdPicker?.delegate = self
@@ -262,7 +310,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                 sheet.deletage = self
                 sheet.show()
                 
-            } else {
+            } else if indexPath.row == 2 {
                 if customerNumPicker == nil {
                     customerNumPicker = UIPickerView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 200))
                     customerNumPicker?.delegate = self
@@ -325,7 +373,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     func didPressDoneButton(view: UIView) {
         if view == deskIdPicker {
             deskId = selectDeskid
-            deskInfoView.reloadData()
+            tableView.reloadData()
             
             if customerNum == 0 {
                 okButton.setTitle("没人数", forState: UIControlState.Normal)
@@ -337,7 +385,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             
         } else {
             customerNum = selectCustomerNum
-            deskInfoView.reloadData()
+            tableView.reloadData()
             
             if deskId == 0 {
                 okButton.setTitle("没桌号", forState: UIControlState.Normal)
