@@ -42,7 +42,7 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
 
         accountTF = UITextField(frame: CGRectMake(15, 10, UIUtil.screenWidth - 30, 44))
         accountTF.keyboardType = UIKeyboardType.PhonePad
-        accountTF.text = "15122529222"
+//        accountTF.text = "15122529222"
         accountTF.textAlignment = NSTextAlignment.Center
         accountTF.placeholder = "请输入手机号"
         accountTF.clearButtonMode = UITextFieldViewMode.WhileEditing
@@ -52,7 +52,7 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         self.view.addSubview(accountTF)
         
         pwdTF = UITextField(frame: CGRectMake(15, 65, UIUtil.screenWidth - 30, 44))
-        pwdTF.text = "123456"
+//        pwdTF.text = "123456"
         pwdTF.secureTextEntry = true
         pwdTF.placeholder = "请输入密码"
         pwdTF.clearButtonMode = UITextFieldViewMode.WhileEditing

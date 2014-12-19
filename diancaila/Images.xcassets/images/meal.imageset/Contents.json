@@ -3,17 +3,16 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "waiter.png"
+      "filename" : "meal.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "waiter@2x.png"
+      "filename" : "meal@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "waiter@3x.png"
+      "scale" : "3x"
     }
   ],
   "info" : {

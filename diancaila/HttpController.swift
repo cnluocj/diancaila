@@ -32,8 +32,8 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-return "http://114.215.105.93/"
-//return "http://dclweixin.diancai.la/"
+//return "http://114.215.105.93/"
+return "http://dclweixin.diancai.la/"
     }
     
     class func apiLogin() -> String {
@@ -112,9 +112,9 @@ return "http://114.215.105.93/"
         request.HTTPBody = json
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-                        println(string)
-                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                        println(string)
+//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
@@ -181,9 +181,9 @@ return "http://114.215.105.93/"
         request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-            println(string)
-            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+//            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//            println(string)
+//            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 self.deletage?.didReceiveOrderId!(jsonResult)
@@ -223,9 +223,9 @@ return "http://114.215.105.93/"
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                                    println("\(string)")
-//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                                    println("\(string)")
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 self.deletage?.didReceiveDidPayOrder!(jsonResult)
@@ -240,9 +240,9 @@ return "http://114.215.105.93/"
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                                    println("\(string)")
-//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                                    println("\(string)")
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSMutableDictionary
                 self.deletage?.didReceiveOrderDetail!(jsonResult)

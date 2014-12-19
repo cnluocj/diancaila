@@ -32,6 +32,7 @@
 		4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */; };
 		4B33050D1A3AB76F00957A9B /* IconTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B33050C1A3AB76F00957A9B /* IconTableViewCell.swift */; };
 		4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3455791A26DB190038C139 /* CustomActionSheet.swift */; };
+		4B374C7B1A43D406005E5DD0 /* VipNumInputModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */; };
 		4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3BD4781A2EF9EA00735C07 /* DOrder.swift */; };
 		4B3ECDDC1A3FCBB00054188A /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */; };
 		4B3ECDDE1A3FDECD0054188A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ECDDD1A3FDECD0054188A /* LoginViewController.swift */; };
@@ -41,6 +42,7 @@
 		4B57931C1A3AAB63000850AB /* UserInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B57931B1A3AAB63000850AB /* UserInfoTableViewCell.swift */; };
 		4B5C390B1A3956A2007DAA3F /* CustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C390A1A3956A2007DAA3F /* CustomView.swift */; };
 		4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */; };
+		4B6E84581A43C921000805DD /* WaiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6E84571A43C921000805DD /* WaiterViewController.swift */; };
 		4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */; };
 		4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B81A37EEE20051B0F6 /* MeViewController.swift */; };
 		4B97CCF91A3E8E710097BFA4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B97CCF81A3E8E710097BFA4 /* User.swift */; };
@@ -88,6 +90,7 @@
 		4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderListViewController.swift; sourceTree = "<group>"; };
 		4B33050C1A3AB76F00957A9B /* IconTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconTableViewCell.swift; sourceTree = "<group>"; };
 		4B3455791A26DB190038C139 /* CustomActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomActionSheet.swift; sourceTree = "<group>"; };
+		4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VipNumInputModelViewController.swift; sourceTree = "<group>"; };
 		4B3BD4781A2EF9EA00735C07 /* DOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DOrder.swift; sourceTree = "<group>"; };
 		4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		4B3ECDDD1A3FDECD0054188A /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +100,7 @@
 		4B57931B1A3AAB63000850AB /* UserInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewCell.swift; sourceTree = "<group>"; };
 		4B5C390A1A3956A2007DAA3F /* CustomView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomView.swift; sourceTree = "<group>"; };
 		4B5C5AB21A384767003E1B30 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
+		4B6E84571A43C921000805DD /* WaiterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaiterViewController.swift; sourceTree = "<group>"; };
 		4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
 		4B7561B81A37EEE20051B0F6 /* MeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeViewController.swift; sourceTree = "<group>"; };
 		4B97CCF81A3E8E710097BFA4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -201,6 +205,8 @@
 				4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */,
 				4B3ECDDD1A3FDECD0054188A /* LoginViewController.swift */,
 				4B3ECDDF1A3FF0980054188A /* RegisterViewController.swift */,
+				4B6E84571A43C921000805DD /* WaiterViewController.swift */,
+				4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -378,6 +384,8 @@
 				4B3ECDDE1A3FDECD0054188A /* LoginViewController.swift in Sources */,
 				4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */,
 				4B33050D1A3AB76F00957A9B /* IconTableViewCell.swift in Sources */,
+				4B6E84581A43C921000805DD /* WaiterViewController.swift in Sources */,
+				4B374C7B1A43D406005E5DD0 /* VipNumInputModelViewController.swift in Sources */,
 				4B0A10871A1ED41400A71B53 /* MenuDetailTableViewCell.swift in Sources */,
 				4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,

@@ -39,6 +39,7 @@ class UIUtil {
         return CGFloat(64)
     }
     
+    
     /** 屏幕数值相关 */
     class var screenWidth: CGFloat  { return UIScreen.mainScreen().bounds.size.width }
     class var screenHeight: CGFloat { return UIScreen.mainScreen().bounds.size.height }
@@ -119,4 +120,5 @@ class UIUtil {
         
         return waitIndicator
     }
+    
 }

@@ -73,7 +73,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         
         
         // 外卖按钮 （暂做 订单 按钮）
-        takeawayBtn = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/2, 0, UIUtil.screenWidth/2, headButtonHeight), image: UIImage(named: "list")!, title: "订单")
+        takeawayBtn = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/2, 0, UIUtil.screenWidth/2 + 1, headButtonHeight), image: UIImage(named: "list")!, title: "订单")
         takeawayBtn.addTarget(self, action: "didPressOrderBarItem:", forControlEvents: UIControlEvents.TouchUpInside)
         takeawayBtn.setBackgroundImage(bgimg, forState: UIControlState.Normal)
         takeawayBtn.setBackgroundImage(bgimgSelected, forState: UIControlState.Highlighted)

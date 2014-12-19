@@ -25,7 +25,7 @@ class SettleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIUtil.gray_system
         
         let navBar = UINavigationBar(frame: CGRectMake(0, 0, UIUtil.screenWidth, 44 + UIUtil.statusHeight))
         navBar.backgroundColor = UIUtil.navColor
@@ -55,6 +55,7 @@ class SettleViewController: UIViewController {
         priceField.borderStyle = UITextBorderStyle.RoundedRect
         priceField.placeholder = "输入实际金额"
         priceField.keyboardType = UIKeyboardType.NumberPad
+        priceField.becomeFirstResponder()
         self.view.addSubview(priceField)
     }
     

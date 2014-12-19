@@ -14,7 +14,7 @@ class DiscoverViewController: UIViewController, UITableViewDelegate, UITableView
     
     let titles = ["附近", "吃货圈", "游戏"]
     
-    let imageNames = ["location", "waiter", "game"]
+    let imageNames = ["location", "meal", "game"]
 
     override func viewDidLoad() {
         super.viewDidLoad()

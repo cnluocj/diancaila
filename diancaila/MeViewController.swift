@@ -17,6 +17,8 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     let imageNames = ["picture", "box", "wallet"]
     
     var user: User?
+    
+    var sectionNum = 3
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +26,11 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         self.title = "我"
         
         self.view.backgroundColor = UIColor.whiteColor()
+        
+        if user?.auth == "3" {
+            sectionNum = 4
+        }
+        
 
         tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
         tableView.delegate = self
@@ -37,6 +44,11 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         let settingsVC = SettingsTableViewController()
         self.navigationController?.pushViewController(settingsVC, animated: true)
     }
+    
+    func gotoWaiterVC() {
+        let waiterVC = WaiterViewController()
+        self.navigationController?.pushViewController(waiterVC, animated: true)
+    }
 
     
     // MARK: - Table view data source
@@ -44,18 +56,16 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 3
+        return 4
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        if section == 0 {
-            return 1
-        } else if section == 2 {
-            return 1
-        } else {
+        if section == 1 {
             return titles.count
+        } else {
+            return 1
         }
     }
     
@@ -74,12 +84,18 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
             cell.imageView?.image = UIImage(named: "settings")
             cell.textLabel?.text = "设置"
             
-        }else {
-//            cell = IconTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell, image: UIImage(named: imageNames[indexPath.row])!, title: titles[indexPath.row])
+        } else if indexPath.section == 1 {
             
             cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
             cell.imageView?.image = UIImage(named: imageNames[indexPath.row])
             cell.textLabel?.text = titles[indexPath.row]
+            
+        } else if indexPath.section == 3 {
+            if indexPath.row == 0 {
+                cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
+                cell.imageView?.image = UIImage(named: "waiter")
+                cell.textLabel?.text = "服务员"
+            }
         }
         
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
@@ -91,9 +107,14 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         
         if indexPath.section == 2 && indexPath.row == 0 {
             gotoSettingsVC()
+            
+        } else if indexPath.section == 3 {
+            if indexPath.row == 0 {
+                gotoWaiterVC()
+            }
         }
+        
     }
-    
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if indexPath.section == 0 && indexPath.row == 0 {

@@ -33,7 +33,11 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "\(deskId)号桌"
+        if deskId == 0 {
+            self.title = "外带"
+        } else {
+            self.title = "\(deskId)号桌"
+        }
         
         httpController.deletage = self
         
@@ -43,7 +47,11 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             
         }
 
-        orderListTableView  = UITableView(frame: CGRectMake(0, 0, self.view.frame.width, UIUtil.screenHeight - UIUtil.contentOffset - 60), style: UITableViewStyle.Grouped)
+        var tableViewHeight = UIUtil.screenHeight - UIUtil.contentOffset - 60
+        if truePrice != nil {
+            tableViewHeight - 60
+        }
+        orderListTableView  = UITableView(frame: CGRectMake(0, 0, self.view.frame.width, tableViewHeight), style: UITableViewStyle.Grouped)
         orderListTableView.delegate = self
         orderListTableView.dataSource = self
         self.view.addSubview(orderListTableView)
@@ -65,27 +73,35 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             settleButton.setTitle("\(truePrice!)", forState: UIControlState.Normal)
             
             // 订单号
-            let priceLabel = UILabel(frame: CGRectMake(10, 0, 200, 60))
+            let priceLabel = UILabel(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 120, UIUtil.screenWidth, 60))
+            priceLabel.backgroundColor = UIColor.whiteColor()
             priceLabel.textAlignment = NSTextAlignment.Center
             priceLabel.text = "订单号: \(orderId)"
-            settleView.addSubview(priceLabel)
+            self.view.addSubview(priceLabel)
+            
+            // 横分割线
+            let hDivide1 = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 120, UIUtil.screenWidth, 1))
+            hDivide1.backgroundColor = UIColor.grayColor()
+            hDivide1.alpha = 0.3
+            self.view.addSubview(hDivide1)
             
         } else {
-            // 原价
-            priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
-            priceLabel.textAlignment = NSTextAlignment.Center
-            priceLabel.text = "原: 0"
-            settleView.addSubview(priceLabel)
-            // 会员价
-            vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
-            vipPriceLabel.textAlignment = NSTextAlignment.Center
-            vipPriceLabel.text = "VIP: 0"
-            settleView.addSubview(vipPriceLabel)
-
             
             settleButton.setTitle("结账", forState: UIControlState.Normal)
             settleButton.addTarget(self, action: "didPressSettleButton:", forControlEvents: UIControlEvents.TouchUpInside)
         }
+        
+        // 原价
+        priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
+        priceLabel.textAlignment = NSTextAlignment.Center
+        priceLabel.text = "原: 0"
+        settleView.addSubview(priceLabel)
+        // 会员价
+        vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
+        vipPriceLabel.textAlignment = NSTextAlignment.Center
+        vipPriceLabel.text = "VIP: 0"
+        settleView.addSubview(vipPriceLabel)
+
         
         // 横分割线
         let hDivide = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 60, UIUtil.screenWidth, 1))
@@ -181,12 +197,11 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         waitIndicator.removeFromSuperview()
         self.view.userInteractionEnabled = true
         
-        if (truePrice == nil) {
-            let totalPrice = orderDetail["totalprice"] as String
-            let vipPrice = orderDetail["vip_totalprice"] as String
-            priceLabel.text =   "原: \(totalPrice)"
-            vipPriceLabel.text = "VIP: \(vipPrice)"
-        }
+        println("detail \(orderDetail)")
+        let totalPrice = orderDetail["totalprice"] as String
+        let vipPrice = orderDetail["vip_totalprice"] as String
+        priceLabel.text =   "原: \(totalPrice)"
+        vipPriceLabel.text = "VIP: \(vipPrice)"
     }
     
 
