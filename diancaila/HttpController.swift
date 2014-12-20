@@ -32,8 +32,8 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-//return "http://114.215.105.93/"
-return "http://dclweixin.diancai.la/"
+return "http://114.215.105.93/"
+//return "http://dclweixin.diancai.la/"
     }
     
     class func apiLogin() -> String {
