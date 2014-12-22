@@ -9,7 +9,7 @@
 import UIKit
 
 protocol CustomActionSheetDelegate {
-    func didPressDoneButton(view: UIView)
+    func didPressDoneButton(actionSheet: UIView)
 }
 
 class CustomActionSheet: UIView {
@@ -58,7 +58,7 @@ class CustomActionSheet: UIView {
     }
     
     func didPressDoneButton(sender: UIView) {
-        self.deletage?.didPressDoneButton(customView)
+        self.deletage?.didPressDoneButton(self)
         hide(sender)
     }
     

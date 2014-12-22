@@ -24,6 +24,10 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     var okButton: UIButton!
     var waitIndicator: UIActivityIndicatorView?
     
+    var customerNumSheet: CustomActionSheet?
+    
+    var deskIdSheet: CustomActionSheet?
+    
     // 值由外面一层传入
     var orderList: [Order]!
     
@@ -62,6 +66,8 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "订单确认"
         
         ehttp.deletage = self
         
@@ -279,6 +285,9 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             deskId = 0
             customerNum = 0
             
+            okButton.setTitle("下单", forState: UIControlState.Normal)
+            okButton.backgroundColor = UIColor.orangeColor()
+            
             isTakeaway = true
         } else {
             isTakeaway = false
@@ -306,9 +315,9 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                     deskIdPicker?.dataSource = self
                     deskIdPicker?.selectRow(numOfDesk, inComponent: 0, animated: true)
                 }
-                let sheet = CustomActionSheet(customView: deskIdPicker!)
-                sheet.deletage = self
-                sheet.show()
+                deskIdSheet = CustomActionSheet(customView: deskIdPicker!)
+                deskIdSheet!.deletage = self
+                deskIdSheet!.show()
                 
             } else if indexPath.row == 2 {
                 if customerNumPicker == nil {
@@ -317,9 +326,9 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
                     customerNumPicker?.dataSource = self
                     customerNumPicker?.selectRow(maxNumOfCustom, inComponent: 0, animated: true)
                 }
-                let sheet = CustomActionSheet(customView: customerNumPicker!)
-                sheet.deletage  = self
-                sheet.show()
+                customerNumSheet = CustomActionSheet(customView: customerNumPicker!)
+                customerNumSheet!.deletage  = self
+                customerNumSheet!.show()
             }
                 
         }
@@ -370,8 +379,8 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     // actionsheet deletage
-    func didPressDoneButton(view: UIView) {
-        if view == deskIdPicker {
+    func didPressDoneButton(actionSheet: UIView) {
+        if actionSheet == deskIdSheet {
             deskId = selectDeskid
             tableView.reloadData()
             

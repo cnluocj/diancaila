@@ -88,8 +88,7 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         let dic = NSMutableDictionary()
         dic["name"] = accountTF.text
         dic["pwd"] = pwdTF.text
-        var data = NSJSONSerialization.dataWithJSONObject(dic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
-        httpController.post(HttpController.apiLogin(), json: data!)
+        httpController.post(HttpController.apiLogin(), json: dic)
         
         waitIndicator.startAnimating()
         self.view.addSubview(waitIndicator)

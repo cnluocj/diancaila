@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WaiterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class WaiterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, VipNumInputModelViewControllerDelegate {
     
     var tableView: UITableView!
     
@@ -31,7 +31,14 @@ class WaiterViewController: UIViewController, UITableViewDataSource, UITableView
     
     func gotoVipNumInputMVC() {
         let vipNumInputMVC = VipNumInputModelViewController()
+        vipNumInputMVC.delegate = self
         self.presentViewController(vipNumInputMVC, animated: true, completion: nil)
+    }
+    
+    func gotoVipDetailVC(vipInfo: NSDictionary) {
+        let vipDetailVC = VipDetailViewController()
+        vipDetailVC.vipInfo = vipInfo
+        self.navigationController?.pushViewController(vipDetailVC, animated: true)
     }
     
     // MARK : UITableViewDataSource
@@ -63,6 +70,19 @@ class WaiterViewController: UIViewController, UITableViewDataSource, UITableView
                 gotoVipNumInputMVC()
             }
         }
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 18
+    }
+    
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 1
+    }
+    
+    // MARK: VipNumInputModelViewControllerDelegate
+    func receiveVipInfo(info: NSDictionary) {
+        gotoVipDetailVC(info)
     }
 
 }

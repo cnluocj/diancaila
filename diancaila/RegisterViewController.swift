@@ -76,8 +76,7 @@ class RegisterViewController: UIViewController, HttpProtocol {
         dic["name"] = phoneNumber
         dic["pwd"] = pwd
         dic["realname"] = name
-        var data = NSJSONSerialization.dataWithJSONObject(dic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
-        httpController.post(HttpController.apiRegister(), json: data!)
+        httpController.post(HttpController.apiRegister(), json: dic)
         
         
         waitIndicator.startAnimating()

@@ -218,7 +218,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             // 先把服务器那边的状态改了，再改本地
             for key in selectedItem.keys {
                 let orderItem = orderList.objectAtIndex(key) as Order
-                httpController.overOrder(HttpController.apiOverOrder(id: orderItem.id, stat: 1))
+                httpController.changeFoodState(HttpController.apiChangeFoodState(id: orderItem.id, stat: 1))
             }
             
             // todo 服务器传回数据后，再对表进行修改
@@ -542,7 +542,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 foodMoreStateAlert = UIAlertView(title: "更多", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "退菜")
                 foodMoreStateAlert.show()
             case 1:
-                httpController.overOrder(HttpController.apiOverOrder(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1))
+                httpController.changeFoodState(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1))
                 orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
                 
                 didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
@@ -554,7 +554,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             
             switch buttonIndex {
             case 1:
-                httpController.overOrder(HttpController.apiOverOrder(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2))
+                httpController.changeFoodState(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2))
                 orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
                 
                 didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)

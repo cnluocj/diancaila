@@ -48,7 +48,7 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
             jsonDic["pwd"] = pwd
             var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
             
-            httpController.post(HttpController.apiLogin(), json: data!)
+            httpController.post(HttpController.apiLogin(), json: jsonDic)
             httpController.deletage = self
             jsonController.parseDelegate = self
         

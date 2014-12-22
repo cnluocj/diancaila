@@ -26,6 +26,14 @@ import Foundation
     
     optional func didReceiveOrderDetail(result: NSMutableDictionary)
     
+    optional func didReceiveChangeTableIdState(result: NSMutableDictionary)
+    
+    optional func didReceiveCancelOrderState(result: NSMutableDictionary)
+    
+    optional func didReceiveChangeFoodState(result: NSDictionary)
+    
+    optional func didReceiveUserInfo(result: NSDictionary)
+    
 }
 
 class HttpController: NSObject {
@@ -68,7 +76,7 @@ return "http://114.215.105.93/"
     }
     
     // stat 上菜 1 ，退菜 2
-    class func apiOverOrder(#id: String, stat: Int) -> String {
+    class func apiChangeFoodState(#id: String, stat: Int) -> String {
         
         return path + "order/change_state?id=" + id + "&stat=" + "\(stat)"
     }
@@ -96,6 +104,19 @@ return "http://114.215.105.93/"
         return path + "order/add_order_dish"
     }
     
+    class func apiChangeTableId(orderId: String, tableId: Int) -> String {
+        return path + "order/change_table_id?oid=\(orderId)&tableid=\(tableId)"
+    }
+    
+    
+    class func apiCancelOrder(orderId: String) -> String {
+        return path + "order/cancel_order?oid=\(orderId)"
+    }
+    
+    // post方式
+    class func apiUserInfo() -> String {
+        return path + "recharge/return_info"
+    }
     
     // todo 重构这个类
     func onSearch() {
@@ -103,18 +124,19 @@ return "http://114.215.105.93/"
     }
     
     
-    func post(url: String, json: NSData) {
+    func post(url: String, json: NSDictionary) {
         var nsUrl: NSURL! = NSURL(string: url)
         var request = NSMutableURLRequest(URL: nsUrl)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.HTTPMethod = "POST"
 //        request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding)
-        request.HTTPBody = json
+        var data = NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+        request.HTTPBody = data
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                        println(string)
-//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
@@ -192,13 +214,17 @@ return "http://114.215.105.93/"
     }
     
     // 发送 已上的菜/退菜 给服务器
-    func overOrder(url: String) {
+    func changeFoodState(url: String) {
         var nsUrl: NSURL! = NSURL(string: url)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
 //            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
 //            println(string)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                self.deletage?.didReceiveChangeFoodState!(jsonResult)
+            }
         }
     }
     
@@ -223,9 +249,9 @@ return "http://114.215.105.93/"
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-                                    println("\(string)")
-                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                                    println("\(string)")
+//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 self.deletage?.didReceiveDidPayOrder!(jsonResult)
@@ -240,9 +266,9 @@ return "http://114.215.105.93/"
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-                                    println("\(string)")
-                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                                    println("\(string)")
+//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSMutableDictionary
                 self.deletage?.didReceiveOrderDetail!(jsonResult)
@@ -255,8 +281,38 @@ return "http://114.215.105.93/"
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-                        println(string)
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                        println(string)
+        }
+    }
+    
+    func changeTableId(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            println("\(string)")
+            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSMutableDictionary
+                self.deletage?.didReceiveChangeTableIdState!(jsonResult)
+            }
+        }
+    }
+    
+    func cancelOrder(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            println("\(string)")
+            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSMutableDictionary
+                self.deletage?.didReceiveCancelOrderState!(jsonResult)
+            }
         }
     }
     

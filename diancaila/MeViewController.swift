@@ -18,7 +18,7 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     
     var user: User?
     
-    var sectionNum = 3
+    var numOfSection = 3
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +28,7 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         self.view.backgroundColor = UIColor.whiteColor()
         
         if user?.auth == "3" {
-            sectionNum = 4
+            numOfSection = 4
         }
         
 
@@ -56,7 +56,7 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 4
+        return numOfSection
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

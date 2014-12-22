@@ -46,6 +46,7 @@
 		4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */; };
 		4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B81A37EEE20051B0F6 /* MeViewController.swift */; };
 		4B97CCF91A3E8E710097BFA4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B97CCF81A3E8E710097BFA4 /* User.swift */; };
+		4BA7C2711A4801E8005B8722 /* VipDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */; };
 		4BDEC5CA1A3AD6EC001887B6 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */; };
 		4BFB7B131A3A855E009E168C /* CustomScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFB7B121A3A855E009E168C /* CustomScrollView.swift */; };
 /* End PBXBuildFile section */
@@ -104,6 +105,7 @@
 		4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
 		4B7561B81A37EEE20051B0F6 /* MeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeViewController.swift; sourceTree = "<group>"; };
 		4B97CCF81A3E8E710097BFA4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VipDetailViewController.swift; sourceTree = "<group>"; };
 		4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		4BFB7B121A3A855E009E168C /* CustomScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomScrollView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -207,6 +209,7 @@
 				4B3ECDDF1A3FF0980054188A /* RegisterViewController.swift */,
 				4B6E84571A43C921000805DD /* WaiterViewController.swift */,
 				4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */,
+				4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -377,6 +380,7 @@
 				4B0A10811A1ED41400A71B53 /* AppDelegate.swift in Sources */,
 				4B0A10861A1ED41400A71B53 /* Menu.swift in Sources */,
 				4B57931C1A3AAB63000850AB /* UserInfoTableViewCell.swift in Sources */,
+				4BA7C2711A4801E8005B8722 /* VipDetailViewController.swift in Sources */,
 				4B4C2C9C1A31402A00CF0209 /* SettleViewController.swift in Sources */,
 				4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */,
 				4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */,
