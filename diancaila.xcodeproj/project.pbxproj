@@ -32,6 +32,7 @@
 		4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */; };
 		4B33050D1A3AB76F00957A9B /* IconTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B33050C1A3AB76F00957A9B /* IconTableViewCell.swift */; };
 		4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3455791A26DB190038C139 /* CustomActionSheet.swift */; };
+		4B36A0F21A49137700D64131 /* InputMoneyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B36A0F11A49137700D64131 /* InputMoneyViewController.swift */; };
 		4B374C7B1A43D406005E5DD0 /* VipNumInputModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */; };
 		4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3BD4781A2EF9EA00735C07 /* DOrder.swift */; };
 		4B3ECDDC1A3FCBB00054188A /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */; };
@@ -91,6 +92,7 @@
 		4B313FCF1A257BEB002C6ED5 /* OrderListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderListViewController.swift; sourceTree = "<group>"; };
 		4B33050C1A3AB76F00957A9B /* IconTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconTableViewCell.swift; sourceTree = "<group>"; };
 		4B3455791A26DB190038C139 /* CustomActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomActionSheet.swift; sourceTree = "<group>"; };
+		4B36A0F11A49137700D64131 /* InputMoneyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputMoneyViewController.swift; sourceTree = "<group>"; };
 		4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VipNumInputModelViewController.swift; sourceTree = "<group>"; };
 		4B3BD4781A2EF9EA00735C07 /* DOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DOrder.swift; sourceTree = "<group>"; };
 		4B3ECDDB1A3FCBB00054188A /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				4B6E84571A43C921000805DD /* WaiterViewController.swift */,
 				4B374C7A1A43D406005E5DD0 /* VipNumInputModelViewController.swift */,
 				4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */,
+				4B36A0F11A49137700D64131 /* InputMoneyViewController.swift */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -384,6 +387,7 @@
 				4B4C2C9C1A31402A00CF0209 /* SettleViewController.swift in Sources */,
 				4B0A10901A1ED41400A71B53 /* ViewController.swift in Sources */,
 				4B34557A1A26DB190038C139 /* CustomActionSheet.swift in Sources */,
+				4B36A0F21A49137700D64131 /* InputMoneyViewController.swift in Sources */,
 				4B0A108A1A1ED41400A71B53 /* Order.swift in Sources */,
 				4B3ECDDE1A3FDECD0054188A /* LoginViewController.swift in Sources */,
 				4B313FD01A257BEB002C6ED5 /* OrderListViewController.swift in Sources */,

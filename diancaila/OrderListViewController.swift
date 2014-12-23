@@ -331,7 +331,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         allOrderTableView.reloadData()
     }
     
-    // HttpProtocol
+    // MARK: - HttpProtocol
     func didReceiveWaitMenu(result: NSDictionary) {
         jsonController.parseWaitMenu(result)
     }
@@ -344,17 +344,14 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         jsonController.parseDidPayOrder(result)
     }
     
-    
-    
-
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func didReceiveChangeFoodState(result: NSDictionary) {
+        // todo 返回结果前应该显示loading
+        println("change food state success")
     }
     
+
     
-    // UITableView data source / UITableView Deletage
+    // MARK: - UITableView data source / UITableView Deletage
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }

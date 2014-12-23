@@ -8,11 +8,15 @@
 
 import UIKit
 
-class VipDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class VipDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, HttpProtocol, InputMoneyViewControllerDelegate {
     
     var vipInfo: NSDictionary?
     
     var tableView: UITableView!
+    
+    var httpController = HttpController()
+    
+    var waitIndicator = UIUtil.waitIndicator()
     
     // 数据源
     var data = [["会员", "余额", "返现"], ["充值"], ["付款"]]
@@ -22,9 +26,12 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        httpController.deletage = self
+        
         self.title = "会员信息"
         
         self.view.backgroundColor = UIUtil.gray_system
+        
         
         detailData.append(vipInfo?.objectForKey("name") as String)
         detailData.append(vipInfo?.objectForKey("money") as String)
@@ -37,11 +44,30 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         self.view.addSubview(tableView)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func gotoInputMoneyVC(actionType: InputMoneyActionType, actionTilte: String, url: String) {
+        let vc = InputMoneyViewController()
+        vc.delegate = self
+        vc.vipId = vipInfo!.objectForKey("id") as? String
+        vc.actionTitle = actionTilte
+        vc.actionType = actionType
+        vc.postUrl = url
+        
+//        let nav = UIUtil.navController()
+//        nav.pushViewController(vc, animated: true)
+        
+        self.presentViewController(vc, animated: true, completion: nil)
     }
     
+    func reloadData() {
+        
+        waitIndicator.startAnimating()
+        self.view.addSubview(waitIndicator)
+        self.view.userInteractionEnabled = false
+        
+        let jsonDic = NSMutableDictionary()
+        jsonDic["phone"] = vipInfo?.objectForKey("phone") as String
+        httpController.post(HttpController.apiUserInfo(), json: jsonDic)
+    }
     
     // MARK: - UITableViewDelegate UITableViewDataSource
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -72,6 +98,16 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        
+        if indexPath.section == 1 {
+            if indexPath.row == 0 {
+                gotoInputMoneyVC(InputMoneyActionType.plus, actionTilte: "充值", url: HttpController.apiCharge())
+            }
+        } else if indexPath.section == 2 {
+            if indexPath.row == 0 {
+                gotoInputMoneyVC(InputMoneyActionType.subtract, actionTilte: "付账", url: HttpController.apiCharge())
+            }
+        }
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -80,6 +116,29 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1
+    }
+    
+    // MARK: - HttpProtocol
+    func didReceiveResults(result: NSDictionary) {
+        let info = result["user_info"] as NSDictionary
+        
+        detailData.removeAll(keepCapacity: false)
+        detailData.append(info.objectForKey("name") as String)
+        detailData.append(info.objectForKey("money") as String)
+        detailData.append(info.objectForKey("money2") as String)
+        
+        tableView.reloadData()
+        
+        
+        waitIndicator.stopAnimating()
+        waitIndicator.removeFromSuperview()
+        self.view.userInteractionEnabled = true
+    }
+    
+    
+    // MARK: - InputMoneyViewControllerDelegate
+    func inputMoneyDidFinish() {
+        reloadData()
     }
     
 

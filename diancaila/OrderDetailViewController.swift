@@ -291,13 +291,20 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     // MARK: CustomActionSheetDelegate
     func didPressDoneButton(actionSheet: UIView) {
         if actionSheet == changeTableIdActionSheet {
-            changeTableIdAlert = UIAlertView(title: "确定把桌号改为 \(changeTableId)", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确认")
+            
+            var tit = ""
+            if changeTableId == 0 {
+                tit = "确定改为 外带"
+            } else {
+                tit = "确定把桌号改为 \(changeTableId)"
+            }
+            changeTableIdAlert = UIAlertView(title: tit, message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确认")
             changeTableIdAlert!.show()
+            
         } else if actionSheet == cancelFoodActionSheet {
             
             let orderItem = (orderDetail["list"] as NSArray)[selectedOrderItemIndex] as NSDictionary
             let name = orderItem["dish_name"] as? String
-            
             cancelFoodAlert = UIAlertView(title: "退 \(name!) \(numOfCancelFood)份", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
             cancelFoodAlert?.show()
         }
@@ -319,7 +326,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
         if pickerView == changeTableIdPicker {
-            return "第\(row+1)桌"
+            if row == 0 {
+                return "外带"
+            }
+            return "第\(row)桌"
         } else {
             return "\(row+1)"
         }
@@ -327,7 +337,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == changeTableIdPicker {
-            changeTableId = row + 1
+            changeTableId = row
         } else if pickerView == cancelFoodNumPicker {
             numOfCancelFood = row + 1
         }
@@ -396,13 +406,15 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
 //        cancelFoodActionSheet!.show()
     }
     
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0.1
     }
     
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.1
+    }
     
+
     
     // MARK: HttpProtocol
     func didReceiveOrderDetail(result: NSMutableDictionary) {
@@ -427,7 +439,11 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             self.view.userInteractionEnabled = true
             waitIndicator.removeFromSuperview()
             
-            self.title = "\(changeTableId)号桌"
+            if changeTableId == 0 {
+                self.title = "外带"
+            } else {
+                self.title = "\(changeTableId)号桌"
+            }
         }
     }
     
