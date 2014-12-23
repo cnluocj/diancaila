@@ -12,7 +12,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     var segmentedControl: UISegmentedControl!
     
-    var segmentedItems = ["等待上菜", "未结订单", "全部订单"]
+    var segmentedItems = ["等待上菜", "未结订单", "今天已结"]
     
     var refreshButton: UIButton!
     
@@ -48,6 +48,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     // 全部订单相关 -------------------------------------------
     var allOrderView: UIView!
     var allOrderTableView: UITableView!
+    var moneyLabel: UILabel!
     // 全部订单 数据源 (暂时显示今天已结账订单)
     var allOrder = NSMutableArray()
     
@@ -94,7 +95,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         // 等待上菜订单界面 ---------------------------------------------------------------------------
         didNotFinishView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
-        didNotFinishOrderTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
+        didNotFinishOrderTableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
         didNotFinishOrderTableView.delegate = self
         didNotFinishOrderTableView.dataSource = self
         didNotFinishView.addSubview(didNotFinishOrderTableView)
@@ -121,7 +122,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         didNotPayView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
         didNotPayView.backgroundColor = UIColor.whiteColor()
         
-        didNotPayTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
+        didNotPayTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
         didNotPayTableView.delegate = self
         didNotPayTableView.dataSource = self
         didNotPayView.addSubview(didNotPayTableView)
@@ -130,32 +131,38 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         // 全部订单界面 -----------------------------------------------------------------------
         allOrderView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
-        allOrderView.backgroundColor = UIColor.whiteColor()
+        allOrderView.backgroundColor = UIUtil.gray_system
         
         
-        // 条件选择按钮组
-        let choseButtonGroupView = UIView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, 40))
-        let dateChoseButton = UIButton(frame: CGRectMake(0, 5, UIUtil.screenWidth/2, 30))
-        dateChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
-        dateChoseButton.setTitle("今天", forState: UIControlState.Normal)
-        dateChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-        dateChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
-        dateChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
-        dateChoseButton.layer.borderWidth = 2
-        dateChoseButton.layer.cornerRadius = 5
+        // todo 条件选择按钮组
+//        let choseButtonGroupView = UIView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, 40))
+//        let dateChoseButton = UIButton(frame: CGRectMake(0, 5, UIUtil.screenWidth/2, 30))
+//        dateChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
+//        dateChoseButton.setTitle("今天", forState: UIControlState.Normal)
+//        dateChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+//        dateChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
+//        dateChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
+//        dateChoseButton.layer.borderWidth = 2
+//        dateChoseButton.layer.cornerRadius = 5
+//        
+//        let deskChoseButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2, 5, UIUtil.screenWidth/2, 30))
+//        deskChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
+//        deskChoseButton.setTitle("全部", forState: UIControlState.Normal)
+//        deskChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+//        deskChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
+//        deskChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
+//        deskChoseButton.layer.borderWidth = 2
+//        deskChoseButton.layer.cornerRadius = 5
+//        
+//        choseButtonGroupView.addSubview(dateChoseButton)
+//        choseButtonGroupView.addSubview(deskChoseButton)
+//        allOrderView.addSubview(choseButtonGroupView)
         
-        let deskChoseButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2, 5, UIUtil.screenWidth/2, 30))
-        deskChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
-        deskChoseButton.setTitle("全部", forState: UIControlState.Normal)
-        deskChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-        deskChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
-        deskChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
-        deskChoseButton.layer.borderWidth = 2
-        deskChoseButton.layer.cornerRadius = 5
-        
-        choseButtonGroupView.addSubview(dateChoseButton)
-        choseButtonGroupView.addSubview(deskChoseButton)
-        allOrderView.addSubview(choseButtonGroupView)
+        moneyLabel = UILabel(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, 50))
+        moneyLabel.backgroundColor = UIUtil.navColor
+        moneyLabel.textColor = UIColor.whiteColor()
+        moneyLabel.textAlignment = NSTextAlignment.Center
+        allOrderView.addSubview(moneyLabel)
         
         
         allOrderTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset + 50, UIUtil.screenWidth, UIUtil.screenHeight))
@@ -287,10 +294,12 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         waitIndicator.startAnimating()
         
         httpController.onSearchDidPayOrder(HttpController.apiDidPayOrder(user.shopId))
+        
+        httpController.onSearchTodayCount(HttpController.apiTodayCount())
     }
     
     
-    // JSONParseDelegate
+    // MARK: - JSONParseDelegate
     func didFinishParseWaitMenu(menuArray: NSMutableArray) {
         let tempData = menuArray
         
@@ -347,6 +356,16 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func didReceiveChangeFoodState(result: NSDictionary) {
         // todo 返回结果前应该显示loading
         println("change food state success")
+    }
+    
+    func didReceiveTodayCount(result: NSDictionary) {
+        if result["error"] == nil {
+            let data = result["result"] as NSDictionary
+            let money = data["count"] as? String
+            moneyLabel.text = "今天营业额为: ¥ \(money!)"
+        } else {
+            moneyLabel.text = "null"
+        }
     }
     
 
@@ -529,7 +548,15 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         return 60
     }
     
-    // UIAlertViewDelegate
+    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.1
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0.1
+    }
+    
+    // MARK: - UIAlertViewDelegate
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         
         if alertView == foodStateAlert {
@@ -563,7 +590,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
  
-    // searchbar 相关
+    // MARK: - UISearchBarDelegate
     func searchDisplayControllerWillBeginSearch(controller: UISearchDisplayController) {
         UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.Default, animated: true)
     }

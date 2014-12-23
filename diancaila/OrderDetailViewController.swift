@@ -57,6 +57,8 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     // 数据源
     var orderDetail = NSMutableDictionary()
+    var orderListDic = NSMutableDictionary()
+    var orderListArray = NSMutableArray()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -344,18 +346,25 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     
-    // UITableViewDelegate  UITableViewDataSource
+    // MARK: - UITableViewDelegate  UITableViewDataSource
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if orderDetail.count == 0 {
             return 0
         } else {
-            let list = orderDetail["list"] as NSArray
-            return list.count
+//            let list = orderDetail["list"] as NSArray
+//            return list.count
+            return orderListArray.count
         }
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if orderDetail.count == 0 {
+//            return 0
+//        } else {
+//            let list = orderDetail["list"] as NSArray
+//            return list.count
+//        }
+        return 1
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -366,12 +375,32 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         //* json 模版 ------------------------------------------------------------------------------------------------
         //{"order_id":"1-1-20141203165755-6910","list":[{"dish_id":"9","dish_name":"肉龙","num":"1","totalprice":"28"},{"dish_id":"10","dish_name":"三不馆er招牌香香骨（小）","num":"1","totalprice":"68"},{"dish_id":"11","dish_name":"三不馆er招牌香香骨（中）","num":"1","totalprice":"102"}]}
         
-        let orderItem = (orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary
-        cell.textLabel?.text = orderItem["dish_name"] as? String
-        let price = orderItem["price"] as String
-        let vipPrice = orderItem["vip_price"] as String
-        let num = orderItem["num"] as String
-        cell.detailTextLabel?.text = "\(price) / \(vipPrice)   x \(num)"
+//        let orderItem = (orderDetail["list"] as NSArray)[indexPath.section] as NSDictionary
+        
+//        cell.textLabel?.text = orderItem["dish_name"] as? String
+//        let price = orderItem["price"] as String
+//        let vipPrice = orderItem["vip_price"] as String
+//        let num = orderItem["num"] as String
+//        cell.detailTextLabel?.text = "¥\(price) / ¥\(vipPrice)"
+//        
+//        if orderItem["state"] as String == "1" {
+//            cell.textLabel?.textColor = UIColor.grayColor()
+//            
+//            let separator = UIView(frame: CGRectMake(16, 21.5, 359, 1))
+//            separator.backgroundColor = UIColor.grayColor()
+//            cell.addSubview(separator)
+//        }
+        
+        let sameDishArray = orderListArray.objectAtIndex(indexPath.section) as NSArray
+        if sameDishArray.count == 1 {
+            let item = sameDishArray[0] as NSDictionary
+            cell.textLabel?.text = item["dish_name"] as? String
+        } else  {
+            
+            let item = sameDishArray[0] as NSDictionary
+            cell.textLabel?.text = item["dish_name"] as? String
+        }
+        
         return cell
     }
     
@@ -407,11 +436,11 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0.1
+        return 0.01
     }
     
     func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0.1
+        return 0.01
     }
     
 
@@ -420,7 +449,6 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     func didReceiveOrderDetail(result: NSMutableDictionary) {
         orderDetail = result
         
-        orderListTableView.reloadData()
         
         waitIndicator.stopAnimating()
         waitIndicator.removeFromSuperview()
@@ -431,6 +459,27 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         let vipPrice = orderDetail["vip_totalprice"] as String
         priceLabel.text =   "原: \(totalPrice)"
         vipPriceLabel.text = "VIP: \(vipPrice)"
+        
+        
+        // 把相同 dish ID 的项目放到一起
+        let list = orderDetail["list"] as NSArray
+        for item in list {
+            let temp  = item as NSDictionary
+            let id = temp["dish_id"] as String
+            if orderListDic[id] == nil {
+                orderListDic[id] = NSMutableArray()
+            }
+            orderListDic[id]?.addObject(temp)
+        }
+        
+        // 再 化为array
+        for key in orderListDic.allKeys {
+            let k = key as String
+            orderListArray.addObject(orderListDic[k]!)
+        }
+        
+        
+        orderListTableView.reloadData()
     }
     
     func didReceiveChangeTableIdState(result: NSMutableDictionary) {

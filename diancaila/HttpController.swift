@@ -34,6 +34,8 @@ import Foundation
     
     optional func didReceiveUserInfo(result: NSDictionary)
     
+    optional func didReceiveTodayCount(result: NSDictionary)
+    
 }
 
 class HttpController: NSObject {
@@ -123,6 +125,10 @@ return "http://114.215.105.93/"
         return path + "recharge/charge"
     }
     
+    class func apiTodayCount() -> String {
+        return path + "order/today_count"
+    }
+    
     // todo 重构这个类
     func onSearch() {
         
@@ -146,6 +152,21 @@ return "http://114.215.105.93/"
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
                 self.deletage?.didReceiveResults!(jsonResult)
+            }
+        }
+    }
+    
+    func onSearchTodayCount(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            //            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            //            println(string)
+            //            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                self.deletage?.didReceiveTodayCount!(jsonResult)
             }
         }
     }
