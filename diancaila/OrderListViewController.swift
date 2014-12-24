@@ -223,7 +223,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func refreshDidChange(sender: UIRefreshControl) {
         if sender == didNotFinishViewRefresh {
-            
+           loadWaitOrderData()
         }
     }
     
@@ -332,6 +332,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         waitIndicator.stopAnimating()
         
         didNotFinishOrderTableView.reloadData()
+        
+        didNotFinishViewRefresh.endRefreshing()
     }
     
     func didFinishParseDidNotPayOrder(notPayOrders: NSMutableArray) {
