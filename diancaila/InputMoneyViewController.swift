@@ -29,6 +29,10 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
     
     var navbar = UIUtil.navBar()
     
+    var sureAlert: UIAlertView?
+    
+    var successAlert: UIAlertView?
+    
     // 外面传进来
     var actionType = InputMoneyActionType.plus //  + 充值 - 付账
     var actionTitle: String?
@@ -79,8 +83,8 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
             println("不能为空")
         } else {
             
-            let alert = UIAlertView(title: "确定要\(actionTitle!) \(textField.text) 元", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
-            alert.show()
+            sureAlert = UIAlertView(title: "确定要\(actionTitle!) \(textField.text) 元", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+            sureAlert?.show()
             
             
           
@@ -89,36 +93,58 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
     
     // MARK: - UIAlertViewDelegate
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
-        if buttonIndex == 1 {
-            waitIndicator.startAnimating()
-            textField.userInteractionEnabled = false
-            self.view.addSubview(waitIndicator)
-            
-            
-            let jsonDic = NSMutableDictionary()
-            switch actionType {
-            case InputMoneyActionType.plus:
-                jsonDic["action"] = "+"
-            case InputMoneyActionType.subtract:
-                jsonDic["action"] = "1"
-            default:
-                return
+        
+        if alertView == sureAlert {
+            if buttonIndex == 1 {
+                waitIndicator.startAnimating()
+                textField.userInteractionEnabled = false
+                self.view.addSubview(waitIndicator)
+                
+                
+                let jsonDic = NSMutableDictionary()
+                switch actionType {
+                case InputMoneyActionType.plus:
+                    jsonDic["action"] = "+"
+                case InputMoneyActionType.subtract:
+                    jsonDic["action"] = "1"
+                default:
+                    return
+                }
+                jsonDic["id"] = vipId
+                jsonDic["money"] = textField.text
+                let defaults = NSUserDefaults.standardUserDefaults()
+                jsonDic["mid"] = defaults.objectForKey("userId") as String
+                httpController.post(postUrl!, json: jsonDic)
             }
-            jsonDic["id"] = vipId
-            jsonDic["money"] = textField.text
-            let defaults = NSUserDefaults.standardUserDefaults()
-            jsonDic["mid"] = defaults.objectForKey("userId") as String
-            httpController.post(postUrl!, json: jsonDic)
+            
+        } else if alertView == successAlert {
+            
+            if buttonIndex == 0 {
+                waitIndicator.removeFromSuperview()
+                
+                dismissViewControllerAnimated(true, completion: nil)
+                delegate?.inputMoneyDidFinish()
+                
+            }
         }
     }
     
     // MARK: - HttpProtocol
     func didReceiveResults(result: NSDictionary) {
-        if result["error"] == nil {
+        let error: String? = result["error"] as? String
+        if error == nil {
             
-            dismissViewControllerAnimated(true, completion: nil)
+            successAlert = UIAlertView(title: "消费成功", message: "", delegate: self, cancelButtonTitle: "确定")
+            successAlert?.show()
+        } else {
             
-            delegate?.inputMoneyDidFinish()
+            waitIndicator.stopAnimating()
+            waitIndicator.removeFromSuperview()
+            self.textField.userInteractionEnabled = true
+            
+            let alertView = UIAlertView(title: "\(error!)", message: "", delegate: nil, cancelButtonTitle: "取消")
+            alertView.show()
+            
         }
     }
     

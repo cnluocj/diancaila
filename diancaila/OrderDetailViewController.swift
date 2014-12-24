@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, HttpProtocol, SettleViewControllerDeletage, OrderViewControllerDeletage, UIPickerViewDataSource, UIPickerViewDelegate, CustomActionSheetDelegate, UIAlertViewDelegate{
+class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, HttpProtocol, SettleViewControllerDeletage, OrderViewControllerDeletage, UIPickerViewDataSource, UIPickerViewDelegate, CustomActionSheetDelegate, UIAlertViewDelegate, UIActionSheetDelegate {
     
     var orderListTableView: UITableView!
     
@@ -30,10 +30,9 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     var changeTableIdPicker: UIPickerView?
     
-    // 选择需要退多少数量的菜
-    var cancelFoodActionSheet: CustomActionSheet?
     
-    var cancelFoodNumPicker: UIPickerView?
+    // 选择需要退多少数量的菜
+    var cancelFoodActionSheet: UIActionSheet?
     
     var cancelFoodAlert: UIAlertView?
     
@@ -59,7 +58,8 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     var orderDetail = NSMutableDictionary()
     var orderListDic = NSMutableDictionary()
     var orderListArray = NSMutableArray()
-
+    var expandArray = [Bool]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -251,12 +251,15 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         // 获取前 清空
         orderDetail.removeAllObjects()
+        orderListArray.removeAllObjects()
+        orderListDic.removeAllObjects()
+        expandArray.removeAll(keepCapacity: false)
         
         httpController.onSearchOrderDetailById(orderId, url: HttpController.apiOrderDetail())
     }
     
     
-    // MARK: UIAlertViewDelegate
+    // MARK: - UIAlertViewDelegate
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         
         if alertView == changeTableIdAlert {
@@ -278,13 +281,12 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }
         } else if alertView == cancelFoodAlert {
             if buttonIndex == 1 {
-                let orderItem = (orderDetail["list"] as NSArray)[selectedOrderItemIndex] as NSDictionary
-                let id = orderItem["id"] as String
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: id, stat: 2))
+                httpController.changeFoodState(HttpController.apiChangeFoodState(id: cancelFoodId, stat: 2))
                 
                 self.view.addSubview(waitIndicator)
                 self.view.userInteractionEnabled = false
                 waitIndicator.startAnimating()
+                
             }
         }
         
@@ -322,7 +324,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         if pickerView == changeTableIdPicker {
             return 20
         } else {
-            return numOfOrderItem
+            return 0
         }
     }
     
@@ -333,15 +335,13 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }
             return "第\(row)桌"
         } else {
-            return "\(row+1)"
+            return ""
         }
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == changeTableIdPicker {
             changeTableId = row
-        } else if pickerView == cancelFoodNumPicker {
-            numOfCancelFood = row + 1
         }
     }
     
@@ -364,7 +364,12 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
 //            let list = orderDetail["list"] as NSArray
 //            return list.count
 //        }
-        return 1
+        
+        if expandArray[section] {
+            return (orderListArray.objectAtIndex(section) as NSArray).count
+        } else {
+            return 1
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -375,64 +380,89 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         //* json 模版 ------------------------------------------------------------------------------------------------
         //{"order_id":"1-1-20141203165755-6910","list":[{"dish_id":"9","dish_name":"肉龙","num":"1","totalprice":"28"},{"dish_id":"10","dish_name":"三不馆er招牌香香骨（小）","num":"1","totalprice":"68"},{"dish_id":"11","dish_name":"三不馆er招牌香香骨（中）","num":"1","totalprice":"102"}]}
         
-//        let orderItem = (orderDetail["list"] as NSArray)[indexPath.section] as NSDictionary
-        
-//        cell.textLabel?.text = orderItem["dish_name"] as? String
-//        let price = orderItem["price"] as String
-//        let vipPrice = orderItem["vip_price"] as String
-//        let num = orderItem["num"] as String
-//        cell.detailTextLabel?.text = "¥\(price) / ¥\(vipPrice)"
-//        
-//        if orderItem["state"] as String == "1" {
-//            cell.textLabel?.textColor = UIColor.grayColor()
-//            
-//            let separator = UIView(frame: CGRectMake(16, 21.5, 359, 1))
-//            separator.backgroundColor = UIColor.grayColor()
-//            cell.addSubview(separator)
-//        }
         
         let sameDishArray = orderListArray.objectAtIndex(indexPath.section) as NSArray
+        
+        let item = sameDishArray[indexPath.row] as NSDictionary
+        cell.textLabel?.text = item["dish_name"] as? String
+        let price = item["price"] as String
+        let vipPrice = item["vip_price"] as String
+        let specialPrice = item["special_price"] as String
+        let state = item["state"] as String
+ 
+        let separator = UIView(frame: CGRectMake(16, 21.5, 359, 1))
+        separator.backgroundColor = UIColor.grayColor()
+        
         if sameDishArray.count == 1 {
-            let item = sameDishArray[0] as NSDictionary
-            cell.textLabel?.text = item["dish_name"] as? String
+            cell.detailTextLabel?.text = "¥\(vipPrice) / ¥\(price)"
+            
+            if state == "1" {
+                cell.textLabel?.textColor = UIColor.grayColor()
+                cell.addSubview(separator)
+            }
+            
         } else  {
             
-            let item = sameDishArray[0] as NSDictionary
-            cell.textLabel?.text = item["dish_name"] as? String
+            if expandArray[indexPath.section] {
+                cell.detailTextLabel?.text = "¥\(vipPrice) / ¥\(price)"
+                
+                if state == "1" {
+                    cell.textLabel?.textColor = UIColor.grayColor()
+                    cell.addSubview(separator)
+                }
+            } else {
+                
+                cell.detailTextLabel?.text = "x \(sameDishArray.count)   ¥\(vipPrice) / ¥\(price)"
+                
+                var isAllDidFinish = true
+                for food in sameDishArray {
+                    let tempFood = food as NSDictionary
+                    if tempFood.objectForKey("state") as String == "0" {
+                        isAllDidFinish = false
+                        break
+                    }
+                }
+                if isAllDidFinish {
+                    cell.textLabel?.textColor = UIColor.grayColor()
+                    cell.addSubview(separator)
+                }
+                
+            }
         }
-        
+       
         return cell
     }
     
     
-    var numOfOrderItem = 0
+    var cancelFoodId = ""
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
         
-        // todo 已上菜，要退菜
-//        selectedOrderItemIndex = indexPath.row
-//        
-//        let orderItem = (orderDetail["list"] as NSArray)[indexPath.row] as NSDictionary
-//        numOfOrderItem = (orderItem["num"] as NSString).integerValue
-//        cancelFoodNumPicker = UIPickerView(frame: CGRectMake(0, 50, UIUtil.screenWidth, 200))
-//        cancelFoodNumPicker!.delegate = self
-//        cancelFoodNumPicker!.dataSource = self
-//        numOfCancelFood = 1
-//        
-//        let cancelFoodView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 250))
-//        
-//        let label = UILabel(frame: CGRectMake(0, 0, UIUtil.screenWidth, 50))
-//        label.text = "选择退菜个数"
-//        label.textAlignment = NSTextAlignment.Center
-//        
-//        cancelFoodView.addSubview(label)
-//        cancelFoodView.addSubview(cancelFoodNumPicker!)
-//        
-//        
-//        cancelFoodActionSheet = CustomActionSheet(customView: cancelFoodView)
-//        cancelFoodActionSheet!.deletage = self
-//        cancelFoodActionSheet!.show()
+        let array = orderListArray.objectAtIndex(indexPath.section) as NSArray
+        if array.count > 1 {
+            if !expandArray[indexPath.section] {
+                
+                expandArray[indexPath.section] = true
+                
+                var indexPaths = [NSIndexPath]()
+                for row in 1..<array.count {
+                    indexPaths.append(NSIndexPath(forRow: row, inSection: indexPath.section))
+                }
+                tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: UITableViewRowAnimation.Top)
+                
+                tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: indexPath.section)], withRowAnimation: UITableViewRowAnimation.Fade)
+                
+                return
+            }
+        }
+        
+        if truePrice == nil {
+            cancelFoodId = (array.objectAtIndex(indexPath.row) as NSDictionary).objectForKey("id") as String
+            cancelFoodActionSheet = UIActionSheet(title: "选择操作", delegate: self, cancelButtonTitle: "取消", destructiveButtonTitle: "退菜")
+            cancelFoodActionSheet!.showInView(self.view)
+                
+        }
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -443,12 +473,23 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         return 0.01
     }
     
-
+    
+    // MARK: - UIActionSheetDelegate
+    func actionSheet(actionSheet: UIActionSheet, clickedButtonAtIndex buttonIndex: Int) {
+        if actionSheet == cancelFoodActionSheet {
+            if buttonIndex == 0 {
+                
+                cancelFoodAlert = UIAlertView(title: "确定要退菜", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+                cancelFoodAlert?.show()
+                
+            }
+        }
+    }
+    
     
     // MARK: HttpProtocol
     func didReceiveOrderDetail(result: NSMutableDictionary) {
         orderDetail = result
-        
         
         waitIndicator.stopAnimating()
         waitIndicator.removeFromSuperview()
@@ -476,6 +517,8 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         for key in orderListDic.allKeys {
             let k = key as String
             orderListArray.addObject(orderListDic[k]!)
+            
+            expandArray.append(false)
         }
         
         

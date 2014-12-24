@@ -25,6 +25,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     // 等待上菜界面相关 -----------------------------------
     var didNotFinishView: UIView!
     var didNotFinishOrderTableView: UITableView!
+    var didNotFinishViewRefresh: UIRefreshControl!
     var searchBar: UISearchBar!
     var searchController: UISearchDisplayController!
     var foodStateAlert: UIAlertView!
@@ -100,6 +101,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         didNotFinishOrderTableView.dataSource = self
         didNotFinishView.addSubview(didNotFinishOrderTableView)
         
+        // todo 下拉刷新
+        didNotFinishViewRefresh = UIRefreshControl()
+        didNotFinishViewRefresh.addTarget(self, action: "refreshDidChange:", forControlEvents: UIControlEvents.ValueChanged)
+        didNotFinishOrderTableView.addSubview(didNotFinishViewRefresh)
+        
         searchBar = UISearchBar(frame: CGRectMake(0, 0, self.view.frame.width, 44))
 //        searchBar.backgroundImage = UIUtil.imageFromColor(self.view.frame.width, height: 44, color: UIUtil.gray_system)
         searchBar.placeholder = "搜索"
@@ -111,9 +117,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         searchController.searchResultsDelegate = self
         searchController.searchResultsDataSource = self
         
-        // todo 下拉刷新
-        let refresh = UIRefreshControl()
-        didNotFinishOrderTableView.addSubview(refresh)
         
         self.view = didNotFinishView
         
@@ -218,6 +221,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     
+    func refreshDidChange(sender: UIRefreshControl) {
+        if sender == didNotFinishViewRefresh {
+            
+        }
+    }
     
     func didPressOpButton(sender: UIButton) {
         if numOfDidSelected > 0 {
@@ -295,7 +303,9 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         httpController.onSearchDidPayOrder(HttpController.apiDidPayOrder(user.shopId))
         
-        httpController.onSearchTodayCount(HttpController.apiTodayCount())
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let shopId = defaults.objectForKey("shopId") as String
+        httpController.onSearchTodayCount(HttpController.apiTodayCount(shopId))
     }
     
     
@@ -361,7 +371,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func didReceiveTodayCount(result: NSDictionary) {
         if result["error"] == nil {
             let data = result["result"] as NSDictionary
-            let money = data["count"] as? String
+            let money = data["earncount"] as? String
             moneyLabel.text = "今天营业额为: ¥ \(money!)"
         } else {
             moneyLabel.text = "null"

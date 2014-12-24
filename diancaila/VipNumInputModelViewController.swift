@@ -130,8 +130,9 @@ class VipNumInputModelViewController: UIViewController, UITextFieldDelegate, Htt
             delegate?.receiveVipInfo!(info)
         } else {
             
-            // todo 提醒 电话号码有错
-            println(result["error"])
+            let error = result["error"] as String
+            let alert = UIAlertView(title: error, message: "", delegate: nil, cancelButtonTitle: "确定")
+            alert.show()
             
             waitIndicator.stopAnimating()
             waitIndicator.removeFromSuperview()

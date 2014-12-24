@@ -12,6 +12,8 @@ import Foundation
     
     optional func didReceiveResults(result: NSDictionary)
     
+    optional func didReceiveResults2(result: NSDictionary)
+    
     optional func didReceiveMenuTypeResults(result: NSDictionary)
     
     optional func didReceiveMenuResults(result: NSDictionary)
@@ -35,6 +37,8 @@ import Foundation
     optional func didReceiveUserInfo(result: NSDictionary)
     
     optional func didReceiveTodayCount(result: NSDictionary)
+    
+    optional func didReceiveMoneyList(result: NSDictionary)
     
 }
 
@@ -125,8 +129,16 @@ return "http://114.215.105.93/"
         return path + "recharge/charge"
     }
     
-    class func apiTodayCount() -> String {
-        return path + "order/today_count"
+    class func apiTodayCount(shop_id: String) -> String {
+        return path + "order/today_count?clerk_shop_id=\(shop_id)"
+    }
+    
+    class func apiCheckoutType() -> String {
+        return path + "order/checkout_type?clerk_shop_id=1"
+    }
+    
+    class func apiMoneyList() -> String {
+        return path + "recharge/return_charge_money"
     }
     
     // todo 重构这个类
@@ -145,13 +157,36 @@ return "http://114.215.105.93/"
         request.HTTPBody = data
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                        println(string)
-//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
                 self.deletage?.didReceiveResults!(jsonResult)
+            }
+        }
+    }
+    
+    
+    // 用于解决 一个界面 多次 post
+    func post2(url: String, json: NSDictionary) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request = NSMutableURLRequest(URL: nsUrl)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPMethod = "POST"
+        //        request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding)
+        var data = NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+        request.HTTPBody = data
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            //                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            //                        println(string)
+            //                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                
+                self.deletage?.didReceiveResults2!(jsonResult)
             }
         }
     }
@@ -167,6 +202,21 @@ return "http://114.215.105.93/"
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 self.deletage?.didReceiveTodayCount!(jsonResult)
+            }
+        }
+    }
+    
+    func onSearchMoneyList(url: String) {
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            //            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            //            println(string)
+            //            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                self.deletage?.didReceiveMoneyList!(jsonResult)
             }
         }
     }

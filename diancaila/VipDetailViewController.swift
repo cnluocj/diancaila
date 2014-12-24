@@ -8,23 +8,35 @@
 
 import UIKit
 
-class VipDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, HttpProtocol, InputMoneyViewControllerDelegate {
-    
-    var vipInfo: NSDictionary?
+class VipDetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, HttpProtocol, InputMoneyViewControllerDelegate, UIPickerViewDataSource, UIPickerViewDelegate, CustomActionSheetDelegate, UIAlertViewDelegate {
     
     var tableView: UITableView!
     
+    var moneyPicker: UIPickerView?
+    
     var httpController = HttpController()
+    
+    var topupAlertView: UIAlertView?
+    
+    var topupSuccessAlertView: UIAlertView?
     
     var waitIndicator = UIUtil.waitIndicator()
     
-    // 数据源
-    var data = [["会员", "余额", "返现"], ["充值"], ["付款"]]
+    var vipInfo: NSDictionary?
+    
+    // tableview数据源
+    var data = [["会员", "余额", "返现"], ["充值"], ["消费"]]
     
     var detailData = [String]()
+    
+    // money Picker 数据源
+    var moneyList = [String]()
+    var selectedMoeny = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loadMoneyList() // 加载 充值 固定的金钱
         
         httpController.deletage = self
         
@@ -32,10 +44,21 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         self.view.backgroundColor = UIUtil.gray_system
         
+        println(vipInfo)
         
+        let name = vipInfo?.objectForKey("name") as String
+        let money: String? = vipInfo?.objectForKey("money") as? String
+        let money2 = vipInfo?.objectForKey("money2") as String
         detailData.append(vipInfo?.objectForKey("name") as String)
-        detailData.append(vipInfo?.objectForKey("money") as String)
-        detailData.append(vipInfo?.objectForKey("money2") as String)
+        
+        if money == nil {
+            var data = [["会员"], ["开卡"]]
+            
+        } else {
+            detailData.append(vipInfo?.objectForKey("money") as String)
+            detailData.append(vipInfo?.objectForKey("money2") as String)
+        }
+        
 
         tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
         tableView.delegate = self
@@ -67,6 +90,14 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         let jsonDic = NSMutableDictionary()
         jsonDic["phone"] = vipInfo?.objectForKey("phone") as String
         httpController.post(HttpController.apiUserInfo(), json: jsonDic)
+    }
+    
+    func loadMoneyList() {
+        waitIndicator.startAnimating()
+        self.view.addSubview(waitIndicator)
+        self.view.userInteractionEnabled = false
+        
+        httpController.onSearchMoneyList(HttpController.apiMoneyList())
     }
     
     // MARK: - UITableViewDelegate UITableViewDataSource
@@ -101,7 +132,14 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         if indexPath.section == 1 {
             if indexPath.row == 0 {
-                gotoInputMoneyVC(InputMoneyActionType.plus, actionTilte: "充值", url: HttpController.apiCharge())
+//                gotoInputMoneyVC(InputMoneyActionType.plus, actionTilte: "充值", url: HttpController.apiCharge())
+                
+                moneyPicker = UIPickerView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 200))
+                moneyPicker?.dataSource = self
+                moneyPicker?.delegate = self
+                let sheet = CustomActionSheet(customView: moneyPicker!)
+                sheet.deletage = self
+                sheet.show()
             }
         } else if indexPath.section == 2 {
             if indexPath.row == 0 {
@@ -135,13 +173,93 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         self.view.userInteractionEnabled = true
     }
     
+    func didReceiveResults2(result: NSDictionary) {
+        if result["error"] == nil {
+            waitIndicator.stopAnimating()
+            waitIndicator.removeFromSuperview()
+            self.view.userInteractionEnabled = true
+            
+            topupSuccessAlertView = UIAlertView(title: "充值成功", message: "", delegate: self, cancelButtonTitle: "取消")
+            topupSuccessAlertView?.show()
+        }
+    }
+    
+    func didReceiveMoneyList(result: NSDictionary) {
+        if result["error"] == nil {
+            let data = result["money_info"] as NSArray
+            
+            for money in data {
+                let tempMoney = money as NSDictionary
+                let moneyString = tempMoney["money"] as String
+                moneyList.append(moneyString)
+            }
+        }
+        
+        waitIndicator.stopAnimating()
+        waitIndicator.removeFromSuperview()
+        self.view.userInteractionEnabled = true
+    }
+    
     
     // MARK: - InputMoneyViewControllerDelegate
     func inputMoneyDidFinish() {
         reloadData()
     }
     
+    
+    // MARK: - UIPickerViewDataSource
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return moneyList.count
+    }
+    
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
+        return moneyList[row]
+    }
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedMoeny = moneyList[row]
+    }
+    
+    
+    // MARK: - CustomActionSheetDelegate
+    func didPressDoneButton(view: UIView) {
+        topupAlertView = UIAlertView(title: "确定充值 ¥\(selectedMoeny)", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+        topupAlertView?.show()
+    }
 
+    
+    // MARK: - UIAlertViewDelegate
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        if alertView == topupAlertView {
+            
+            if buttonIndex == 1 {
+                let jsonDic = NSMutableDictionary()
+                
+                let defaults = NSUserDefaults.standardUserDefaults()
+                jsonDic["mid"] = defaults.objectForKey("userId") as String
+                jsonDic["id"] = vipInfo?.objectForKey("id")
+                jsonDic["money"] = selectedMoeny
+                jsonDic["action"] = "+"
+                
+                httpController.post2(HttpController.apiCharge(), json: jsonDic)
+                
+                
+                waitIndicator.startAnimating()
+                self.view.addSubview(waitIndicator)
+                self.view.userInteractionEnabled = false
+            }
+        } else if alertView == topupSuccessAlertView {
+            
+            if buttonIndex == 0 {
+                reloadData()
+            }
+        }
+    }
+    
     /*
     // MARK: - Navigation
 
