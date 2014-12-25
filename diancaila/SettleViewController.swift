@@ -26,11 +26,17 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     var checkoutSuccessAlertView: UIAlertView?
     
+    var checkUserInfoAndCheckoutAlertView: UIAlertView?
+    
     var orderId: String!
+    
+    var vipPrice: Double!
     
     let httpController = HttpController()
     
     var deletage: SettleViewControllerDeletage?
+    
+    var waitState = 0 // 用于判断 会员卡支付状态 0是第一次传，需要接收用户信息， 1是第二次确认能支付后传给服务器
     
     // tableview 数据源
     var checkoutType = [NSDictionary]()
@@ -77,13 +83,6 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         contentView.addSubview(tableView)
         
-//        priceField = UITextField(frame: CGRectMake(10, 120, self.view.frame.width - 20, 40))
-//        priceField.borderStyle = UITextBorderStyle.RoundedRect
-//        priceField.placeholder = "输入实际金额"
-//        priceField.keyboardType = UIKeyboardType.NumberPad
-//        priceField.becomeFirstResponder()
-//        self.view.addSubview(priceField)
-        
         contentView.addSubview(waitView)
         loadCheckoutType()
     }
@@ -110,18 +109,25 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
 
         } else {
             
-            let jsonDic = NSMutableDictionary()
-            jsonDic["earn"] = text
-            jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
-            jsonDic["order_id"] = orderId
-            httpController.post(HttpController.apiCheckout(), json: jsonDic)
-            
-            waitIndicator.startAnimating()
-            self.contentView.addSubview(waitIndicator)
-            self.contentView.userInteractionEnabled = false
+            postCheckoutInfo()
             
         }
         
+    }
+    
+    func postCheckoutInfo() {
+        let jsonDic = NSMutableDictionary()
+        jsonDic["earn"] = textField.text
+        jsonDic["phone"] = textField.text
+        jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
+        jsonDic["order_id"] = orderId
+        jsonDic["wait"] = waitState
+        println(jsonDic)
+        httpController.post(HttpController.apiCheckout(), json: jsonDic)
+        
+        waitIndicator.startAnimating()
+        self.contentView.addSubview(waitIndicator)
+        self.contentView.userInteractionEnabled = false
     }
     
     // MARK: - UITableViewDataSource
@@ -217,8 +223,38 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         
         let error = result["error"] as? String
         if error == nil {
-            checkoutSuccessAlertView = UIAlertView(title: "消费成功", message: "", delegate: self, cancelButtonTitle: "确定")
-            checkoutSuccessAlertView?.show()
+            let userInfo = result["user_info"] as? NSDictionary
+            
+            if userInfo == nil {
+                checkoutSuccessAlertView = UIAlertView(title: "消费成功", message: "", delegate: self, cancelButtonTitle: "确定")
+                checkoutSuccessAlertView?.show()
+            } else {
+                let name = userInfo?.objectForKey("name") as String
+                let id = userInfo?.objectForKey("id") as String
+                let moneyString = userInfo?.objectForKey("money") as? NSString
+                let money2String = userInfo?.objectForKey("money2") as? NSString
+                
+                if moneyString == nil {
+                    let message = "\(name) \n未开卡"
+                    checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: nil, cancelButtonTitle: "确定")
+                    checkUserInfoAndCheckoutAlertView?.show()
+                    
+                } else {
+                    let money = moneyString?.doubleValue
+                    let money2 = money2String?.doubleValue
+                    if money! + money2! >= vipPrice {
+                        let message = "\(name) \n余额: \(money!) \n返现: \(money2!)"
+                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+                        checkUserInfoAndCheckoutAlertView?.show()
+                    } else {
+                        let message = "\(name) \n余额: \(money!) \n返现: \(money2!)"
+                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: nil, cancelButtonTitle: "余额不足请充值")
+                        checkUserInfoAndCheckoutAlertView?.show()
+                    }
+                }
+                
+               
+            }
             
         } else {
             
@@ -236,6 +272,13 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                 self.dismissViewControllerAnimated(true, completion: nil)
                 deletage?.didSettle()
                 
+            }
+        } else if alertView == checkUserInfoAndCheckoutAlertView {
+            if buttonIndex == 1 {
+                waitState = 1
+                postCheckoutInfo()
+            } else {
+                waitState = 0
             }
         }
     }

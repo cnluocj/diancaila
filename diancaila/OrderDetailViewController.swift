@@ -238,6 +238,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         let settleVC = SettleViewController()
         settleVC.orderId = orderId
+        settleVC.vipPrice = (orderDetail["vip_totalprice"] as NSString).doubleValue
         settleVC.deletage = self
         self.navigationController?.presentViewController(settleVC, animated: true, completion: nil)
     }

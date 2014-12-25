@@ -31,6 +31,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     var foodStateAlert: UIAlertView!
     var foodMoreStateAlert: UIAlertView!
     var opButton: UIButton!
+    var opButtonIsShow = false
+    var radius = CGFloat(70)
     var tableViewCellEditingIndexPath: NSIndexPath! // 正在编辑的菜 index
     // 等待上菜 table 的 数据源
     var orderDic: [String:[Order]] = [:] // 转成 dic， 按照菜id分类 方便排序
@@ -43,6 +45,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     // 未结订单相关 ------------------------------------------
     var didNotPayView: UIView!
     var didNotPayTableView: UITableView!
+    var didNotPayRefresh: UIRefreshControl!
     // 未结订单 的 数据源
     var notPayOrders = NSMutableArray()
     
@@ -50,6 +53,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     var allOrderView: UIView!
     var allOrderTableView: UITableView!
     var moneyLabel: UILabel!
+    var allOrderRefresh: UIRefreshControl!
     // 全部订单 数据源 (暂时显示今天已结账订单)
     var allOrder = NSMutableArray()
     
@@ -85,11 +89,9 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         // deleteButton -- didNotFinishView
-        var radius = CGFloat(70)
-        opButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight - UIUtil.contentOffset - 20, radius, radius))
-        opButton.setTitle("刷新", forState: UIControlState.Normal)
+        opButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2 - radius/2, UIUtil.screenHeight, radius, radius))
+        opButton.setTitle("上菜", forState: UIControlState.Normal)
         opButton.backgroundColor = UIColor.orangeColor()
-        opButton.setTitle("松开～", forState: UIControlState.Highlighted)
         opButton.layer.cornerRadius = radius/2
         opButton.addTarget(self, action: "didPressOpButton:", forControlEvents: UIControlEvents.TouchUpInside)
         
@@ -129,6 +131,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         didNotPayTableView.delegate = self
         didNotPayTableView.dataSource = self
         didNotPayView.addSubview(didNotPayTableView)
+        
+        didNotPayRefresh = UIRefreshControl()
+        didNotPayRefresh.addTarget(self, action: "refreshDidChange:", forControlEvents: UIControlEvents.ValueChanged)
+        didNotPayTableView.addSubview(didNotPayRefresh)
         
         
         
@@ -173,8 +179,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
 //        allOrderTableView.contentInset = UIEdgeInsets(top: UIUtil.contentOffset + 50, left: 0, bottom: 0, right: 0)
         allOrderTableView.delegate = self
         allOrderTableView.dataSource = self
-        
         allOrderView.addSubview(allOrderTableView)
+        
+        allOrderRefresh = UIRefreshControl()
+        allOrderRefresh.addTarget(self, action: "refreshDidChange:", forControlEvents: UIControlEvents.ValueChanged)
+        allOrderTableView.addSubview(allOrderRefresh)
       
         
         // 先加载 第一个界面的数据
@@ -182,8 +191,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         didNotFinishViewRefresh.sendActionsForControlEvents(UIControlEvents.ValueChanged)
         didNotFinishOrderTableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
         
-        opButton.removeFromSuperview()
-        self.view.addSubview(opButton)
+        
     }
     
     
@@ -196,24 +204,17 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             loadWaitOrderData()
             self.view = didNotFinishView
             
-            opButton.removeFromSuperview()
-            self.view.addSubview(opButton)
-            
         case 1:
             loadNotPayOrderData()
-            opButton.setTitle("刷新", forState: UIControlState.Normal)
             self.view = didNotPayView
             
             opButton.removeFromSuperview()
-            self.view.addSubview(opButton)
             
         case 2:
             loadAllOrder()
-            opButton.setTitle("刷新", forState: UIControlState.Normal)
             self.view = allOrderView
             
             opButton.removeFromSuperview()
-            self.view.addSubview(opButton)
             
         default:
             break
@@ -225,6 +226,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func refreshDidChange(sender: UIRefreshControl) {
         if sender == didNotFinishViewRefresh {
            loadWaitOrderData()
+        } else if sender == didNotPayRefresh {
+            loadNotPayOrderData()
+        } else if  sender == allOrderRefresh {
+            loadAllOrder()
         }
     }
     
@@ -252,8 +257,13 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             // 清空选中的数据源
             selectedItem.removeAll(keepCapacity: false)
             numOfDidSelected = 0
-            opButton.setTitle("刷新", forState: UIControlState.Normal)
-            opButton.backgroundColor = UIColor.orangeColor()
+            
+            UIView.animateWithDuration(0.2, animations: { () -> Void in
+                self.opButton.frame.origin = CGPoint(x: UIUtil.screenWidth/2 - self.radius/2, y: UIUtil.screenHeight)
+                
+                }, completion: { (finished: Bool) -> Void in
+                    self.opButton.removeFromSuperview()
+            })
             
             
         } else {
@@ -341,6 +351,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         waitIndicator.stopAnimating()
         
         didNotPayTableView.reloadData()
+        
+        didNotPayRefresh.endRefreshing()
     }
     
     func didFinishParseDidPayOrder(payOrders: NSMutableArray) {
@@ -349,6 +361,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         waitIndicator.stopAnimating()
         
         allOrderTableView.reloadData()
+        
+        allOrderRefresh.endRefreshing()
     }
     
     // MARK: - HttpProtocol
@@ -544,11 +558,24 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             if numOfDidSelected > 0 {
-                opButton.backgroundColor = UIUtil.flatBlue()
-                opButton.setTitle("上菜", forState: UIControlState.Normal)
+                self.view.addSubview(opButton)
+                
+                UIView.animateWithDuration(0.3, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.3, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+                    
+                        self.opButton.frame.origin = CGPoint(x: UIUtil.screenWidth/2 - self.radius/2, y: UIUtil.screenHeight - self.radius - 16)
+                    }, completion: { (finished: Bool) -> Void in
+                        
+                })
+                
             } else {
-                opButton.backgroundColor = UIColor.orangeColor()
-                opButton.setTitle("刷新", forState: UIControlState.Normal)
+                
+                UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    self.opButton.frame.origin = CGPoint(x: UIUtil.screenWidth/2 - self.radius/2, y: UIUtil.screenHeight)
+                    
+                    }, completion: { (finished: Bool) -> Void in
+                        self.opButton.removeFromSuperview()
+                })
+                
             }
             tableView.reloadData()
         }

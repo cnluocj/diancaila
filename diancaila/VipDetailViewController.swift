@@ -286,6 +286,8 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
                 
                 let defaults = NSUserDefaults.standardUserDefaults()
                 jsonDic["mid"] = defaults.objectForKey("userId") as String
+                jsonDic["clerk_shop_id"] = defaults.objectForKey("shopId") as String
+                
                 jsonDic["id"] = vipInfo?.objectForKey("id")
                 jsonDic["money"] = selectedMoeny
                 jsonDic["action"] = "+"
