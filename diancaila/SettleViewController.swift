@@ -12,18 +12,35 @@ protocol SettleViewControllerDeletage {
     func didSettle()
 }
 
-class SettleViewController: UIViewController {
+class SettleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, HttpProtocol, UIAlertViewDelegate {
     
-    var priceField: UITextField!
+    var contentView: UIView!
+    
+    var waitView = UIUtil.waitView()
+    
+    var waitIndicator = UIUtil.waitIndicator()
+    
+    var tableView: UITableView!
+    
+    var textField: UITextField!
+    
+    var checkoutSuccessAlertView: UIAlertView?
     
     var orderId: String!
     
     let httpController = HttpController()
     
     var deletage: SettleViewControllerDeletage?
+    
+    // tableview 数据源
+    var checkoutType = [NSDictionary]()
+    var selectedCheckoutTypeIndex = 0
+    var selectedCheckoutTypeArray = [Bool]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        httpController.deletage = self
         
         self.view.backgroundColor = UIUtil.gray_system
         
@@ -51,14 +68,32 @@ class SettleViewController: UIViewController {
         
         self.view.addSubview(navBar)
         
-        priceField = UITextField(frame: CGRectMake(10, 120, self.view.frame.width - 20, 40))
-        priceField.borderStyle = UITextBorderStyle.RoundedRect
-        priceField.placeholder = "输入实际金额"
-        priceField.keyboardType = UIKeyboardType.NumberPad
-        priceField.becomeFirstResponder()
-        self.view.addSubview(priceField)
+        
+        contentView = UIView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
+        self.view.addSubview(contentView)
+        
+        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
+        tableView.delegate = self
+        tableView.dataSource = self
+        contentView.addSubview(tableView)
+        
+//        priceField = UITextField(frame: CGRectMake(10, 120, self.view.frame.width - 20, 40))
+//        priceField.borderStyle = UITextBorderStyle.RoundedRect
+//        priceField.placeholder = "输入实际金额"
+//        priceField.keyboardType = UIKeyboardType.NumberPad
+//        priceField.becomeFirstResponder()
+//        self.view.addSubview(priceField)
+        
+        contentView.addSubview(waitView)
+        loadCheckoutType()
     }
     
+    
+    func loadCheckoutType() {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let shopId = defaults.objectForKey("shopId") as String
+        httpController.onSearchCheckoutType(HttpController.apiCheckoutType(shopId))
+    }
     
     func didPressCancelButton(sender: UIBarButtonItem) {
         self.dismissViewControllerAnimated(true, completion: nil)
@@ -66,30 +101,144 @@ class SettleViewController: UIViewController {
     
     func didPressDoneButton(sender: UIBarButtonItem) {
         
-//        let numbers = NSString(string: "0123456789.")
-        let price = NSString(string: priceField.text)
+        let text = NSString(string: textField.text)
         
-        if price == "" {
-            let alert = UIAlertView(title: "", message: "金额不能为空", delegate: nil, cancelButtonTitle: "好的")
+        if text == "" {
+            let text = checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as String
+            let alert = UIAlertView(title: "", message: "\(text) 不能为空", delegate: nil, cancelButtonTitle: "好的")
             alert.show()
-            
+
         } else {
             
-            httpController.settle(HttpController.apiSettle(orderId: orderId, price: price.integerValue))
+            let jsonDic = NSMutableDictionary()
+            jsonDic["earn"] = text
+            jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
+            jsonDic["order_id"] = orderId
+            httpController.post(HttpController.apiCheckout(), json: jsonDic)
             
-            self.dismissViewControllerAnimated(true, completion: nil)
+            waitIndicator.startAnimating()
+            self.contentView.addSubview(waitIndicator)
+            self.contentView.userInteractionEnabled = false
             
-            deletage?.didSettle()
         }
         
     }
     
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    // MARK: - UITableViewDataSource
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
     }
     
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return checkoutType.count
+        } else {
+            return 1
+        }
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let checkoutCell = "checkoutCell"
+        
+        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: checkoutCell)
+        
+        if indexPath.section == 0 {
+            cell.textLabel?.text = checkoutType[indexPath.row].objectForKey("c_name") as? String
+            if selectedCheckoutTypeArray[indexPath.row] {
+                cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            }
+            
+        } else if indexPath.section == 1 {
+            if indexPath.row == 0 {
+                textField = UITextField(frame: CGRectMake(15, 3, UIUtil.screenWidth - 30, cell.frame.height - 6))
+                textField.borderStyle = UITextBorderStyle.RoundedRect
+                textField.keyboardType = UIKeyboardType.NumberPad
+                textField.becomeFirstResponder()
+                cell.addSubview(textField)
+            }
+        }
+        
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        
+        if indexPath.section == 0 {
+            if !selectedCheckoutTypeArray[indexPath.row] {
+                selectedCheckoutTypeArray[indexPath.row] = true
+                selectedCheckoutTypeArray[selectedCheckoutTypeIndex] = false
+                selectedCheckoutTypeIndex = indexPath.row
+                
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "请选择支付方式"
+        } else if section == 1 {
+            if checkoutType.count > 0 {
+                return checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
+            }
+        }
+        return ""
+    }
+    
+    
+    // MARK: - HttpProtocol
+    func didReceiveCheckoutType(result: NSDictionary) {
+        let error = result["error"] as? String
+        if error == nil {
+            let data = result["checkout_type"] as NSArray
+            for type in data {
+                let temp = type as NSDictionary
+                checkoutType.append(temp)
+                selectedCheckoutTypeArray.append(false)
+            }
+            if selectedCheckoutTypeArray.count > 0 {
+                selectedCheckoutTypeArray[0] = true
+            }
+            
+            waitView.removeFromSuperview()
+            
+            tableView.reloadData()
+        } else {
+            println(error)
+        }
+    }
+    
+    func didReceiveResults(result: NSDictionary) {
+        waitIndicator.stopAnimating()
+        waitIndicator.removeFromSuperview()
+        self.contentView.userInteractionEnabled = true
+        
+        let error = result["error"] as? String
+        if error == nil {
+            checkoutSuccessAlertView = UIAlertView(title: "消费成功", message: "", delegate: self, cancelButtonTitle: "确定")
+            checkoutSuccessAlertView?.show()
+            
+        } else {
+            
+            let alertView = UIAlertView(title: error, message: "", delegate: nil, cancelButtonTitle: "确定")
+            alertView.show()
+        }
+    }
+    
+    
+    // MARK: - UIAlertViewDelegate
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        if alertView == checkoutSuccessAlertView {
+            if buttonIndex == 0 {
+                
+                self.dismissViewControllerAnimated(true, completion: nil)
+                deletage?.didSettle()
+                
+            }
+        }
+    }
 
     /*
     // MARK: - Navigation

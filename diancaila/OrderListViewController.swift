@@ -178,8 +178,9 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
       
         
         // 先加载 第一个界面的数据
-        loadWaitOrderData()
-        
+        didNotFinishViewRefresh.beginRefreshing()
+        didNotFinishViewRefresh.sendActionsForControlEvents(UIControlEvents.ValueChanged)
+        didNotFinishOrderTableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
         
         opButton.removeFromSuperview()
         self.view.addSubview(opButton)
@@ -278,7 +279,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         orderDic = [:] // 转成 dic， 按照菜id分类 方便排序
         orderList.removeAllObjects()  // 有序的 tempdata
         filterData = NSArray() // 过滤的数据
-        didNotFinishOrderTableView.reloadData()
         numOfDidSelected = 0
         selectedItem.removeAll(keepCapacity: false)
         
@@ -291,7 +291,6 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         // 取数据前，清空数据
         notPayOrders.removeAllObjects()
-        didNotPayTableView.reloadData()
         
         httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder(user.shopId))
         
@@ -481,6 +480,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 foodStateAlert = UIAlertView(title: "选择状态", message: "", delegate: self, cancelButtonTitle: "更多", otherButtonTitles: "上菜")
 
                 foodStateAlert.show()
+                
                 
             }
         }

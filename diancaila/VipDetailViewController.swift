@@ -99,7 +99,9 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         self.view.addSubview(waitIndicator)
         self.view.userInteractionEnabled = false
         
-        httpController.onSearchMoneyList(HttpController.apiMoneyList())
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let shopId = defaults.objectForKey("shopId") as String
+        httpController.onSearchMoneyList(HttpController.apiMoneyList(shopId))
     }
     
     // MARK: - UITableViewDelegate UITableViewDataSource
@@ -205,7 +207,7 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         if result["error"] == nil {
             
-            topupSuccessAlertView = UIAlertView(title: "充值成功", message: "", delegate: self, cancelButtonTitle: "取消")
+            topupSuccessAlertView = UIAlertView(title: "充值成功", message: "", delegate: self, cancelButtonTitle: "确定")
             topupSuccessAlertView?.show()
         } else {
             let alert = UIAlertView(title: error, message: "", delegate: nil, cancelButtonTitle: "确定")

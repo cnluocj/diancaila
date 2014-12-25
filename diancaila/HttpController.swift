@@ -42,14 +42,16 @@ import Foundation
     
     optional func didReceiveMoneyList(result: NSDictionary)
     
+    optional func didReceiveCheckoutType(result: NSDictionary)
+    
 }
 
 class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-//return "http://114.215.105.93/"
-return "http://dclweixin.diancai.la/"
+return "http://114.215.105.93/"
+//return "http://dclweixin.diancai.la/"
     }
     
     class func apiLogin() -> String {
@@ -104,8 +106,9 @@ return "http://dclweixin.diancai.la/"
         return path + "order/re_order_detail?oid="
     }
     
-    class func apiSettle(#orderId: String, price: Int) -> String {
-        return path + "order/checkout_order?oid=" + orderId + "&earn=" + "\(price)"
+    // post --现金支付 order_id checkout_id earn
+    class func apiCheckout() -> String {
+        return path + "order/checkout_order"
     }
     
     class func apiAddFood() -> String {
@@ -131,18 +134,21 @@ return "http://dclweixin.diancai.la/"
         return path + "recharge/charge"
     }
     
+    // get
     class func apiTodayCount(shop_id: String) -> String {
         return path + "order/today_count?clerk_shop_id=\(shop_id)"
     }
     
-    class func apiCheckoutType() -> String {
-        return path + "order/checkout_type?clerk_shop_id=1"
+    class func apiCheckoutType(shopId: String) -> String {
+        return path + "order/checkout_type?clerk_shop_id=\(shopId)"
     }
     
-    class func apiMoneyList() -> String {
-        return path + "recharge/return_charge_money"
+    // get
+    class func apiMoneyList(shopId: String) -> String {
+        return path + "recharge/return_charge_money?clerk_shop_id=\(shopId)"
     }
     
+    // post
     class func apiBecomeVip() -> String {
         return path + "recharge/to_be_vipmember"
     }
@@ -158,7 +164,6 @@ return "http://dclweixin.diancai.la/"
         var request = NSMutableURLRequest(URL: nsUrl)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.HTTPMethod = "POST"
-//        request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding)
         var data = NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
         request.HTTPBody = data
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
@@ -214,6 +219,22 @@ return "http://dclweixin.diancai.la/"
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
                 self.deletage?.didReceiveResults3!(jsonResult)
+            }
+        }
+    }
+    
+    func onSearchCheckoutType(url: String) {
+        println(url)
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+//                        println(string)
+//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                self.deletage?.didReceiveCheckoutType!(jsonResult)
             }
         }
     }

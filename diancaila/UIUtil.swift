@@ -125,4 +125,17 @@ class UIUtil {
         return waitIndicator
     }
     
+    class func waitView() -> UIView {
+        let waitView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
+        waitView.backgroundColor = UIUtil.gray_system
+        
+        let indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
+        indicator.layer.position = CGPoint(x: UIUtil.screenWidth/2, y: UIUtil.screenHeight/3)
+        indicator.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        indicator.startAnimating()
+        waitView.addSubview(indicator)
+        
+        return waitView
+    }
+    
 }
