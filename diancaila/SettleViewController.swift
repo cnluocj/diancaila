@@ -12,7 +12,7 @@ protocol SettleViewControllerDeletage {
     func didSettle()
 }
 
-class SettleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, HttpProtocol, UIAlertViewDelegate {
+class SettleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, HttpProtocol, UIAlertViewDelegate, UITextFieldDelegate {
     
     var contentView: UIView!
     
@@ -28,15 +28,21 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     var checkUserInfoAndCheckoutAlertView: UIAlertView?
     
+    var sureCheckoutAlertVeiw: UIAlertView?
+    
     var orderId: String!
     
     var vipPrice: Double!
+    
+    var vipMoneyNotEnough = false
     
     let httpController = HttpController()
     
     var deletage: SettleViewControllerDeletage?
     
     var waitState = 0 // 用于判断 会员卡支付状态 0是第一次传，需要接收用户信息， 1是第二次确认能支付后传给服务器
+    
+    var vipInfo: NSDictionary?
     
     // tableview 数据源
     var checkoutType = [NSDictionary]()
@@ -50,32 +56,15 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         
         self.view.backgroundColor = UIUtil.gray_system
         
-        let navBar = UINavigationBar(frame: CGRectMake(0, 0, UIUtil.screenWidth, 44 + UIUtil.statusHeight))
-        navBar.backgroundColor = UIUtil.navColor
+        self.title = "结账"
         
-        //22为iphone状态栏高度
-        let navImage = UIUtil.imageFromColor(UIUtil.screenWidth, height: 44 + UIUtil.statusHeight, color: UIUtil.navColor)
-        // 改变背景颜色，使用生成的纯色图片
-        navBar.setBackgroundImage(navImage, forBarMetrics: UIBarMetrics.Default)
-        // 主体是否从顶部开始
-        navBar.translucent = false
-        // 改变title颜色
-        navBar.titleTextAttributes = NSDictionary(object: UIColor.whiteColor(), forKey: NSForegroundColorAttributeName)
-        // 改变导航栏上字体颜色，除了title
-        navBar.tintColor = UIColor.whiteColor()
-        
-        let navitem = UINavigationItem(title: "结账")
         let cancelButton = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressCancelButton:")
         let doneButton = UIBarButtonItem(title: "确定", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressDoneButton:")
-        navitem.setLeftBarButtonItem(cancelButton, animated: false)
-        navitem.setRightBarButtonItem(doneButton, animated: false)
         
-        navBar.pushNavigationItem(navitem, animated: false)
+        self.navigationItem.leftBarButtonItem = cancelButton
+        self.navigationItem.rightBarButtonItem = doneButton
         
-        self.view.addSubview(navBar)
-        
-        
-        contentView = UIView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
+        contentView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
         self.view.addSubview(contentView)
         
         tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
@@ -84,6 +73,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         contentView.addSubview(tableView)
         
         contentView.addSubview(waitView)
+        
         loadCheckoutType()
     }
     
@@ -95,10 +85,12 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func didPressCancelButton(sender: UIBarButtonItem) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.navigationController?.popViewControllerAnimated(true)
     }
     
     func didPressDoneButton(sender: UIBarButtonItem) {
+        textField.resignFirstResponder()
+        
         
         let text = NSString(string: textField.text)
         
@@ -109,7 +101,9 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
 
         } else {
             
-            postCheckoutInfo()
+            let checkoutTypeTitle = checkoutType[selectedCheckoutTypeIndex].objectForKey("c_name") as String
+            sureCheckoutAlertVeiw = UIAlertView(title: "是否用 \(checkoutTypeTitle) 方式支付此账单", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确认")
+            sureCheckoutAlertVeiw?.show()
             
         }
         
@@ -122,7 +116,6 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
         jsonDic["order_id"] = orderId
         jsonDic["wait"] = waitState
-        println(jsonDic)
         httpController.post(HttpController.apiCheckout(), json: jsonDic)
         
         waitIndicator.startAnimating()
@@ -157,9 +150,9 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         } else if indexPath.section == 1 {
             if indexPath.row == 0 {
                 textField = UITextField(frame: CGRectMake(15, 3, UIUtil.screenWidth - 30, cell.frame.height - 6))
+                textField.delegate = self
                 textField.borderStyle = UITextBorderStyle.RoundedRect
                 textField.keyboardType = UIKeyboardType.NumberPad
-                textField.becomeFirstResponder()
                 cell.addSubview(textField)
             }
         }
@@ -223,16 +216,18 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         
         let error = result["error"] as? String
         if error == nil {
-            let userInfo = result["user_info"] as? NSDictionary
             
-            if userInfo == nil {
+            vipInfo = result["user_info"] as? NSDictionary
+            println(vipInfo)
+            
+            if vipInfo == nil {
                 checkoutSuccessAlertView = UIAlertView(title: "消费成功", message: "", delegate: self, cancelButtonTitle: "确定")
                 checkoutSuccessAlertView?.show()
             } else {
-                let name = userInfo?.objectForKey("name") as String
-                let id = userInfo?.objectForKey("id") as String
-                let moneyString = userInfo?.objectForKey("money") as? NSString
-                let money2String = userInfo?.objectForKey("money2") as? NSString
+                let name = vipInfo?.objectForKey("name") as String
+                let id = vipInfo?.objectForKey("id") as String
+                let moneyString = vipInfo?.objectForKey("money") as? NSString
+                let money2String = vipInfo?.objectForKey("money2") as? NSString
                 
                 if moneyString == nil {
                     let message = "\(name) \n未开卡"
@@ -247,8 +242,11 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                         checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
                         checkUserInfoAndCheckoutAlertView?.show()
                     } else {
+                        vipMoneyNotEnough = true
+                        
                         let message = "\(name) \n余额: \(money!) \n返现: \(money2!)"
-                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: nil, cancelButtonTitle: "余额不足请充值")
+//                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "余额不足请充值")
+                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "余额不足请充值")
                         checkUserInfoAndCheckoutAlertView?.show()
                     }
                 }
@@ -269,18 +267,61 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         if alertView == checkoutSuccessAlertView {
             if buttonIndex == 0 {
                 
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.navigationController?.popViewControllerAnimated(true)
                 deletage?.didSettle()
                 
             }
         } else if alertView == checkUserInfoAndCheckoutAlertView {
-            if buttonIndex == 1 {
-                waitState = 1
-                postCheckoutInfo()
+            if vipMoneyNotEnough {
+                if buttonIndex == 1 {
+                    let vc = VipDetailViewController()
+                    vc.vipInfo = vipInfo
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+                
             } else {
-                waitState = 0
+                if buttonIndex == 1 {
+                    waitState = 1
+                    postCheckoutInfo()
+                } else {
+                    waitState = 0
+                }
+            }
+            
+        } else if alertView == sureCheckoutAlertVeiw {
+            if buttonIndex == 1 {
+                postCheckoutInfo()
             }
         }
+    }
+    
+    // MARK: - UITextFieldDelegate
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+        let board = UIButton(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
+        board.addTarget(self, action: "keyboardHide:", forControlEvents: UIControlEvents.TouchUpInside)
+        board.backgroundColor = UIColor.clearColor()
+        self.contentView.addSubview(board)
+        
+        
+        UIView.animateWithDuration(0.2, animations: { () -> Void in
+            self.contentView.transform = CGAffineTransformMakeTranslation(0, -100)
+        })
+        
+        
+        return true
+    }
+    
+    func textFieldShouldEndEditing(textField: UITextField) -> Bool {
+        UIView.animateWithDuration(0.2, animations: { () -> Void in
+            self.contentView.transform = CGAffineTransformMakeTranslation(0, 0)
+        })
+        
+        return true
+    }
+    
+    func keyboardHide(sender: UIButton) {
+        textField.resignFirstResponder()
+        sender.removeFromSuperview()
     }
 
     /*

@@ -9,20 +9,21 @@
 import Foundation
 
 class Menu: NSObject {
-    let id: String = ""
-    let name: String = ""
-    let desc: String = ""
-    let cover: String = ""
-    let price: Double = 0
-    let vipPrice: Double = 0
-    let typeId: String = ""
-    let shopId: String = ""
-    let pubDate: String = ""
+    let id = ""
+    let name = ""
+    let desc = ""
+    let cover = ""
+    let price = 0.0
+    let vipPrice = 0.0
+    let typeId = ""
+    let shopId = ""
+    let pubDate = ""
+    let isActivity = false
     
     // 在列表中的位置，搜索时候用
     var index = 0
     
-    init(id: String, name: String, description: String, cover: String, price: Double, vipPrice: Double, typeId: String, shopId: String, pubDate: String) {
+    init(id: String, name: String, description: String, cover: String, price: Double, vipPrice: Double, typeId: String, shopId: String, pubDate: String, isActivity: Bool) {
         self.id = id
         self.name = name
         self.desc = description
@@ -32,6 +33,7 @@ class Menu: NSObject {
         self.typeId = typeId
         self.shopId = shopId
         self.pubDate = pubDate
+        self.isActivity = isActivity
     }
     
     init(id: String, name: String) {

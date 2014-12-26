@@ -30,9 +30,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     var changeTableIdPicker: UIPickerView?
     
+    var finishFoodAlert: UIAlertView?
     
-    // 选择需要退多少数量的菜
-    var cancelFoodActionSheet: UIActionSheet?
+    
+    var changeFoodStateActionSheet: UIActionSheet?
     
     var cancelFoodAlert: UIAlertView?
     
@@ -54,11 +55,14 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     // 当前获取
     var truePrice: Double?
     
-    // 数据源
+    // tableview 数据源
     var orderDetail = NSMutableDictionary()
     var orderListDic = NSMutableDictionary()
     var orderListArray = NSMutableArray()
     var expandArray = [Bool]()
+    
+    // 菜品操作 数据源
+    var foodOperateTitles = ["退菜","上菜"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -240,7 +244,8 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         settleVC.orderId = orderId
         settleVC.vipPrice = (orderDetail["vip_totalprice"] as NSString).doubleValue
         settleVC.deletage = self
-        self.navigationController?.presentViewController(settleVC, animated: true, completion: nil)
+//        self.navigationController?.presentViewController(settleVC, animated: true, completion: nil)
+        self.navigationController?.pushViewController(settleVC, animated: true)
     }
     
     
@@ -282,12 +287,21 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }
         } else if alertView == cancelFoodAlert {
             if buttonIndex == 1 {
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: cancelFoodId, stat: 2))
+                httpController.changeFoodState(HttpController.apiChangeFoodState(id: selectedFoodId, stat: 2))
                 
                 self.view.addSubview(waitIndicator)
                 self.view.userInteractionEnabled = false
                 waitIndicator.startAnimating()
                 
+            }
+        } else if alertView == finishFoodAlert {
+            if buttonIndex == 1 {
+                
+                httpController.changeFoodState(HttpController.apiChangeFoodState(id: selectedFoodId,stat: 1))
+                
+                self.view.addSubview(waitIndicator)
+                self.view.userInteractionEnabled = false
+                waitIndicator.startAnimating()
             }
         }
         
@@ -306,12 +320,6 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             changeTableIdAlert = UIAlertView(title: tit, message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确认")
             changeTableIdAlert!.show()
             
-        } else if actionSheet == cancelFoodActionSheet {
-            
-            let orderItem = (orderDetail["list"] as NSArray)[selectedOrderItemIndex] as NSDictionary
-            let name = orderItem["dish_name"] as? String
-            cancelFoodAlert = UIAlertView(title: "退 \(name!) \(numOfCancelFood)份", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
-            cancelFoodAlert?.show()
         }
     
     }
@@ -435,7 +443,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     
-    var cancelFoodId = ""
+    var selectedFoodId = ""
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
@@ -459,9 +467,15 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         if truePrice == nil {
-            cancelFoodId = (array.objectAtIndex(indexPath.row) as NSDictionary).objectForKey("id") as String
-            cancelFoodActionSheet = UIActionSheet(title: "选择操作", delegate: self, cancelButtonTitle: "取消", destructiveButtonTitle: "退菜")
-            cancelFoodActionSheet!.showInView(self.view)
+            selectedFoodId = (array.objectAtIndex(indexPath.row) as NSDictionary).objectForKey("id") as String
+            let state = (array.objectAtIndex(indexPath.row) as NSDictionary).objectForKey("state") as String
+            if state == "1" {
+                changeFoodStateActionSheet = UIActionSheet(title: "选择操作", delegate: self, cancelButtonTitle: "取消", destructiveButtonTitle: foodOperateTitles[0])
+                
+            } else {
+                changeFoodStateActionSheet = UIActionSheet(title: "选择操作", delegate: self, cancelButtonTitle: "取消", destructiveButtonTitle: foodOperateTitles[0], otherButtonTitles: foodOperateTitles[1])
+            }
+            changeFoodStateActionSheet!.showInView(self.view)
                 
         }
     }
@@ -477,12 +491,16 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     // MARK: - UIActionSheetDelegate
     func actionSheet(actionSheet: UIActionSheet, clickedButtonAtIndex buttonIndex: Int) {
-        if actionSheet == cancelFoodActionSheet {
+        if actionSheet == changeFoodStateActionSheet {
             if buttonIndex == 0 {
                 
                 cancelFoodAlert = UIAlertView(title: "确定要退菜", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
                 cancelFoodAlert?.show()
                 
+            } else if buttonIndex == 2 {
+                
+                finishFoodAlert = UIAlertView(title: "确定要上菜", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+                finishFoodAlert?.show()
             }
         }
     }

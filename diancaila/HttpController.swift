@@ -50,36 +50,18 @@ class HttpController: NSObject {
     var deletage: HttpProtocol?
     
     class var path: String {
-return "http://114.215.105.93/"
-//return "http://dclweixin.diancai.la/"
+//return "http://114.215.105.93/"
+return "http://dclweixin.diancai.la/"
     }
     
-    class func apiLogin() -> String {
-        return path + "user/login"
-    }
-    
-    class func apiRegister() -> String {
-        return path + "user/register"
-    }
-    
+    // get ------------------------------
     class func apiMenuType(shopId: String) -> String {
         return path + "welcome/typeapi?clerk_shop_id=\(shopId)"
     }
     
-    
     class func apiMenu(typeId:String, shopId: String) -> String {
         return path + "welcome/dishapi?id=\(typeId)&clerk_shop_id=\(shopId)"
     }
-    
-    
-    class var apiSubmitOrder: String {
-//        return path + "order/add_or?order="
-        return path + "order/add_or"
-    }
-    
-//    class var apiWaitMenu: String {
-//        return path + "order/re_all_ios"
-//    }
     
     class func apiWaitMenu(shopId: String) -> String {
         return path + "order/re_all_ios?clerk_shop_id=\(shopId)"
@@ -87,13 +69,9 @@ return "http://114.215.105.93/"
     
     // stat 上菜 1 ，退菜 2
     class func apiChangeFoodState(#id: String, stat: Int) -> String {
-        
         return path + "order/change_state?id=" + id + "&stat=" + "\(stat)"
     }
     
-//    class var apiNotPayOrder: String {
-//        return path + "order/re_orders_ios"
-//    }
     class func apiNotPayOrder(shopId: String) -> String {
         return path + "order/re_orders_ios?clerk_shop_id=\(shopId)"
     }
@@ -106,35 +84,14 @@ return "http://114.215.105.93/"
         return path + "order/re_order_detail?oid="
     }
     
-    // post --现金支付 order_id checkout_id earn
-    class func apiCheckout() -> String {
-        return path + "order/checkout_order"
-    }
-    
-    class func apiAddFood() -> String {
-        return path + "order/add_order_dish"
-    }
-    
     class func apiChangeTableId(orderId: String, tableId: Int) -> String {
         return path + "order/change_table_id?oid=\(orderId)&tableid=\(tableId)"
     }
-    
     
     class func apiCancelOrder(orderId: String) -> String {
         return path + "order/cancel_order?oid=\(orderId)"
     }
     
-    // post方式  value: phone
-    class func apiUserInfo() -> String {
-        return path + "recharge/return_info"
-    }
-    
-    // post value: id mid money action
-    class func apiCharge() -> String {
-        return path + "recharge/charge"
-    }
-    
-    // get
     class func apiTodayCount(shop_id: String) -> String {
         return path + "order/today_count?clerk_shop_id=\(shop_id)"
     }
@@ -143,12 +100,42 @@ return "http://114.215.105.93/"
         return path + "order/checkout_type?clerk_shop_id=\(shopId)"
     }
     
-    // get
     class func apiMoneyList(shopId: String) -> String {
         return path + "recharge/return_charge_money?clerk_shop_id=\(shopId)"
     }
     
-    // post
+    // post -----------------------------
+    class func apiLogin() -> String {
+        return path + "user/login"
+    }
+    
+    class func apiRegister() -> String {
+        return path + "user/register"
+    }
+    
+    class var apiSubmitOrder: String {
+        return path + "order/add_or"
+    }
+    
+    // --现金支付 order_id checkout_id earn
+    class func apiCheckout() -> String {
+        return path + "order/checkout_order"
+    }
+    
+    class func apiAddFood() -> String {
+        return path + "order/add_order_dish"
+    }
+    
+    // value: phone
+    class func apiUserInfo() -> String {
+        return path + "recharge/return_info"
+    }
+    
+    // id mid money action
+    class func apiCharge() -> String {
+        return path + "recharge/charge"
+    }
+    
     class func apiBecomeVip() -> String {
         return path + "recharge/to_be_vipmember"
     }
@@ -168,9 +155,9 @@ return "http://114.215.105.93/"
         request.HTTPBody = data
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//                        println(string)
-//                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             if error == nil {
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
@@ -224,7 +211,6 @@ return "http://114.215.105.93/"
     }
     
     func onSearchCheckoutType(url: String) {
-        println(url)
         var nsUrl: NSURL! = NSURL(string: url)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (

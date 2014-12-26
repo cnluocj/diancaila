@@ -22,9 +22,11 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
     
     var waitIndicator = UIUtil.waitIndicator()
     
+    var isVip = true
+    
+    // 外面传入
     var vipInfo: NSDictionary?
     
-    var isVip = true
     
     // tableview数据源
     var data = [["会员", "余额", "返现"], ["充值"], ["消费"]]
@@ -42,11 +44,12 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         httpController.deletage = self
         
-        self.title = "会员信息"
+//        self.title = "会员信息"
         
         self.view.backgroundColor = UIUtil.gray_system
         
-        println(vipInfo)
+        println("--------\(vipInfo)")
+        
         
         let name = vipInfo?.objectForKey("name") as String
         let money: String? = vipInfo?.objectForKey("money") as? String
@@ -67,6 +70,15 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         tableView.dataSource = self
         
         self.view.addSubview(tableView)
+        
+    }
+    
+    func cancelButtonDidPressed(sender: UIBarButtonItem) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func doneButtonDidPressed(sender: UIBarButtonItem) {
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
 
     func gotoInputMoneyVC(actionType: InputMoneyActionType, actionTilte: String, url: String) {

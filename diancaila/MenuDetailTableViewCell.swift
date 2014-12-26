@@ -18,8 +18,6 @@ class MenuDetailTableViewCell: UITableViewCell {
     // badge变化前的数
     var preNum = 0.0
     
-    let context = UIGraphicsGetCurrentContext()
-    let PI = CGFloat(3.1415926)
     
     var menuStyleIndex: Int!
     var menuIndex: Int!
@@ -44,6 +42,17 @@ class MenuDetailTableViewCell: UITableViewCell {
         superTableView = _superTableView
         
         
+        if menu.isActivity {
+            let activityLabel = UILabel(frame: CGRectMake(0, 0, superTableView.frame.width, viewcontroller.menuDetailCellHeight))
+            activityLabel.text = "活动中"
+            activityLabel.backgroundColor = UIUtil.gray_system
+            activityLabel.textColor = UIColor.whiteColor()
+            activityLabel.font = UIFont.boldSystemFontOfSize(50)
+            activityLabel.textAlignment = NSTextAlignment.Center
+            self.contentView.addSubview(activityLabel)
+        }
+        
+        
         
         nameLabel = UILabel(frame: CGRectMake(15, 0, UIUtil.screenWidth/7*5-20, 50))
         nameLabel.numberOfLines = 0
@@ -53,7 +62,7 @@ class MenuDetailTableViewCell: UITableViewCell {
         priceLabel.textColor = UIColor.orangeColor()
         self.contentView.addSubview(priceLabel)
         
-        // 如果大于300，就是弹出的全部菜单
+        // 如果大于300，就是弹出 点菜清单 的 界面
         if (self.superTableView.frame.width > 300) {
             self.steper = CustomStepper(frame: CGRectMake(self.superTableView.frame.width/7*5, 50, self.superTableView.frame.width/3, 50))
             self.badge = UIButton(frame: CGRectMake(UIUtil.screenWidth - 50, 10, 25, 25))

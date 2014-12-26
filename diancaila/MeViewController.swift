@@ -32,7 +32,7 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         }
         
 
-        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight), style: UITableViewStyle.Grouped)
+        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
         tableView.delegate = self
         tableView.dataSource = self
         

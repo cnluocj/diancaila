@@ -74,12 +74,17 @@ class JSONController : NSObject {
             let typeId: String = menu.objectForKey("dish_type_id") as String
 //            let cover: String = menu.objectForKey("dish_cover") as String
             let cover = ""
-            let price: Double = (menu.objectForKey("dish_origin_price") as NSString).doubleValue
-            let vipPrice: Double = (menu.objectForKey("dish_user_price") as NSString).doubleValue
-            let shopId: String = menu.objectForKey("dish_shop_id") as NSString
-            let pubDate: String = menu.objectForKey("dish_time") as NSString
+            let price = (menu.objectForKey("dish_origin_price") as NSString).doubleValue
+            let vipPrice = (menu.objectForKey("dish_user_price") as NSString).doubleValue
+            let shopId = menu.objectForKey("dish_shop_id") as NSString
+            let pubDate = menu.objectForKey("dish_time") as NSString
+            let activity = menu.objectForKey("on_activity") as NSString
+            var isActivity = false
+            if activity == "1" {
+                isActivity = true
+            }
             
-            let menu: Menu = Menu(id: id, name: name, description: description, cover: cover, price: price, vipPrice: vipPrice, typeId: typeId, shopId: shopId, pubDate: pubDate)
+            let menu: Menu = Menu(id: id, name: name, description: description, cover: cover, price: price, vipPrice: vipPrice, typeId: typeId, shopId: shopId, pubDate: pubDate, isActivity: isActivity)
             menuArray.addObject(menu)
         }
         

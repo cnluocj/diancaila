@@ -114,6 +114,7 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
                 jsonDic["money"] = textField.text
                 let defaults = NSUserDefaults.standardUserDefaults()
                 jsonDic["mid"] = defaults.objectForKey("userId") as String
+                jsonDic["clerk_shop_id"] = defaults.objectForKey("shopId") as String
                 httpController.post(postUrl!, json: jsonDic)
             }
             
