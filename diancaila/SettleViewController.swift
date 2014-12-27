@@ -48,6 +48,9 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     var checkoutType = [NSDictionary]()
     var selectedCheckoutTypeIndex = 0
     var selectedCheckoutTypeArray = [Bool]()
+    
+    // http id
+    let httpIdWithCheckoutType = "CheckoutType"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +84,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     func loadCheckoutType() {
         let defaults = NSUserDefaults.standardUserDefaults()
         let shopId = defaults.objectForKey("shopId") as String
-        httpController.onSearchCheckoutType(HttpController.apiCheckoutType(shopId))
+        httpController.getWithUrl(HttpController.apiCheckoutType(shopId), forIndentifier: httpIdWithCheckoutType)
     }
     
     func didPressCancelButton(sender: UIBarButtonItem) {

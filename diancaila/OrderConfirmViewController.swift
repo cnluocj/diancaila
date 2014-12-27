@@ -63,6 +63,8 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     var jsonController = JSONController()
     
     var delegate: OrderConfirmViewControllerDelegate?
+    
+    let httpIdWithSubmitOrder = "submitOrderId"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,7 +185,8 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
         jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
         jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-        ehttp.submitOrder(HttpController.apiSubmitOrder, json: jsonStr!)
+        
+        ehttp.postWithUrl(HttpController.apiSubmitOrder, andJson: jsonDic, forIdentifier: httpIdWithSubmitOrder)
     }
     
     
@@ -407,8 +410,13 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     // HttpProtocol
-    func didReceiveOrderId(result: NSDictionary) {
-        jsonController.parseOrderId(result)
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithSubmitOrder:
+            jsonController.parseOrderId(result)
+        default:
+            return
+        }
     }
     
     // JSONProtocol

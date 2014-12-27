@@ -80,6 +80,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var orderId: String?
     var delegate: OrderViewControllerDeletage?
     
+    
+    // http id
+    let httpIdWithMenuType = "MenuType"
+    let httpIdWithAddFood = "AddFood"
+    let httpIdWithMenu = "Menu"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -100,7 +106,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         shopId = defaults.objectForKey("shopId") as String
         
         // 获取数据
-        httpController.onSearchMenuType(HttpController.apiMenuType(shopId))
+        httpController.getWithUrl(HttpController.apiMenuType(shopId), forIndentifier: httpIdWithMenuType)
         httpController.deletage = self
         jsonController.parseDelegate = self
         
@@ -261,11 +267,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
             jsonDic["dish_list"] = dishList
             
-            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
-            var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
-            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
-            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-            httpController.submitOrder(HttpController.apiAddFood(), json: jsonStr!)
+//            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+//            var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
+//            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
+//            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
+            httpController.postWithUrl(HttpController.apiAddFood(), andJson: jsonDic, forIdentifier: httpIdWithAddFood)
             
         }
     }
@@ -317,28 +323,26 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     
-    // HttpProtocol
-    func didReceiveMenuTypeResults(result: NSDictionary) {
-        
-        jsonController.parseMenuType(result)
+    // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+            
+        case httpIdWithMenuType:
+            jsonController.parseMenuType(result)
+            
+        case httpIdWithMenu:
+            jsonController.parseMenu(result)
+            
+        case httpIdWithAddFood:
+            delegate?.didAddFood!()
+            self.navigationController?.popViewControllerAnimated(false)
+            
+        default:
+            return
+        }
     }
     
-    
-    func didReceiveMenuResults(result: NSDictionary) {
-        jsonController.parseMenu(result)
-    }
-    
-    // 加菜成功
-    func didReceiveOrderId(result: NSDictionary) {
-        
-        delegate?.didAddFood!()
-        
-        self.navigationController?.popViewControllerAnimated(false)
-    }
-    
-    
-    
-    // JSONParseProtocol 相关
+    // MARK: - JSONParseProtocol
     func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray) {
         
         self.menuTypeArray = menuTypeArray ?? NSArray()
@@ -354,7 +358,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 根据获取的type id 继续获取菜单
         for menuType in self.menuTypeArray {
             let type = menuType as MenuType
-            httpController.onSearchMenu(HttpController.apiMenu(type.id, shopId: shopId))
+            httpController.getWithUrl(HttpController.apiMenu(type.id, shopId: shopId), forIndentifier: httpIdWithMenu)
             
         }
         if self.menuTypeArray.count > 0 {

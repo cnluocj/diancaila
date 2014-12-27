@@ -64,6 +64,12 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     // 菜品操作 数据源
     var foodOperateTitles = ["退菜","上菜"]
     
+    // http id
+    let httpIdWithOrderDetail = "OrderDetail"
+    let httpIdWithChangeTableId = "ChangeTableId"
+    let httpIdWithCancelOrder = "CancelOrder"
+    let httpIdWithChangeFoodState = "ChangeFoodState"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -261,7 +267,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         orderListDic.removeAllObjects()
         expandArray.removeAll(keepCapacity: false)
         
-        httpController.onSearchOrderDetailById(orderId, url: HttpController.apiOrderDetail())
+        httpController.getWithUrl(HttpController.apiOrderDetail(orderId), forIndentifier: httpIdWithOrderDetail)
     }
     
     
@@ -270,7 +276,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         if alertView == changeTableIdAlert {
             if buttonIndex == 1 {
-                httpController.changeTableId(HttpController.apiChangeTableId(orderId, tableId: changeTableId))
+                httpController.getWithUrl(HttpController.apiChangeTableId(orderId, tableId: changeTableId), forIndentifier: httpIdWithChangeTableId)
                 
                 
                 self.view.addSubview(waitIndicator)
@@ -279,7 +285,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }    
         } else if alertView == cancelOrderAlert {
             if buttonIndex == 1 {
-                httpController.cancelOrder(HttpController.apiCancelOrder(orderId))
+                httpController.getWithUrl(HttpController.apiCancelOrder(orderId), forIndentifier: httpIdWithCancelOrder)
                 
                 self.view.addSubview(waitIndicator)
                 self.view.userInteractionEnabled = false
@@ -287,7 +293,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }
         } else if alertView == cancelFoodAlert {
             if buttonIndex == 1 {
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: selectedFoodId, stat: 2))
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: selectedFoodId, stat: 2), forIndentifier: httpIdWithChangeFoodState)
                 
                 self.view.addSubview(waitIndicator)
                 self.view.userInteractionEnabled = false
@@ -297,7 +303,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         } else if alertView == finishFoodAlert {
             if buttonIndex == 1 {
                 
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: selectedFoodId,stat: 1))
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: selectedFoodId, stat: 1), forIndentifier: httpIdWithChangeFoodState)
                 
                 self.view.addSubview(waitIndicator)
                 self.view.userInteractionEnabled = false
@@ -506,9 +512,25 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     
-    // MARK: HttpProtocol
-    func didReceiveOrderDetail(result: NSMutableDictionary) {
-        orderDetail = result
+    // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithOrderDetail:
+            didReceiveOrderDetail(result)
+        case httpIdWithChangeTableId:
+            didReceiveChangeTableIdState(result)
+        case httpIdWithCancelOrder:
+            didReceiveCancelOrderState(result)
+        case httpIdWithChangeFoodState:
+            didReceiveChangeFoodState(result)
+        default:
+            return
+        }
+    }
+    
+    // 重构前 接口
+    func didReceiveOrderDetail(result: NSDictionary) {
+        orderDetail =  NSMutableDictionary(dictionary: result)
         
         waitIndicator.stopAnimating()
         waitIndicator.removeFromSuperview()
@@ -544,7 +566,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         orderListTableView.reloadData()
     }
     
-    func didReceiveChangeTableIdState(result: NSMutableDictionary) {
+    func didReceiveChangeTableIdState(result: NSDictionary) {
         if result["error"] == nil {
             waitIndicator.stopAnimating()
             self.view.userInteractionEnabled = true
@@ -558,7 +580,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         }
     }
     
-    func didReceiveCancelOrderState(result: NSMutableDictionary) {
+    func didReceiveCancelOrderState(result: NSDictionary) {
         if result["error"] == nil {
             self.navigationController?.popViewControllerAnimated(true)
         }

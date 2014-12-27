@@ -62,6 +62,13 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     let httpController = HttpController()
     let jsonController = JSONController()
     
+    // http id
+    let httpIdWithChangeFoodState = "ChangeFoodState"
+    let httpIdWithWaitMenu = "WaitMenu"
+    let httpIdWithNotPayOrder = "NotPayOrder"
+    let httpIdWithDidPayOrder = "DidPayOrder"
+    let httpIdWithTodayCount = "TodayCount"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "订单"
@@ -239,7 +246,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             // 先把服务器那边的状态改了，再改本地
             for key in selectedItem.keys {
                 let orderItem = orderList.objectAtIndex(key) as Order
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: orderItem.id, stat: 1))
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderItem.id, stat: 1), forIndentifier: httpIdWithChangeFoodState)
             }
             
             // todo 服务器传回数据后，再对表进行修改
@@ -292,7 +299,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         numOfDidSelected = 0
         selectedItem.removeAll(keepCapacity: false)
         
-        httpController.onSearchWaitMenu(HttpController.apiWaitMenu(user.shopId))
+        httpController.getWithUrl(HttpController.apiWaitMenu(user.shopId), forIndentifier: httpIdWithWaitMenu)
 
     }
     
@@ -302,7 +309,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         // 取数据前，清空数据
         notPayOrders.removeAllObjects()
         
-        httpController.onSearchDidNotPayOrder(HttpController.apiNotPayOrder(user.shopId))
+        httpController.getWithUrl(HttpController.apiNotPayOrder(user.shopId), forIndentifier: httpIdWithNotPayOrder)
         
     }
     
@@ -310,11 +317,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     func loadAllOrder() {
         waitIndicator.startAnimating()
         
-        httpController.onSearchDidPayOrder(HttpController.apiDidPayOrder(user.shopId))
+        httpController.getWithUrl(HttpController.apiDidPayOrder(user.shopId), forIndentifier: httpIdWithDidPayOrder)
         
         let defaults = NSUserDefaults.standardUserDefaults()
         let shopId = defaults.objectForKey("shopId") as String
-        httpController.onSearchTodayCount(HttpController.apiTodayCount(shopId))
+        httpController.getWithUrl(HttpController.apiTodayCount(shopId), forIndentifier: httpIdWithTodayCount)
     }
     
     
@@ -366,33 +373,34 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     // MARK: - HttpProtocol
-    func didReceiveWaitMenu(result: NSDictionary) {
-        jsonController.parseWaitMenu(result)
-    }
-    
-    func didReceiveDidNotPayOrder(result: NSDictionary) {
-        jsonController.parseDidNotPayOrder(result)
-    }
-    
-    func didReceiveDidPayOrder(result: NSDictionary) {
-        jsonController.parseDidPayOrder(result)
-    }
-    
-    func didReceiveChangeFoodState(result: NSDictionary) {
-        // todo 返回结果前应该显示loading
-        println("change food state success")
-    }
-    
-    func didReceiveTodayCount(result: NSDictionary) {
-        if result["error"] == nil {
-            let data = result["result"] as NSDictionary
-            let money = data["earncount"] as? String
-            moneyLabel.text = "今天营业额为: ¥ \(money!)"
-        } else {
-            moneyLabel.text = "null"
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithWaitMenu:
+            jsonController.parseWaitMenu(result)
+            
+        case httpIdWithNotPayOrder:
+            jsonController.parseDidNotPayOrder(result)
+            
+        case httpIdWithDidPayOrder:
+            jsonController.parseDidPayOrder(result)
+            
+        case httpIdWithChangeFoodState:
+            // todo 返回结果前应该显示loading
+            println("change food state success")
+            
+        case httpIdWithTodayCount:
+            if result["error"] == nil {
+                let data = result["result"] as NSDictionary
+                let money = data["earncount"] as? String
+                moneyLabel.text = "今天营业额为: ¥ \(money!)"
+            } else {
+                moneyLabel.text = "null"
+            }
+            
+        default:
+            return
         }
     }
-    
 
     
     // MARK: - UITableView data source / UITableView Deletage
@@ -605,7 +613,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 foodMoreStateAlert = UIAlertView(title: "更多", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "退菜")
                 foodMoreStateAlert.show()
             case 1:
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1))
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1), forIndentifier: httpIdWithChangeFoodState)
                 orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
                 
                 didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
@@ -617,7 +625,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             
             switch buttonIndex {
             case 1:
-                httpController.changeFoodState(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2))
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2), forIndentifier: httpIdWithChangeFoodState)
                 orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
                 
                 didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
