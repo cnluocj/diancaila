@@ -33,6 +33,9 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
     
     var successAlert: UIAlertView?
     
+    // http id
+    var httpIdWithCharge = "Charge"
+    
     // 外面传进来
     var actionType = InputMoneyActionType.plus //  + 充值 - 付账
     var actionTitle: String?
@@ -115,7 +118,7 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
                 let defaults = NSUserDefaults.standardUserDefaults()
                 jsonDic["mid"] = defaults.objectForKey("userId") as String
                 jsonDic["clerk_shop_id"] = defaults.objectForKey("shopId") as String
-                httpController.post(postUrl!, json: jsonDic)
+                httpController.postWithUrl(postUrl!, andJson: jsonDic, forIdentifier: httpIdWithCharge)
             }
             
         } else if alertView == successAlert {
@@ -131,6 +134,15 @@ class InputMoneyViewController: UIViewController, HttpProtocol, UIAlertViewDeleg
     }
     
     // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithCharge:
+            didReceiveResults(result)
+        default:
+            return
+        }
+    }
+    
     func didReceiveResults(result: NSDictionary) {
         let error: String? = result["error"] as? String
         if error == nil {

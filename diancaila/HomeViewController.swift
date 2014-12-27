@@ -32,6 +32,9 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
     
     var jsonController = JSONController()
     
+    // http id 
+    let httpIdWithLogin = "Login"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -46,9 +49,9 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
             var jsonDic = [String:String]()
             jsonDic["name"] = account
             jsonDic["pwd"] = pwd
-            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+//            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
             
-            httpController.post(HttpController.apiLogin(), json: jsonDic)
+            httpController.postWithUrl(HttpController.apiLogin(), andJson: jsonDic, forIdentifier: httpIdWithLogin)
             httpController.deletage = self
             jsonController.parseDelegate = self
         
@@ -110,6 +113,16 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
         meViewController.setUser(user)
     }
     
+    
+    // HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithLogin:
+            didReceiveResults(result)
+        default:
+            return
+        }
+    }
     
     func didReceiveResults(result: NSDictionary) {
         jsonController.parseUserInfo(result)

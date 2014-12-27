@@ -27,6 +27,9 @@ class VipNumInputModelViewController: UIViewController, UITextFieldDelegate, Htt
     let tfWidth = UIUtil.screenWidth / 11
     
     let httpController = HttpController()
+    
+    // http id 
+    let httpIdWithUserInfo = "UserInfo"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,7 +107,7 @@ class VipNumInputModelViewController: UIViewController, UITextFieldDelegate, Htt
                 let dic = NSMutableDictionary()
                 dic["phone"] = phone()
                 
-                httpController.post(HttpController.apiUserInfo(), json: dic)
+                httpController.postWithUrl(HttpController.apiUserInfo(), andJson: dic, forIdentifier: httpIdWithUserInfo)
                 
                 return false
             }
@@ -122,6 +125,15 @@ class VipNumInputModelViewController: UIViewController, UITextFieldDelegate, Htt
     
     
     // MARK: HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithUserInfo:
+            didReceiveResults(result)
+        default:
+            return
+        }
+    }
+    
     func didReceiveResults(result: NSDictionary) {
         
         if result["error"] == nil {

@@ -28,6 +28,8 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
     
     var user: User!
     
+    // http id
+    let httpIdWithLogin = "Login"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,7 +90,7 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         let dic = NSMutableDictionary()
         dic["name"] = accountTF.text
         dic["pwd"] = pwdTF.text
-        httpController.post(HttpController.apiLogin(), json: dic)
+        httpController.postWithUrl(HttpController.apiLogin(), andJson: dic, forIdentifier: httpIdWithLogin)
         
         waitIndicator.startAnimating()
         self.view.addSubview(waitIndicator)
@@ -96,6 +98,15 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
     }
 
     // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithLogin:
+            didReceiveResults(result)
+        default:
+            return
+        }
+    }
+    
     func didReceiveResults(result: NSDictionary) {
         if let error = result["error"] as? String {
             println(error)

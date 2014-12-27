@@ -20,6 +20,9 @@ class RegisterViewController: UIViewController, HttpProtocol {
     var waitIndicator = UIUtil.waitIndicator()
     
     var httpController = HttpController()
+    
+    // http id 
+    let httpIdWithRegister = "Register"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +79,7 @@ class RegisterViewController: UIViewController, HttpProtocol {
         dic["name"] = phoneNumber
         dic["pwd"] = pwd
         dic["realname"] = name
-        httpController.post(HttpController.apiRegister(), json: dic)
+        httpController.postWithUrl(HttpController.apiRegister(), andJson: dic, forIdentifier: httpIdWithRegister)
         
         
         waitIndicator.startAnimating()
@@ -94,6 +97,15 @@ class RegisterViewController: UIViewController, HttpProtocol {
     }
     
     // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithRegister:
+            didReceiveResults(result)
+        default:
+            return
+        }
+    }
+    
     func didReceiveResults(result: NSDictionary) {
         waitIndicator.stopAnimating()
         waitIndicator.removeFromSuperview()

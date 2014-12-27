@@ -36,6 +36,12 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
     // money Picker 数据源
     var moneyList = [String]()
     var selectedMoeny = ""
+    
+    // http id 
+    let httpIdWithUserInfo = "UserInfo"
+    let httpIdWithMoneyList = "MoneyList"
+    let httpIdWithBecomeVip = "BecomeVip"
+    let httpIdWithCharge = "Charge"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,7 +109,7 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         let jsonDic = NSMutableDictionary()
         jsonDic["phone"] = vipInfo?.objectForKey("phone") as String
-        httpController.post(HttpController.apiUserInfo(), json: jsonDic)
+        httpController.postWithUrl(HttpController.apiUserInfo(), andJson: jsonDic, forIdentifier: httpIdWithUserInfo)
     }
     
     func loadMoneyList() {
@@ -113,7 +119,7 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         let defaults = NSUserDefaults.standardUserDefaults()
         let shopId = defaults.objectForKey("shopId") as String
-        httpController.onSearchMoneyList(HttpController.apiMoneyList(shopId))
+        httpController.getWithUrl(HttpController.apiMoneyList(shopId), forIndentifier: httpIdWithMoneyList)
     }
     
     // MARK: - UITableViewDelegate UITableViewDataSource
@@ -163,7 +169,7 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
                     let defaults = NSUserDefaults.standardUserDefaults()
                     dic["clerk_shop_id"] = defaults.objectForKey("shopId") as String
                     dic["id"] = vipInfo?.objectForKey("id") as String
-                    httpController.post3(HttpController.apiBecomeVip(), json: dic)
+                    httpController.postWithUrl(HttpController.apiBecomeVip(), andJson: dic, forIdentifier: httpIdWithBecomeVip)
                     
                     waitIndicator.startAnimating()
                     self.view.addSubview(waitIndicator)
@@ -187,6 +193,21 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithUserInfo:
+            didReceiveResults(result)
+        case httpIdWithCharge:
+            didReceiveResults2(result)
+        case httpIdWithBecomeVip:
+            didReceiveResults3(result)
+        case httpIdWithMoneyList:
+            didReceiveMoneyList(result)
+        default:
+            return
+        }
+    }
+    
     func didReceiveResults(result: NSDictionary) {
         vipInfo = result["user_info"] as? NSDictionary
         
@@ -304,7 +325,7 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
                 jsonDic["money"] = selectedMoeny
                 jsonDic["action"] = "+"
                 
-                httpController.post2(HttpController.apiCharge(), json: jsonDic)
+                httpController.postWithUrl(HttpController.apiCharge(), andJson: jsonDic, forIdentifier: httpIdWithCharge)
                 
                 
                 waitIndicator.startAnimating()

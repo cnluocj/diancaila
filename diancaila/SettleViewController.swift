@@ -51,6 +51,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     // http id
     let httpIdWithCheckoutType = "CheckoutType"
+    let httpIdWithCheckout = "Checkout"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,7 +120,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
         jsonDic["order_id"] = orderId
         jsonDic["wait"] = waitState
-        httpController.post(HttpController.apiCheckout(), json: jsonDic)
+        httpController.postWithUrl(HttpController.apiCheckout(), andJson: jsonDic, forIdentifier: httpIdWithCheckout)
         
         waitIndicator.startAnimating()
         self.contentView.addSubview(waitIndicator)
@@ -191,6 +192,18 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     
     // MARK: - HttpProtocol
+    func httpControllerDidReceiveResult(result: NSDictionary, forIdentifier identifier: String) {
+        switch identifier {
+        case httpIdWithCheckoutType:
+            didReceiveCheckoutType(result)
+        case httpIdWithCheckout:
+            didReceiveResults(result)
+        default:
+            return
+        }
+    }
+    
+    
     func didReceiveCheckoutType(result: NSDictionary) {
         let error = result["error"] as? String
         if error == nil {
