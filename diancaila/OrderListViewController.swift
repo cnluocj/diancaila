@@ -151,28 +151,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         // todo 条件选择按钮组
-//        let choseButtonGroupView = UIView(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, 40))
-//        let dateChoseButton = UIButton(frame: CGRectMake(0, 5, UIUtil.screenWidth/2, 30))
-//        dateChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
-//        dateChoseButton.setTitle("今天", forState: UIControlState.Normal)
-//        dateChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-//        dateChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
-//        dateChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
-//        dateChoseButton.layer.borderWidth = 2
-//        dateChoseButton.layer.cornerRadius = 5
-//        
-//        let deskChoseButton = UIButton(frame: CGRectMake(UIUtil.screenWidth/2, 5, UIUtil.screenWidth/2, 30))
-//        deskChoseButton.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
-//        deskChoseButton.setTitle("全部", forState: UIControlState.Normal)
-//        deskChoseButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-//        deskChoseButton.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Highlighted)
-//        deskChoseButton.layer.borderColor = UIColor.lightGrayColor().CGColor
-//        deskChoseButton.layer.borderWidth = 2
-//        deskChoseButton.layer.cornerRadius = 5
-//        
-//        choseButtonGroupView.addSubview(dateChoseButton)
-//        choseButtonGroupView.addSubview(deskChoseButton)
-//        allOrderView.addSubview(choseButtonGroupView)
+
         
         moneyLabel = UILabel(frame: CGRectMake(0, UIUtil.contentOffset, UIUtil.screenWidth, 50))
         moneyLabel.backgroundColor = UIUtil.navColor
@@ -181,7 +160,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         allOrderView.addSubview(moneyLabel)
         
         
-        allOrderTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset + 50, UIUtil.screenWidth, UIUtil.screenHeight))
+        allOrderTableView = UITableView(frame: CGRectMake(0, UIUtil.contentOffset + 50, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - 50))
         // 如果不加这一条，tableview会向上偏移，与手机顶部对齐
 //        allOrderTableView.contentInset = UIEdgeInsets(top: UIUtil.contentOffset + 50, left: 0, bottom: 0, right: 0)
         allOrderTableView.delegate = self
@@ -476,7 +455,10 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell?.textLabel?.text = "\((allOrder[indexPath.row] as DOrder).deskId)号桌"
                 
             }
-            cell?.detailTextLabel?.text = "\((allOrder[indexPath.row] as DOrder).orderTime)"
+            let date = (allOrder[indexPath.row] as DOrder).orderTime
+            let time = date.componentsSeparatedByString(" ")[1]
+            let earn = (allOrder[indexPath.row] as DOrder).price
+            cell?.detailTextLabel?.text = "¥ \(earn)  |  \(time)"
             
         } else {
             let order: Order = filterData?.objectAtIndex(indexPath.row) as Order

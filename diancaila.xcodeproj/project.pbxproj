@@ -46,6 +46,7 @@
 		4B6E84581A43C921000805DD /* WaiterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6E84571A43C921000805DD /* WaiterViewController.swift */; };
 		4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */; };
 		4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B81A37EEE20051B0F6 /* MeViewController.swift */; };
+		4B94BBAC1A528CA3002352FE /* Voucher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B94BBAB1A528CA3002352FE /* Voucher.swift */; };
 		4B97CCF91A3E8E710097BFA4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B97CCF81A3E8E710097BFA4 /* User.swift */; };
 		4BA7C2711A4801E8005B8722 /* VipDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */; };
 		4BDEC5CA1A3AD6EC001887B6 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */; };
@@ -106,6 +107,7 @@
 		4B6E84571A43C921000805DD /* WaiterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaiterViewController.swift; sourceTree = "<group>"; };
 		4B7561B61A37EEC20051B0F6 /* DiscoverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoverViewController.swift; sourceTree = "<group>"; };
 		4B7561B81A37EEE20051B0F6 /* MeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeViewController.swift; sourceTree = "<group>"; };
+		4B94BBAB1A528CA3002352FE /* Voucher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Voucher.swift; sourceTree = "<group>"; };
 		4B97CCF81A3E8E710097BFA4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VipDetailViewController.swift; sourceTree = "<group>"; };
 		4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 				4B0A107A1A1ED41400A71B53 /* Order.swift */,
 				4B3BD4781A2EF9EA00735C07 /* DOrder.swift */,
 				4B97CCF81A3E8E710097BFA4 /* User.swift */,
+				4B94BBAB1A528CA3002352FE /* Voucher.swift */,
 			);
 			name = Domain;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				4B5C5AB31A384767003E1B30 /* TextFieldTableViewCell.swift in Sources */,
 				4B0A10521A1ED3CF00A71B53 /* diancaila.xcdatamodeld in Sources */,
 				4B5C390B1A3956A2007DAA3F /* CustomView.swift in Sources */,
+				4B94BBAC1A528CA3002352FE /* Voucher.swift in Sources */,
 				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,
 				4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */,
 				4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */,

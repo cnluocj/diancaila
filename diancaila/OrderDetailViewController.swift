@@ -250,6 +250,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         let settleVC = SettleViewController()
         settleVC.orderId = orderId
         settleVC.vipPrice = (orderDetail["vip_totalprice"] as NSString).doubleValue
+        settleVC.price = (orderDetail["totalprice"] as NSString).doubleValue
         settleVC.deletage = self
 //        self.navigationController?.presentViewController(settleVC, animated: true, completion: nil)
         self.navigationController?.pushViewController(settleVC, animated: true)
@@ -410,7 +411,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         separator.backgroundColor = UIColor.grayColor()
         
         if sameDishArray.count == 1 {
-            cell.detailTextLabel?.text = "¥\(price) / ¥\(specialPrice) / ¥\(vipPrice)"
+            cell.detailTextLabel?.text = "¥\(price) | ¥\(specialPrice) | ¥\(vipPrice)"
             
             if state == "1" {
                 cell.textLabel?.textColor = UIColor.grayColor()
@@ -420,7 +421,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         } else  {
             
             if expandArray[indexPath.section] {
-                cell.detailTextLabel?.text = "¥\(price) / ¥\(specialPrice) / ¥\(vipPrice)"
+                cell.detailTextLabel?.text = "¥\(price) | ¥\(specialPrice) | ¥\(vipPrice)"
                 
                 if state == "1" {
                     cell.textLabel?.textColor = UIColor.grayColor()
@@ -428,7 +429,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             } else {
                 
-                cell.detailTextLabel?.text = "x \(sameDishArray.count)   ¥\(price) / ¥\(vipPrice)"
+                cell.detailTextLabel?.text = "x \(sameDishArray.count)   ¥\(price) | ¥\(vipPrice)"
                 
                 var isAllDidFinish = true
                 for food in sameDishArray {

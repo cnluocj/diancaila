@@ -108,6 +108,11 @@ return "http://114.215.105.93/"
         return path + "recharge/to_be_vipmember"
     }
     
+    // "clerk_shop_id"=>1,"id"=>3
+    class func apiCheckInfo() -> String {
+        return path + "recharge/return_checkout_info"
+    }
+    
     func postWithUrl(url: String, andJson json: NSDictionary, forIdentifier identifier: String) {
         var nsUrl: NSURL! = NSURL(string: url)
         var request = NSMutableURLRequest(URL: nsUrl)

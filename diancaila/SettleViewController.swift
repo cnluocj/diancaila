@@ -22,8 +22,6 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     var tableView: UITableView!
     
-    var textField: UITextField!
-    
     var checkoutSuccessAlertView: UIAlertView?
     
     var checkUserInfoAndCheckoutAlertView: UIAlertView?
@@ -36,9 +34,17 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     var board: UIButton? // 键盘弹出后面的挡板
     
+    
     var orderId: String!
     
+    // VIP价
     var vipPrice: Double!
+    
+    // 原价
+    var price: Double!
+    
+    // 代金券后仍需付帐
+    var stillPrice: Double!
     
     var vipMoneyNotEnough = false
     
@@ -48,17 +54,28 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     var waitState = 0 // 用于判断 会员卡支付状态 0是第一次传，需要接收用户信息， 1是第二次确认能支付后传给服务器
     
+    // 代金券相关
+    var voucherIndex: Int?
+    var voucherSelectedNum = 0
+    var stepperArray = [UIStepper]()
+    
+    // vip用户信息
     var vipInfo: NSDictionary?
     
     
-    // tableview 数据源
+    
+    // tableview 数据源 ----------------
     var checkoutType = [NSDictionary]()
     var selectedCheckoutTypeIndex = 0
     var selectedCheckoutTypeArray = [Bool]()
+    var sectionHeadTitle = ["请选择支付方式"]
+    // 代金券 array
+    var voucherList = [Voucher]()
     
-    // http id
+    // http id ------------------------
     let httpIdWithCheckoutType = "CheckoutType"
     let httpIdWithCheckout = "Checkout"
+    let httpIdWithCheckoutInfo = "CheckoutInfo"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,6 +86,9 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         
         self.title = "结账"
         
+        // 初始等于原价
+        stillPrice = price
+        
         let cancelButton = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressCancelButton:")
         let doneButton = UIBarButtonItem(title: "确定", style: UIBarButtonItemStyle.Bordered, target: self, action: "didPressDoneButton:")
         
@@ -78,7 +98,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         contentView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
         self.view.addSubview(contentView)
         
-        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - 44), style: UITableViewStyle.Grouped)
+        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - 50), style: UITableViewStyle.Grouped)
         tableView.delegate = self
         tableView.dataSource = self
         contentView.addSubview(tableView)
@@ -87,7 +107,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         
         
         bottomView = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 50, UIUtil.screenWidth, 50))
-        bottomView.backgroundColor = UIUtil.navColor
+        bottomView.backgroundColor = UIUtil.gray
         contentView.addSubview(bottomView)
         
         bottomTextField = UITextField(frame: CGRectMake(15, 7, UIUtil.screenWidth - 30, 36))
@@ -172,9 +192,14 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func postCheckoutInfo() {
+        var count = 0.0
+        for voucher in voucherList {
+                count = count + (Double(voucher.num) * voucher.realValue)
+        }
+        
         let jsonDic = NSMutableDictionary()
-        jsonDic["earn"] = textField.text
-        jsonDic["phone"] = textField.text
+        jsonDic["earn"] = NSString(string: bottomTextField.text).doubleValue + count
+        jsonDic["phone"] = bottomTextField.text
         jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
         jsonDic["order_id"] = orderId
         jsonDic["wait"] = waitState
@@ -182,6 +207,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         let userId = defaults.objectForKey("userId") as String
         jsonDic["user_id"] = userId
         
+        println(jsonDic)
         httpController.postWithUrl(HttpController.apiCheckout(), andJson: jsonDic, forIdentifier: httpIdWithCheckout)
         
         waitIndicator.startAnimating()
@@ -191,47 +217,92 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: - UITableViewDataSource
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return sectionHeadTitle.count
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return checkoutType.count
         } else {
-            return 1
+            return voucherList.count
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let checkoutCell = "checkoutCell"
         
-        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: checkoutCell)
+        let cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: checkoutCell)
         
         if indexPath.section == 0 {
             cell.textLabel?.text = checkoutType[indexPath.row].objectForKey("c_name") as? String
             if selectedCheckoutTypeArray[indexPath.row] {
                 cell.accessoryType = UITableViewCellAccessoryType.Checkmark
             }
-            
+        } else {
+            if voucherList.count > 0 {
+                cell.textLabel?.text = voucherList[indexPath.row].name
+                
+                stepperArray[indexPath.row].frame.origin = CGPoint(x: UIUtil.screenWidth - 100, y: 7)
+                stepperArray[indexPath.row].addTarget(self, action: "valueChangeAction:", forControlEvents: UIControlEvents.ValueChanged)
+                cell.contentView.addSubview(stepperArray[indexPath.row])
+                
+                
+                let numLabel = UILabel(frame: CGRectMake(UIUtil.screenWidth - 150, 0, 50, 44))
+                numLabel.textAlignment = NSTextAlignment.Center
+                numLabel.text = "\(voucherList[indexPath.row].num) 张"
+                cell.contentView.addSubview(numLabel)
+            }
         }
-//        else if indexPath.section == 1 {
-//            if indexPath.row == 0 {
-//                textField = UITextField(frame: CGRectMake(15, 3, UIUtil.screenWidth - 30, cell.frame.height - 6))
-//                textField.delegate = self
-//                textField.borderStyle = UITextBorderStyle.RoundedRect
-//                textField.keyboardType = UIKeyboardType.NumberPad
-//                cell.addSubview(textField)
-//            }
-//        }
         
         
         return cell
+    }
+    
+    func valueChangeAction(sender: UIStepper) {
+        let num = stepperArray.count
+        for i in 0 ..< num {
+            if stepperArray[i] == sender {
+                if Int(sender.value) > voucherList[i].maxNum {
+                   sender.value = Double(voucherList[i].maxNum)
+                   return
+                }
+                
+                if Int(sender.value) < voucherList[i].num {
+                    println("<")
+                    voucherList[i].num = Int(sender.value)
+                    stillPrice = stillPrice + voucherList[i].voucherValue
+                } else {
+                    
+                    if stillPrice == 0 {
+                        sender.value = Double(voucherList[i].num)
+                        return
+                    }
+                    
+                    let tempPrice = stillPrice - voucherList[i].voucherValue
+                    if tempPrice < 0 {
+                        stillPrice = 0
+                    } else {
+                        stillPrice = tempPrice
+                    }
+                }
+                
+                
+                voucherList[i].num = Int(sender.value)
+                tableView.reloadData()
+                bottomTextField.placeholder = "仍需付 ¥ \(stillPrice)"
+                return
+            }
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
         
         if indexPath.section == 0 {
+            
+            voucherList.removeAll(keepCapacity: false)
+            sectionHeadTitle = ["请选择支付方式"]
+            
             if !selectedCheckoutTypeArray[indexPath.row] {
                 selectedCheckoutTypeArray[indexPath.row] = true
                 selectedCheckoutTypeArray[selectedCheckoutTypeIndex] = false
@@ -240,20 +311,30 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                 tableView.reloadData()
                 
                 bottomTextField.placeholder = checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
+                
+                waitIndicator.startAnimating()
+                self.view.addSubview(waitIndicator)
+                self.view.userInteractionEnabled = false
+                
+                let dic = NSMutableDictionary()
+                dic["id"] = checkoutType[indexPath.row].objectForKey("id")
+                let defaults = NSUserDefaults.standardUserDefaults()
+                dic["clerk_shop_id"] = defaults.objectForKey("shopId") as String
+                httpController.postWithUrl(HttpController.apiCheckInfo(), andJson: dic, forIdentifier: httpIdWithCheckoutInfo)
+            }
+        } else if indexPath.section == 1 {
+            if voucherList.count > 0 {
+                
+                // todo 暂时没用
+                voucherIndex = indexPath.row
+                
+                
             }
         }
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return "请选择支付方式"
-        }
-//        else if section == 1 {
-//            if checkoutType.count > 0 {
-//                return checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
-//            }
-//        }
-        return ""
+        return sectionHeadTitle[section]
     }
     
     
@@ -264,11 +345,51 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
             didReceiveCheckoutType(result)
         case httpIdWithCheckout:
             didReceiveResults(result)
+        case httpIdWithCheckoutInfo:
+            checkoutInfoDidReceive(result)
+            
         default:
             return
         }
     }
     
+    func checkoutInfoDidReceive(result: NSDictionary) {
+        waitIndicator.removeFromSuperview()
+        self.view.userInteractionEnabled = true
+        
+        println(result)
+        let error = result["error"] as? String
+        if error == nil {
+            let voucherInfo = result["voucher_info"] as? NSArray
+            
+            // 如果是代金券信息
+            if let array = voucherInfo {
+                
+                for voucher in array {
+                    let temp = voucher as NSDictionary
+                    let id = temp["voucher_id"] as String
+                    let isOnline = (temp["voucher_online"] as String) == "1" ? true : false
+                    let realValue = (temp["voucher_real_value"] as NSString).doubleValue
+                    let voucherValue = (temp["voucher_value"] as NSString).doubleValue
+                    let shopId = temp["voucher_shop_id"] as String
+                    let name = temp["voucher_name"] as String
+                    let maxNum = (temp["voucher_maxnum"] as NSString).integerValue
+                    
+                    let vou = Voucher(id: id, name: name, isOnline: isOnline, realValue: realValue, voucherValue: voucherValue, shopId: shopId, maxNum: maxNum)
+                    voucherList.append(vou)
+                    
+                    stepperArray.append(UIStepper())
+                }
+                
+                bottomTextField.placeholder = "仍需付 ¥ \(stillPrice)"
+                
+                sectionHeadTitle = ["请选择支付方式", "请选择代金券数量"]
+                tableView.reloadData()
+            }
+            
+        }
+        
+    }
     
     func didReceiveCheckoutType(result: NSDictionary) {
         let error = result["error"] as? String
@@ -405,6 +526,8 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewWillAppear(animated: Bool) {
         waitState = 0
     }
+    
+    
 
     /*
     // MARK: - Navigation
