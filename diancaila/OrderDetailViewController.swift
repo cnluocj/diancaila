@@ -16,6 +16,8 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     var priceLabel: UILabel!
     
+    var activityPriceLabel: UILabel!
+    
     var vipPriceLabel:UILabel!
     
     var popover: UIImageView!
@@ -98,32 +100,19 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         
         // 结账栏 ---------------
-        let settleView = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 60 , UIUtil.screenWidth, 60))
+        let settleView = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 120 , UIUtil.screenWidth, 60))
         settleView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(settleView)
         
         // 结账按钮 / 显示结账后金额
-        let settleButton = UIButton(frame: CGRectMake(220, 0, UIUtil.screenWidth - 220, 60))
-        let color = UIColor(red: 0.98431, green: 0.31764, blue: 0.03137, alpha: 0.9)
+        let settleButton = UIButton(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 60, UIUtil.screenWidth, 60))
+        let color = UIColor(red: 0.98431, green: 0.31764, blue: 0.03137, alpha: 1)
         settleButton.backgroundColor = color
-        settleView.addSubview(settleButton)
+        self.view.addSubview(settleButton)
         
         // 判断已结账还是未结账
         if (truePrice != nil) {
             settleButton.setTitle("\(truePrice!)", forState: UIControlState.Normal)
-            
-            // 订单号
-            let priceLabel = UILabel(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 120, UIUtil.screenWidth, 60))
-            priceLabel.backgroundColor = UIColor.whiteColor()
-            priceLabel.textAlignment = NSTextAlignment.Center
-            priceLabel.text = "订单号: \(orderId)"
-            self.view.addSubview(priceLabel)
-            
-            // 横分割线
-            let hDivide1 = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 120, UIUtil.screenWidth, 1))
-            hDivide1.backgroundColor = UIColor.grayColor()
-            hDivide1.alpha = 0.3
-            self.view.addSubview(hDivide1)
             
         } else {
             
@@ -132,14 +121,19 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         }
         
         // 原价
-        priceLabel = UILabel(frame: CGRectMake(0, 0, 100, 60))
+        priceLabel = UILabel(frame: CGRectMake(0, 0, UIUtil.screenWidth/3, 60))
         priceLabel.textAlignment = NSTextAlignment.Center
-        priceLabel.text = "原: 0"
+        priceLabel.text = "原价: 0"
         settleView.addSubview(priceLabel)
+        // 活动价
+        activityPriceLabel = UILabel(frame: CGRectMake(UIUtil.screenWidth/3, 0, UIUtil.screenWidth/3, 60))
+        activityPriceLabel.textAlignment = NSTextAlignment.Center
+        activityPriceLabel.text = "活动价: 0"
+        settleView.addSubview(activityPriceLabel)
         // 会员价
-        vipPriceLabel = UILabel(frame: CGRectMake(100, 0, 100, 60))
+        vipPriceLabel = UILabel(frame: CGRectMake(UIUtil.screenWidth/3 * 2, 0, UIUtil.screenWidth/3, 60))
         vipPriceLabel.textAlignment = NSTextAlignment.Center
-        vipPriceLabel.text = "VIP: 0"
+        vipPriceLabel.text = "充值价: 0"
         settleView.addSubview(vipPriceLabel)
 
         
@@ -148,6 +142,13 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         hDivide.backgroundColor = UIColor.grayColor()
         hDivide.alpha = 0.3
         self.view.addSubview(hDivide)
+        
+        // 横分割线
+        let hDivide2 = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 120, UIUtil.screenWidth, 1))
+        hDivide2.backgroundColor = UIColor.grayColor()
+        hDivide2.alpha = 0.3
+        self.view.addSubview(hDivide2)
+        
         
         // popover
         
@@ -409,7 +410,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         separator.backgroundColor = UIColor.grayColor()
         
         if sameDishArray.count == 1 {
-            cell.detailTextLabel?.text = "¥\(vipPrice) / ¥\(price)"
+            cell.detailTextLabel?.text = "¥\(price) / ¥\(specialPrice) / ¥\(vipPrice)"
             
             if state == "1" {
                 cell.textLabel?.textColor = UIColor.grayColor()
@@ -419,7 +420,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         } else  {
             
             if expandArray[indexPath.section] {
-                cell.detailTextLabel?.text = "¥\(vipPrice) / ¥\(price)"
+                cell.detailTextLabel?.text = "¥\(price) / ¥\(specialPrice) / ¥\(vipPrice)"
                 
                 if state == "1" {
                     cell.textLabel?.textColor = UIColor.grayColor()
@@ -427,7 +428,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 }
             } else {
                 
-                cell.detailTextLabel?.text = "x \(sameDishArray.count)   ¥\(vipPrice) / ¥\(price)"
+                cell.detailTextLabel?.text = "x \(sameDishArray.count)   ¥\(price) / ¥\(vipPrice)"
                 
                 var isAllDidFinish = true
                 for food in sameDishArray {
@@ -539,8 +540,10 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
 //        println("detail \(orderDetail)")
         let totalPrice = orderDetail["totalprice"] as String
         let vipPrice = orderDetail["vip_totalprice"] as String
-        priceLabel.text =   "原: \(totalPrice)"
-        vipPriceLabel.text = "VIP: \(vipPrice)"
+        let activityPrice = orderDetail["special_totalprice"] as String
+        priceLabel.text =   "原价: \(totalPrice)"
+        vipPriceLabel.text = "充值价: \(vipPrice)"
+        activityPriceLabel.text = "活动价: \(activityPrice)"
         
         
         // 把相同 dish ID 的项目放到一起

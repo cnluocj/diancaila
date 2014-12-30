@@ -30,6 +30,12 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     var sureCheckoutAlertVeiw: UIAlertView?
     
+    var bottomTextField: UITextField!
+    
+    var bottomView: UIView!
+    
+    var board: UIButton? // 键盘弹出后面的挡板
+    
     var orderId: String!
     
     var vipPrice: Double!
@@ -43,6 +49,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     var waitState = 0 // 用于判断 会员卡支付状态 0是第一次传，需要接收用户信息， 1是第二次确认能支付后传给服务器
     
     var vipInfo: NSDictionary?
+    
     
     // tableview 数据源
     var checkoutType = [NSDictionary]()
@@ -71,16 +78,67 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         contentView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
         self.view.addSubview(contentView)
         
-        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset), style: UITableViewStyle.Grouped)
+        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - 44), style: UITableViewStyle.Grouped)
         tableView.delegate = self
         tableView.dataSource = self
         contentView.addSubview(tableView)
         
         contentView.addSubview(waitView)
         
+        
+        bottomView = UIView(frame: CGRectMake(0, UIUtil.screenHeight - UIUtil.contentOffset - 50, UIUtil.screenWidth, 50))
+        bottomView.backgroundColor = UIUtil.navColor
+        contentView.addSubview(bottomView)
+        
+        bottomTextField = UITextField(frame: CGRectMake(15, 7, UIUtil.screenWidth - 30, 36))
+        bottomTextField.keyboardType = UIKeyboardType.NumberPad
+        bottomTextField.borderStyle = UITextBorderStyle.RoundedRect
+        bottomView.addSubview(bottomTextField)
+        
+        let devide = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 1))
+        devide.backgroundColor = UIColor.grayColor()
+        devide.alpha = 0.3
+        bottomView.addSubview(devide)
+        
+        let devide2 = UIView(frame: CGRectMake(0, 49, UIUtil.screenWidth, 1))
+        devide2.backgroundColor = UIColor.grayColor()
+        devide2.alpha = 0.3
+        bottomView.addSubview(devide2)
+        
+        // 获取键盘高度
+        //增加监听，当键盘出现或改变时收出消息
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+        //增加监听，当键退出时收出消息
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+        
         loadCheckoutType()
     }
     
+    
+    func keyboardWillShow(notification: NSNotification) {
+        let userInfo: Dictionary? = notification.userInfo
+        let value: NSValue = userInfo![UIKeyboardFrameEndUserInfoKey] as NSValue
+        let keyboardRect = value.CGRectValue()
+        let height = keyboardRect.size.height
+        
+        UIView.animateWithDuration(0.3, animations: { () -> Void in
+            self.bottomView.frame.origin = CGPoint(x: 0, y: UIUtil.screenHeight - UIUtil.contentOffset - height - 50)
+        })
+        
+        board = UIButton(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - height - 50))
+        board!.addTarget(self, action: "keyboardHide:", forControlEvents: UIControlEvents.TouchUpInside)
+        board!.backgroundColor = UIColor.clearColor()
+        self.contentView.addSubview(board!)
+        
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        
+        UIView.animateWithDuration(0.3, animations: { () -> Void in
+            self.bottomView.frame.origin = CGPoint(x: 0, y: UIUtil.screenHeight - UIUtil.contentOffset - 50)
+        })
+        
+    }
     
     func loadCheckoutType() {
         let defaults = NSUserDefaults.standardUserDefaults()
@@ -93,10 +151,10 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func didPressDoneButton(sender: UIBarButtonItem) {
-        textField.resignFirstResponder()
+        board?.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
         
         
-        let text = NSString(string: textField.text)
+        let text = NSString(string: bottomTextField.text)
         
         if text == "" {
             let text = checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as String
@@ -120,6 +178,10 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
         jsonDic["order_id"] = orderId
         jsonDic["wait"] = waitState
+        let defaults = NSUserDefaults.standardUserDefaults()
+        let userId = defaults.objectForKey("userId") as String
+        jsonDic["user_id"] = userId
+        
         httpController.postWithUrl(HttpController.apiCheckout(), andJson: jsonDic, forIdentifier: httpIdWithCheckout)
         
         waitIndicator.startAnimating()
@@ -129,7 +191,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: - UITableViewDataSource
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 1
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -151,15 +213,16 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                 cell.accessoryType = UITableViewCellAccessoryType.Checkmark
             }
             
-        } else if indexPath.section == 1 {
-            if indexPath.row == 0 {
-                textField = UITextField(frame: CGRectMake(15, 3, UIUtil.screenWidth - 30, cell.frame.height - 6))
-                textField.delegate = self
-                textField.borderStyle = UITextBorderStyle.RoundedRect
-                textField.keyboardType = UIKeyboardType.NumberPad
-                cell.addSubview(textField)
-            }
         }
+//        else if indexPath.section == 1 {
+//            if indexPath.row == 0 {
+//                textField = UITextField(frame: CGRectMake(15, 3, UIUtil.screenWidth - 30, cell.frame.height - 6))
+//                textField.delegate = self
+//                textField.borderStyle = UITextBorderStyle.RoundedRect
+//                textField.keyboardType = UIKeyboardType.NumberPad
+//                cell.addSubview(textField)
+//            }
+//        }
         
         
         return cell
@@ -175,6 +238,8 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                 selectedCheckoutTypeIndex = indexPath.row
                 
                 tableView.reloadData()
+                
+                bottomTextField.placeholder = checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
             }
         }
     }
@@ -182,11 +247,12 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
             return "请选择支付方式"
-        } else if section == 1 {
-            if checkoutType.count > 0 {
-                return checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
-            }
         }
+//        else if section == 1 {
+//            if checkoutType.count > 0 {
+//                return checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
+//            }
+//        }
         return ""
     }
     
@@ -218,6 +284,8 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
             }
             
             waitView.removeFromSuperview()
+            
+            bottomTextField.placeholder = checkoutType[selectedCheckoutTypeIndex].objectForKey("input") as? String
             
             tableView.reloadData()
         } else {
@@ -254,16 +322,21 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                     let money = moneyString?.doubleValue
                     let money2 = money2String?.doubleValue
                     if money! + money2! >= vipPrice {
+                        
+                        vipMoneyNotEnough = false
+                        
                         let message = "\(name) \n余额: \(money!) \n返现: \(money2!)"
                         checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
                         checkUserInfoAndCheckoutAlertView?.show()
+                        
                     } else {
+                        
                         vipMoneyNotEnough = true
                         
                         let message = "\(name) \n余额: \(money!) \n返现: \(money2!)"
-//                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "余额不足请充值")
-                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "余额不足请充值")
+                        checkUserInfoAndCheckoutAlertView = UIAlertView(title: "账户信息", message: message, delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "余额不足请充值")
                         checkUserInfoAndCheckoutAlertView?.show()
+                        
                     }
                 }
                 
@@ -313,31 +386,24 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: - UITextFieldDelegate
     func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        let board = UIButton(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
-        board.addTarget(self, action: "keyboardHide:", forControlEvents: UIControlEvents.TouchUpInside)
-        board.backgroundColor = UIColor.clearColor()
-        self.contentView.addSubview(board)
-        
-        
-        UIView.animateWithDuration(0.2, animations: { () -> Void in
-            self.contentView.transform = CGAffineTransformMakeTranslation(0, -100)
-        })
-        
         
         return true
     }
     
     func textFieldShouldEndEditing(textField: UITextField) -> Bool {
-        UIView.animateWithDuration(0.2, animations: { () -> Void in
-            self.contentView.transform = CGAffineTransformMakeTranslation(0, 0)
-        })
+     
         
         return true
     }
     
     func keyboardHide(sender: UIButton) {
-        textField.resignFirstResponder()
+        bottomTextField.resignFirstResponder()
         sender.removeFromSuperview()
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        waitState = 0
     }
 
     /*
