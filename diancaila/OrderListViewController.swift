@@ -28,12 +28,17 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     var didNotFinishViewRefresh: UIRefreshControl!
     var searchBar: UISearchBar!
     var searchController: UISearchDisplayController!
-    var foodStateAlert: UIAlertView!
-    var foodMoreStateAlert: UIAlertView!
+//    var foodStateAlert: UIAlertView!
+//    var foodMoreStateAlert: UIAlertView!
+    var finishFoodAlert: UIAlertView?
+    var cancelFoodAlert: UIAlertView?
     var opButton: UIButton!
     var opButtonIsShow = false
     var radius = CGFloat(70)
     var tableViewCellEditingIndexPath: NSIndexPath! // 正在编辑的菜 index
+    
+    var isBatchCancel = false  //批量上菜
+    
     // 等待上菜 table 的 数据源
     var orderDic: [String:[Order]] = [:] // 转成 dic， 按照菜id分类 方便排序
 //    var orderList = [Order]()  // 有序的 tempdata
@@ -64,6 +69,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // http id
     let httpIdWithChangeFoodState = "ChangeFoodState"
+    let httpIdWithChangeFoodState2 = "ChangeFoodState2" // 应付批量操作
     let httpIdWithWaitMenu = "WaitMenu"
     let httpIdWithNotPayOrder = "NotPayOrder"
     let httpIdWithDidPayOrder = "DidPayOrder"
@@ -220,16 +226,17 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func didPressOpButton(sender: UIButton) {
+        
         if numOfDidSelected > 0 {
+            isBatchCancel = true
             
             // 先把服务器那边的状态改了，再改本地
             for key in selectedItem.keys {
                 let orderItem = orderList.objectAtIndex(key) as Order
-                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderItem.id, stat: 1), forIndentifier: httpIdWithChangeFoodState)
+                httpController.getWithUrl(HttpController.apiChangeFoodState2(id: orderItem.id, stat: 1), forIndentifier: httpIdWithChangeFoodState2)
             }
             
             // todo 服务器传回数据后，再对表进行修改
-            
             let array = NSMutableArray()
             let set = NSMutableIndexSet()
             for a in selectedItem.keys.array {
@@ -250,20 +257,11 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
                 }, completion: { (finished: Bool) -> Void in
                     self.opButton.removeFromSuperview()
             })
+
             
             
-        } else {
-            switch segmentedControl.selectedSegmentIndex {
-            case 0:
-                loadWaitOrderData()
-            case 1:
-                loadNotPayOrderData()
-            case 2:
-                loadAllOrder()
-            default:
-                return
-            }
         }
+
     }
     
     
@@ -357,6 +355,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         case httpIdWithWaitMenu:
             jsonController.parseWaitMenu(result)
             
+            
         case httpIdWithNotPayOrder:
             jsonController.parseDidNotPayOrder(result)
             
@@ -364,8 +363,16 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             jsonController.parseDidPayOrder(result)
             
         case httpIdWithChangeFoodState:
-            // todo 返回结果前应该显示loading
-            println("change food state success")
+            waitIndicator2.removeFromSuperview()
+            self.view.userInteractionEnabled = true
+            
+            orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
+            
+            didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
+
+        case httpIdWithChangeFoodState2:
+            waitIndicator2.removeFromSuperview()
+            // todo 处理批量上菜 返回消息
             
         case httpIdWithTodayCount:
             if result["error"] == nil {
@@ -476,18 +483,45 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if tableView == didNotFinishOrderTableView {
-            if editingStyle == UITableViewCellEditingStyle.Delete {
-                
-                tableViewCellEditingIndexPath = indexPath
-                
-                foodStateAlert = UIAlertView(title: "选择状态", message: "", delegate: self, cancelButtonTitle: "更多", otherButtonTitles: "上菜")
-
-                foodStateAlert.show()
-                
-                
-            }
+//        if tableView == didNotFinishOrderTableView {
+//            if editingStyle == UITableViewCellEditingStyle.Delete {
+//                
+//                tableViewCellEditingIndexPath = indexPath
+//                
+//                foodStateAlert = UIAlertView(title: "选择状态", message: "", delegate: self, cancelButtonTitle: "更多", otherButtonTitles: "上菜")
+//
+//                foodStateAlert.show()
+//                
+//                
+//            }
+//        }
+    }
+    
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+        let finishAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "上菜") { (UITableViewRowAction, NSIndexPath) -> Void in
+            
+            
+           
+            
+            self.tableViewCellEditingIndexPath = indexPath
+            
+            self.finishFoodAlert = UIAlertView(title: "确定上菜", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+            
+            self.finishFoodAlert?.show()
         }
+        
+        let cancelAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "退菜") { (UITableViewRowAction, NSIndexPath) -> Void in
+            
+            self.tableViewCellEditingIndexPath = indexPath
+            
+            self.cancelFoodAlert = UIAlertView(title: "确定退菜", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "确定")
+            self.cancelFoodAlert?.show()
+        }
+        
+        finishAction.backgroundColor = UIColor(red: 237.0/255.0, green: 75.0/255.0, blue: 27.0/255.0, alpha: 1.0)
+        cancelAction.backgroundColor = UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0)
+        
+        return [finishAction, cancelAction]
     }
     
     
@@ -588,29 +622,28 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     // MARK: - UIAlertViewDelegate
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         
-        if alertView == foodStateAlert {
+        if alertView == finishFoodAlert {
             
             switch buttonIndex {
-            case 0:
-                foodMoreStateAlert = UIAlertView(title: "更多", message: "", delegate: self, cancelButtonTitle: "取消", otherButtonTitles: "退菜")
-                foodMoreStateAlert.show()
             case 1:
-                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1), forIndentifier: httpIdWithChangeFoodState)
-                orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
+                self.waitIndicator2.startAnimating()
+                self.view.addSubview(self.waitIndicator2)
+                self.view.userInteractionEnabled = false
                 
-                didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 1), forIndentifier: httpIdWithChangeFoodState)
             default:
                 return
             }
             
-        } else if alertView == foodMoreStateAlert {
+        } else if alertView == cancelFoodAlert {
             
             switch buttonIndex {
             case 1:
-                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2), forIndentifier: httpIdWithChangeFoodState)
-                orderList.removeObjectAtIndex(tableViewCellEditingIndexPath.row)
+                self.waitIndicator2.startAnimating()
+                self.view.addSubview(self.waitIndicator2)
+                self.view.userInteractionEnabled = false
                 
-                didNotFinishOrderTableView.deleteRowsAtIndexPaths([tableViewCellEditingIndexPath], withRowAnimation: UITableViewRowAnimation.Top)
+                httpController.getWithUrl(HttpController.apiChangeFoodState(id: orderList[tableViewCellEditingIndexPath.row].id, stat: 2), forIndentifier: httpIdWithChangeFoodState)
             default:
                 return
             }

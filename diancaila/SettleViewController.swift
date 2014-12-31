@@ -268,28 +268,22 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
                 }
                 
                 if Int(sender.value) < voucherList[i].num {
-                    println("<")
                     voucherList[i].num = Int(sender.value)
                     stillPrice = stillPrice + voucherList[i].voucherValue
                 } else {
                     
-                    if stillPrice == 0 {
+                    if stillPrice <= 0 {
                         sender.value = Double(voucherList[i].num)
                         return
                     }
                     
-                    let tempPrice = stillPrice - voucherList[i].voucherValue
-                    if tempPrice < 0 {
-                        stillPrice = 0
-                    } else {
-                        stillPrice = tempPrice
-                    }
+                    stillPrice = stillPrice - voucherList[i].voucherValue
                 }
                 
                 
                 voucherList[i].num = Int(sender.value)
                 tableView.reloadData()
-                bottomTextField.placeholder = "仍需付 ¥ \(stillPrice)"
+                bottomTextField.placeholder = "仍需付 ¥ \(stillPrice <= 0 ? 0 : stillPrice)"
                 return
             }
         }

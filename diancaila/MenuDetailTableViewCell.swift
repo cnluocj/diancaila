@@ -63,7 +63,7 @@ class MenuDetailTableViewCell: UITableViewCell {
         }
         
         
-        foodImage = UIImageView(image: UIImage(named: "food"))
+        foodImage = UIImageView(image: UIImage(named: "no_picture"))
         foodImage!.frame = CGRectMake(15, 10, 50, 50)
         foodImage!.layer.borderWidth = 1
         foodImage!.layer.borderColor = UIColor.lightGrayColor().CGColor
@@ -113,7 +113,7 @@ class MenuDetailTableViewCell: UITableViewCell {
         let rectInSuperView = superTableView.convertRect(imageRectInTableView, toView: viewcontroller.view)
         
         if !isFoodImageLarge {
-            let imageHeight = UIUtil.screenWidth * 10 / 16
+            let imageHeight = UIUtil.screenWidth
             
             board = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight))
             board?.alpha = 0
@@ -131,6 +131,7 @@ class MenuDetailTableViewCell: UITableViewCell {
             
 
             foodDescTextView = UITextView(frame: CGRectMake(10, 60, UIUtil.screenWidth - 20, UIUtil.screenHeight - imageHeight - 50))
+            foodDescTextView?.editable = false
             foodDescTextView?.font = UIFont.systemFontOfSize(15)
             foodDescTextView?.text = menu.desc
             foodDescTextView?.text = "习近平指出，办好中国特色社会主义大学，要坚持立德树人，把培育和践行社会主义核心价值观融入教书育人全过程；强化思想引领，牢牢把握高校意识形态工作领导权；坚持和完善党委领导下的校长负责制，不断改革和完善高校体制机制；全面推进党的建设各项工作，有效发挥基层党组织战斗堡垒作用和共产党员先锋模范作用。各级党委和宣传思想部门、组织部门、教育部门要加强对高校党的建设工作的领导和指导，坚持党的教育方针，坚持社会主义办学方向，加强和改进思想政治工作，切实把党要管党、从严治党落到实处。"

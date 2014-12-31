@@ -164,7 +164,10 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         self.view.userInteractionEnabled = false
     
         // 生成json
-        jsonDic["shop_id"] = user.shopId
+        let defaults = NSUserDefaults.standardUserDefaults()
+        
+        jsonDic["user_id"] = defaults.objectForKey("userId") as String
+        jsonDic["shop_id"] = defaults.objectForKey("shopId") as String
         jsonDic["tab_id"] = deskId
         jsonDic["cus_num"] = customerNum
         jsonDic["card_id"] = 0
@@ -181,11 +184,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         }
         jsonDic["dish_list"] = dishList
         
-        var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
-        var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
-        jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
-        jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-        
+        println(jsonDic)
         ehttp.postWithUrl(HttpController.apiSubmitOrder, andJson: jsonDic, forIdentifier: httpIdWithSubmitOrder)
     }
     

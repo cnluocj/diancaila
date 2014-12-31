@@ -40,6 +40,10 @@ return "http://114.215.105.93/"
         return path + "order/change_state?id=" + id + "&stat=" + "\(stat)"
     }
     
+    class func apiChangeFoodState2(#id: String, stat: Int) -> String {
+        return path + "order/change_states?id=" + id + "&stat=" + "\(stat)"
+    }
+    
     class func apiNotPayOrder(shopId: String) -> String {
         return path + "order/re_orders_ios?clerk_shop_id=\(shopId)"
     }
