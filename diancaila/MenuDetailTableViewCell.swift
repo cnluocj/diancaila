@@ -64,6 +64,9 @@ class MenuDetailTableViewCell: UITableViewCell {
         
         
         foodImage = UIImageView(image: UIImage(named: "no_picture"))
+        if menu.cover != "" {
+            foodImage?.image = UIImage(
+        }
         foodImage!.frame = CGRectMake(15, 10, 50, 50)
         foodImage!.layer.borderWidth = 1
         foodImage!.layer.borderColor = UIColor.lightGrayColor().CGColor
@@ -144,12 +147,15 @@ class MenuDetailTableViewCell: UITableViewCell {
             tempImage?.addGestureRecognizer(imageTapGesture)
             UIApplication.sharedApplication().keyWindow?.addSubview(tempImage!)
 
-            UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.Default, animated: true)
+//            UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.Default, animated: true)
             
             foodImage?.alpha = 0
             UIView.animateWithDuration(0.3, animations: { () -> Void in
                 
+                UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: UIStatusBarAnimation.Slide)
+                
                 self.tempImage!.frame = CGRectMake(0, 0, UIUtil.screenWidth, imageHeight)
+                
                 
                 }) { (finished: Bool) -> Void in
                     
@@ -166,12 +172,14 @@ class MenuDetailTableViewCell: UITableViewCell {
             
         } else {
             
-            UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.LightContent, animated: true)
+            self.board?.alpha = 0
             UIView.animateWithDuration(0.3, animations: { () -> Void in
+                
+                UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: UIStatusBarAnimation.Slide)
+                
                 let rectInWindow = CGRectMake(rectInSuperView.origin.x, rectInSuperView.origin.y + UIUtil.contentOffset - 44, rectInSuperView.width, rectInSuperView.height)
                 
                 self.tempImage!.frame = rectInWindow
-                self.board?.alpha = 0
                 self.textView?.alpha = 0
                 
                 }, completion: { (finished: Bool) -> Void in

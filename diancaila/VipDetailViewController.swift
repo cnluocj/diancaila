@@ -54,8 +54,6 @@ class VipDetailViewController: UIViewController, UITableViewDataSource, UITableV
         
         self.view.backgroundColor = UIUtil.gray_system
         
-        println("--------\(vipInfo)")
-        
         
         let name = vipInfo?.objectForKey("name") as String
         let money: String? = vipInfo?.objectForKey("money") as? String

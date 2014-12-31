@@ -207,7 +207,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         let userId = defaults.objectForKey("userId") as String
         jsonDic["user_id"] = userId
         
-        println(jsonDic)
+        
         httpController.postWithUrl(HttpController.apiCheckout(), andJson: jsonDic, forIdentifier: httpIdWithCheckout)
         
         waitIndicator.startAnimating()
@@ -351,7 +351,6 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         waitIndicator.removeFromSuperview()
         self.view.userInteractionEnabled = true
         
-        println(result)
         let error = result["error"] as? String
         if error == nil {
             let voucherInfo = result["voucher_info"] as? NSArray
@@ -417,7 +416,6 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         if error == nil {
             
             vipInfo = result["user_info"] as? NSDictionary
-            println(vipInfo)
             
             if vipInfo == nil {
                 checkoutSuccessAlertView = UIAlertView(title: "消费成功", message: "", delegate: self, cancelButtonTitle: "确定")

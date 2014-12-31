@@ -72,8 +72,9 @@ class JSONController : NSObject {
             let name: String = menu.objectForKey("dish_name") as String
             let description: String = menu.objectForKey("dish_des") as String
             let typeId: String = menu.objectForKey("dish_type_id") as String
-//            let cover: String = menu.objectForKey("dish_cover") as String
-            let cover = ""
+            let cover: String = menu.objectForKey("dish_cover") as String
+//            var cover: AnyObject? = menu.objectForKey("dish_cover")
+            
             let price = (menu.objectForKey("dish_origin_price") as NSString).doubleValue
             let vipPrice = (menu.objectForKey("dish_user_price") as NSString).doubleValue
             let shopId = menu.objectForKey("dish_shop_id") as NSString
