@@ -64,9 +64,6 @@ class MenuDetailTableViewCell: UITableViewCell {
         
         
         foodImage = UIImageView(image: UIImage(named: "no_picture"))
-        if menu.cover != "" {
-            foodImage?.image = UIImage(
-        }
         foodImage!.frame = CGRectMake(15, 10, 50, 50)
         foodImage!.layer.borderWidth = 1
         foodImage!.layer.borderColor = UIColor.lightGrayColor().CGColor
@@ -74,6 +71,21 @@ class MenuDetailTableViewCell: UITableViewCell {
         imageTapGesture = UITapGestureRecognizer(target: self, action: "imageTapGesture:")
         foodImage!.addGestureRecognizer(imageTapGesture)
         self.contentView.addSubview(foodImage!)
+        
+        // 异步加载图片
+        if menu.cover != "" {
+            let url  = NSURL(string: HttpController.path + menu.cover)
+            let request = NSURLRequest(URL: url!)
+            let queue = NSOperationQueue()
+            NSURLConnection.sendAsynchronousRequest(
+                request, queue: queue, completionHandler: { (response, data, error) -> Void in
+                let image = UIImage(data: data)
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.foodImage!.image = image
+                    })
+            })
+        }
+        
         
         
         nameLabel = UILabel(frame: CGRectMake(75, 0, UIUtil.screenWidth/7*5-20, 50))
