@@ -74,7 +74,7 @@ class MenuDetailTableViewCell: UITableViewCell {
         
         // 异步加载图片
         if menu.cover != "" {
-            let url  = NSURL(string: HttpController.path + menu.cover)
+            let url  = NSURL(string: HttpController.path() + menu.cover)
             let request = NSURLRequest(URL: url!)
             let queue = NSOperationQueue()
             NSURLConnection.sendAsynchronousRequest(
@@ -159,7 +159,6 @@ class MenuDetailTableViewCell: UITableViewCell {
             tempImage?.addGestureRecognizer(imageTapGesture)
             UIApplication.sharedApplication().keyWindow?.addSubview(tempImage!)
 
-//            UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.Default, animated: true)
             
             foodImage?.alpha = 0
             UIView.animateWithDuration(0.3, animations: { () -> Void in

@@ -48,6 +48,7 @@
 		4B7561B91A37EEE20051B0F6 /* MeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7561B81A37EEE20051B0F6 /* MeViewController.swift */; };
 		4B94BBAC1A528CA3002352FE /* Voucher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B94BBAB1A528CA3002352FE /* Voucher.swift */; };
 		4B97CCF91A3E8E710097BFA4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B97CCF81A3E8E710097BFA4 /* User.swift */; };
+		4B9E89341A58D59800D26A8C /* ServerSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9E89331A58D59800D26A8C /* ServerSelectorViewController.swift */; };
 		4BA7C2711A4801E8005B8722 /* VipDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */; };
 		4BDEC5CA1A3AD6EC001887B6 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */; };
 		4BFB7B131A3A855E009E168C /* CustomScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFB7B121A3A855E009E168C /* CustomScrollView.swift */; };
@@ -109,6 +110,7 @@
 		4B7561B81A37EEE20051B0F6 /* MeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeViewController.swift; sourceTree = "<group>"; };
 		4B94BBAB1A528CA3002352FE /* Voucher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Voucher.swift; sourceTree = "<group>"; };
 		4B97CCF81A3E8E710097BFA4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		4B9E89331A58D59800D26A8C /* ServerSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerSelectorViewController.swift; sourceTree = "<group>"; };
 		4BA7C2701A4801E8005B8722 /* VipDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VipDetailViewController.swift; sourceTree = "<group>"; };
 		4BDEC5C91A3AD6EC001887B6 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		4BFB7B121A3A855E009E168C /* CustomScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomScrollView.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				4B0A10751A1ED41400A71B53 /* DeskPickerViewController.swift */,
+				4B9E89331A58D59800D26A8C /* ServerSelectorViewController.swift */,
 				4B0A107B1A1ED41400A71B53 /* OrderConfirmViewController.swift */,
 				4B0A107D1A1ED41400A71B53 /* OrderViewController.swift */,
 				4B0A107E1A1ED41400A71B53 /* TakeawayViewController.swift */,
@@ -404,6 +407,7 @@
 				4B94BBAC1A528CA3002352FE /* Voucher.swift in Sources */,
 				4B0A10881A1ED41400A71B53 /* MenuTableViewCell.swift in Sources */,
 				4B3BD4791A2EF9EA00735C07 /* DOrder.swift in Sources */,
+				4B9E89341A58D59800D26A8C /* ServerSelectorViewController.swift in Sources */,
 				4B7561B71A37EEC20051B0F6 /* DiscoverViewController.swift in Sources */,
 				4B0A10851A1ED41400A71B53 /* DeskPickerViewController.swift in Sources */,
 				4B0A10821A1ED41400A71B53 /* CustomGrid.swift in Sources */,

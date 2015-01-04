@@ -13,7 +13,7 @@ class WaiterViewController: UIViewController, UITableViewDataSource, UITableView
     var tableView: UITableView!
     
     // tableView 数据源
-    let titles = [["会员"]]
+    let titles = [["会员"], ["服务器"]]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +28,10 @@ class WaiterViewController: UIViewController, UITableViewDataSource, UITableView
 
     }
     
+    func gotoServerSelectorVC() {
+        let serverVC = ServerSelectorViewController()
+        self.navigationController?.pushViewController(serverVC, animated: true)
+    }
     
     func gotoVipNumInputMVC() {
         let vipNumInputMVC = VipNumInputModelViewController()
@@ -55,9 +59,14 @@ class WaiterViewController: UIViewController, UITableViewDataSource, UITableView
         var cell: UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(mcell) as? UITableViewCell
         
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: mcell)
+            cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: mcell)
         }
         cell?.textLabel?.text = titles[indexPath.section][indexPath.row]
+        
+        if indexPath.section == 1 {
+            if indexPath.row == 0 {
+            }
+        }
         
         return cell!
     }
@@ -68,6 +77,10 @@ class WaiterViewController: UIViewController, UITableViewDataSource, UITableView
         if indexPath.section == 0 {
             if indexPath.row == 0 {
                 gotoVipNumInputMVC()
+            }
+        } else if indexPath.section == 1 {
+            if indexPath.row == 0 {
+                gotoServerSelectorVC()
             }
         }
     }

@@ -41,7 +41,10 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         httpController.deletage = self
         
         jsonController.parseDelegate = self
-
+        
+        loadServer()
+        
+        
         accountTF = UITextField(frame: CGRectMake(15, 10, UIUtil.screenWidth - 30, 44))
         accountTF.keyboardType = UIKeyboardType.PhonePad
         accountTF.text = "15122529222"
@@ -80,6 +83,14 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         registerButton.addTarget(self, action: "registerButtonDidPress:", forControlEvents: UIControlEvents.TouchUpInside)
         self.view.addSubview(registerButton)
     }
+    
+    
+    // 初始化服务器
+    func loadServer() {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject(HttpController.testPath, forKey: "server")
+    }
+    
     
     func registerButtonDidPress(sender: UIButton) {
         let registerVC = RegisterViewController()
