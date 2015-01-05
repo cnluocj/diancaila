@@ -33,9 +33,6 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     var searchBarIsEmpty = true
     
-    // 加载
-    var loadingIndicator: UIActivityIndicatorView!
-    
     let takeOrderButtonWidth = UIUtil.screenWidth/3*2
     
     let menuCellHeight = CGFloat(50)
@@ -105,10 +102,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let defaults = NSUserDefaults.standardUserDefaults()
         shopId = defaults.objectForKey("shopId") as String
         
-        // 获取数据
-        httpController.getWithUrl(HttpController.apiMenuType(shopId), forIndentifier: httpIdWithMenuType)
-        httpController.deletage = self
-        jsonController.parseDelegate = self
+
         
         // 目录菜单
         tableView1 = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth/7 * 2, contentHeight - countViewHeight))
@@ -220,14 +214,10 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.view.addSubview(hDivide)
         
         
-
-        // 加载状态
-        loadingIndicator = UIUtil.waitIndicator()
-        loadingIndicator.startAnimating()
-        self.view.addSubview(loadingIndicator)
-        self.view.bringSubviewToFront(loadingIndicator)
-        self.view.userInteractionEnabled = false
-        
+        // 获取数据
+        httpController.getWithUrl(HttpController.apiMenuType(shopId), forIndentifier: httpIdWithMenuType, inView: self.view)
+        httpController.deletage = self
+        jsonController.parseDelegate = self
     }
     
     
@@ -271,7 +261,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
 //            var jsonStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
 //            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString("\n", withString: "")
 //            jsonStr = jsonStr?.stringByReplacingOccurrencesOfString(" ", withString: "")
-            httpController.postWithUrl(HttpController.apiAddFood(), andJson: jsonDic, forIdentifier: httpIdWithAddFood)
+            httpController.postWithUrl(HttpController.apiAddFood(), andJson: jsonDic, forIdentifier: httpIdWithAddFood, inView: self.view)
             
         }
     }
@@ -358,16 +348,13 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         // 根据获取的type id 继续获取菜单
         for menuType in self.menuTypeArray {
             let type = menuType as MenuType
-            httpController.getWithUrl(HttpController.apiMenu(type.id, shopId: shopId), forIndentifier: httpIdWithMenu)
+            httpController.getWithUrl(HttpController.apiMenu(type.id, shopId: shopId), forIndentifier: httpIdWithMenu, inView: self.view)
             
         }
         if self.menuTypeArray.count > 0 {
             self.menuTypeIndex = NSString(string: self.menuTypeArray[0].id).integerValue
         }
         
-        
-        loadingIndicator.removeFromSuperview()
-        self.view.userInteractionEnabled = true
     }
     
     func didFinishParseMenuByTypeIdAndReturn(menuArray: NSArray) {

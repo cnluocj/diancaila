@@ -12,9 +12,9 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     
     var tableView: UITableView!
     
-    let titles = ["相册", "收藏", "钱包"]
-    
-    let imageNames = ["picture", "box", "wallet"]
+    // tableview 数据源
+    let titles = [["个人信息"], ["设置"], ["服务员"]]
+    let imageNames = [[], ["settings"], ["waiter"]]
     
     var user: User?
     
@@ -56,17 +56,18 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return numOfSection
+        return titles.count
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        if section == 1 {
-            return titles.count
-        } else {
-            return 1
-        }
+//        if section == 1 {
+//            return titles.count
+//        } else {
+//            return 1
+//        }
+        return titles[section].count
     }
     
     
@@ -79,25 +80,11 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
         if indexPath.section == 0 && indexPath.row == 0 {
             cell = UserInfoTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: userInfoCell, image: UIImage(named: "iron_man")!, title: "\(user!.name)", detailTitle: "啦号: \(user!.phoneNumber)")
             
-        } else if indexPath.section == 2 && indexPath.row == 0 {
+        } else {
             cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
-            cell.imageView?.image = UIImage(named: "settings")
-            cell.textLabel?.text = "设置"
-            
-        } else if indexPath.section == 1 {
-            
-            cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
-            cell.imageView?.image = UIImage(named: imageNames[indexPath.row])
-            cell.textLabel?.text = titles[indexPath.row]
-            
-        } else if indexPath.section == 3 {
-            if indexPath.row == 0 {
-                cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: imageCell)
-                cell.imageView?.image = UIImage(named: "waiter")
-                cell.textLabel?.text = "服务员"
-            }
+            cell.imageView?.image = UIImage(named: imageNames[indexPath.section][indexPath.row])
+            cell.textLabel?.text = titles[indexPath.section][indexPath.row]
         }
-        
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
         return cell
     }
@@ -105,10 +92,12 @@ class MeViewController: UIViewController, UITableViewDataSource, UITableViewDele
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: false)
         
-        if indexPath.section == 2 && indexPath.row == 0 {
-            gotoSettingsVC()
+        if indexPath.section == 1 {
+            if indexPath.row == 0 {
+                gotoSettingsVC()
+            }
             
-        } else if indexPath.section == 3 {
+        } else if indexPath.section == 2 {
             if indexPath.row == 0 {
                 gotoWaiterVC()
             }

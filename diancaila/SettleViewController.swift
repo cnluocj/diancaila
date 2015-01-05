@@ -35,16 +35,13 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     var board: UIButton? // 键盘弹出后面的挡板
     
     
+    // 由上一层传入
     var orderId: String!
+    var vipPrice: Double! // VIP价
+    var price: Double! // 原价
+    var specialPrice: Double! // 活动价
+    var groupPrice: Double! //  团购价
     
-    // VIP价
-    var vipPrice: Double!
-    
-    // 原价
-    var price: Double!
-    
-    // 代金券后仍需付帐
-    var stillPrice: Double!
     
     var vipMoneyNotEnough = false
     
@@ -58,6 +55,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
     var voucherIndex: Int?
     var voucherSelectedNum = 0
     var stepperArray = [UIStepper]()
+    var stillPrice: Double! // 代金券后仍需付帐
     
     // vip用户信息
     var vipInfo: NSDictionary?
@@ -98,7 +96,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         contentView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset))
         self.view.addSubview(contentView)
         
-        tableView = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - 50), style: UITableViewStyle.Grouped)
+        tableView = UITableView(frame: CGRectMake(0, 60, UIUtil.screenWidth, UIUtil.screenHeight - UIUtil.contentOffset - 50 - 60), style: UITableViewStyle.Grouped)
         tableView.delegate = self
         tableView.dataSource = self
         contentView.addSubview(tableView)
@@ -130,6 +128,33 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
         //增加监听，当键退出时收出消息
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+        
+        // 显示价格
+        // 原价
+        let priceView = UIView(frame: CGRectMake(0, 0, UIUtil.screenWidth, 60))
+        priceView.backgroundColor = UIUtil.navColor
+        contentView.addSubview(priceView)
+        
+        let priceLabel = UILabel(frame: CGRectMake(0, 0, UIUtil.screenWidth/3, 60))
+        priceLabel.textAlignment = NSTextAlignment.Center
+        priceLabel.text = "原价: \(price)"
+        priceLabel.textColor = UIColor.whiteColor()
+        priceView.addSubview(priceLabel)
+        
+        // 活动价
+        let activityPriceLabel = UILabel(frame: CGRectMake(UIUtil.screenWidth/3, 0, UIUtil.screenWidth/3, 60))
+        activityPriceLabel.textAlignment = NSTextAlignment.Center
+        activityPriceLabel.text = "活动价: \(specialPrice)"
+        activityPriceLabel.textColor = UIColor.whiteColor()
+        priceView.addSubview(activityPriceLabel)
+        
+        // 会员价
+        let vipPriceLabel = UILabel(frame: CGRectMake(UIUtil.screenWidth/3 * 2, 0, UIUtil.screenWidth/3, 60))
+        vipPriceLabel.textAlignment = NSTextAlignment.Center
+        vipPriceLabel.text = "充值价: \(vipPrice)"
+        vipPriceLabel.textColor = UIColor.whiteColor()
+        priceView.addSubview(vipPriceLabel)
+        
         
         loadCheckoutType()
     }
@@ -191,6 +216,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         
     }
     
+    // 发送结账请求
     func postCheckoutInfo() {
         var count = 0.0
         for voucher in voucherList {
@@ -203,6 +229,7 @@ class SettleViewController: UIViewController, UITableViewDataSource, UITableView
         jsonDic["checkout_id"] = checkoutType[selectedCheckoutTypeIndex].objectForKey("id")
         jsonDic["order_id"] = orderId
         jsonDic["wait"] = waitState
+        jsonDic["group_price"] = groupPrice
         let defaults = NSUserDefaults.standardUserDefaults()
         let userId = defaults.objectForKey("userId") as String
         jsonDic["user_id"] = userId

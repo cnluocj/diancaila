@@ -97,7 +97,6 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         let smailBgimgSelected1 = UIUtil.imageFromColor(UIUtil.screenWidth/3, height: 130, color: UIUtil.gray_system)
         
         balanceButton = CustomGrid(frame: CGRectMake(0, 0, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "money")!, title: "余额", detailTitle: "￥?")
-        balanceButton.addTarget(self, action: "didPressOrderButton:", forControlEvents: UIControlEvents.TouchUpInside)
         balanceButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
         balanceButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
         scrollView.addSubview(balanceButton)
@@ -107,25 +106,25 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         backMoneyButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
         scrollView.addSubview(backMoneyButton)
         
-        let couponButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3*2, 0, UIUtil.screenWidth/3, 130 - 0.8), image: UIImage(named: "ticket")!, title: "优惠券", detailTitle: "30张")
-        couponButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
-        couponButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
-        scrollView.addSubview(couponButton)
-        
-        let vipCardButton = CustomGrid(frame: CGRectMake(0, 0 + 130, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "vip")!, title: "会员卡", detailTitle: "30张")
-        vipCardButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
-        vipCardButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
-        scrollView.addSubview(vipCardButton)
-        
-        let saleButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3, 0 + 130, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "sale")!, title: "促销", detailTitle: "30项")
-        saleButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
-        saleButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
-        scrollView.addSubview(saleButton)
-        
-        let takeawayButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3*2, 0 + 130, UIUtil.screenWidth/3, 130 - 0.8), image: UIImage(named: "bike")!, title: "外卖", detailTitle: "30份")
-        takeawayButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
-        takeawayButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
-        scrollView.addSubview(takeawayButton)
+//        let couponButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3*2, 0, UIUtil.screenWidth/3, 130 - 0.8), image: UIImage(named: "ticket")!, title: "优惠券", detailTitle: "30张")
+//        couponButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
+//        couponButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
+//        scrollView.addSubview(couponButton)
+//        
+//        let vipCardButton = CustomGrid(frame: CGRectMake(0, 0 + 130, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "vip")!, title: "会员卡", detailTitle: "30张")
+//        vipCardButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
+//        vipCardButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
+//        scrollView.addSubview(vipCardButton)
+//        
+//        let saleButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3, 0 + 130, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "sale")!, title: "促销", detailTitle: "30项")
+//        saleButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
+//        saleButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
+//        scrollView.addSubview(saleButton)
+//        
+//        let takeawayButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3*2, 0 + 130, UIUtil.screenWidth/3, 130 - 0.8), image: UIImage(named: "bike")!, title: "外卖", detailTitle: "30份")
+//        takeawayButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
+//        takeawayButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
+//        scrollView.addSubview(takeawayButton)
         
         
         if isFirstLogin {

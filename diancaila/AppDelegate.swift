@@ -13,10 +13,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    var homeCV: UITabBarController!
+    // 主界面
+    var homeVC: UITabBarController!
     
-    var loginCV: LoginViewController!
+    // 登陆界面
+    var loginVC: LoginViewController!
     
+    // 导航控制器
     var nav: UINavigationController!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -28,40 +31,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
         
-        loginCV = LoginViewController()
+        loginVC = LoginViewController()
         nav = UIUtil.navController()
-        nav.pushViewController(loginCV, animated: false)
+        nav.pushViewController(loginVC, animated: false)
         
+        // 获取用户账户
         let defaults = NSUserDefaults.standardUserDefaults()
         let accout = defaults.stringForKey("account")
         
         if accout == nil {
             window?.addSubview(nav.view)
         } else {
-            homeCV = HomeViewController()
-            window?.addSubview(homeCV.view)
+            homeVC = HomeViewController()
+            window?.addSubview(homeVC.view)
         }
         
         window?.makeKeyAndVisible()
         
         return true
     }
-    
-    func getNavController() ->UINavigationController{
-        let navController = UINavigationController()
-        //20为iphone状态栏高度
-        let navImage = UIUtil.imageFromColor(UIUtil.screenWidth, height: navController.navigationBar.frame.height+20, color: UIUtil.navColor)
-        // 改变背景颜色，使用生成的纯色图片
-        navController.navigationBar.setBackgroundImage(navImage, forBarMetrics: UIBarMetrics.Default)
-        // 主体是否从顶部开始/是否透明
-        navController.navigationBar.translucent = false
-        // 改变title颜色
-        navController.navigationBar.titleTextAttributes = NSDictionary(object: UIColor.whiteColor(), forKey: NSForegroundColorAttributeName)
-        // 改变导航栏上字体颜色，除了title
-        navController.navigationBar.tintColor = UIColor.whiteColor()
-        return navController
-    }
-    
  
 
     func applicationWillResignActive(application: UIApplication) {

@@ -16,9 +16,9 @@ class DOrder: NSObject {
     var id: String = ""
     var deskId: Int = 0
     var orderTime: String = ""
-    var price: Double = 0.0
+    var price: Double = 0.0 // 原价
     var vipPrice: Double = 0.0
-    var truePrice: Double = 0.0
+    var truePrice: Double = 0.0 // 实际结账
     var orderList = [Order]()
     
     init(id: String, deskId: Int, orderTime: String, price: Double, vipPrice: Double) {

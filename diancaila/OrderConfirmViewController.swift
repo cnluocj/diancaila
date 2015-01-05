@@ -22,7 +22,6 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     var customerNumPicker: UIPickerView?
     var alertLabel: UILabel!
     var okButton: UIButton!
-    var waitIndicator: UIActivityIndicatorView?
     
     var customerNumSheet: CustomActionSheet?
     
@@ -153,15 +152,6 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
             }
         }
             
-        // 等待处理
-        waitIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
-        waitIndicator?.alpha = 0.8
-        waitIndicator?.layer.cornerRadius = 5
-        waitIndicator?.frame = CGRectMake(UIUtil.screenWidth/2 - 75, UIUtil.screenHeight/3 - 75, 150, 150)
-        waitIndicator?.backgroundColor = UIColor.grayColor()
-        waitIndicator?.startAnimating()
-        self.view.addSubview(waitIndicator!)
-        self.view.userInteractionEnabled = false
     
         // 生成json
         let defaults = NSUserDefaults.standardUserDefaults()
@@ -185,7 +175,7 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
         jsonDic["dish_list"] = dishList
         
         println(jsonDic)
-        ehttp.postWithUrl(HttpController.apiSubmitOrder, andJson: jsonDic, forIdentifier: httpIdWithSubmitOrder)
+        ehttp.postWithUrl(HttpController.apiSubmitOrder, andJson: jsonDic, forIdentifier: httpIdWithSubmitOrder, inView: self.view)
     }
     
     
@@ -421,9 +411,6 @@ class OrderConfirmViewController: UIViewController, UITableViewDataSource, UITab
     // JSONProtocol
     func didFinishParseOrderId(orderId: String) {
         self.orderId = orderId
-        
-        waitIndicator?.stopAnimating()
-        self.view.userInteractionEnabled = true
         
         let alert = UIAlertView(title: "下单成功", message: "订单号: \(self.orderId)", delegate: self, cancelButtonTitle: "确定")
         alert.delegate = self

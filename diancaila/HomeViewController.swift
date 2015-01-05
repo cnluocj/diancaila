@@ -18,6 +18,7 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
     
     var user: User!
     
+    // 在login界面传进来
     var isFirstLogin = false
     
     var mainViewController: ViewController!
@@ -25,8 +26,6 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
     var discoverViewController: DiscoverViewController!
     
     var meViewController: MeViewController!
-    
-    var waitIndication = UIUtil.waitIndicator()
     
     var httpController = HttpController()
     
@@ -51,7 +50,7 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
             jsonDic["pwd"] = pwd
 //            var data = NSJSONSerialization.dataWithJSONObject(jsonDic, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
             
-            httpController.postWithUrl(HttpController.apiLogin(), andJson: jsonDic, forIdentifier: httpIdWithLogin)
+            httpController.postWithUrl(HttpController.apiLogin(), andJson: jsonDic, forIdentifier: httpIdWithLogin, inView: self.view)
             httpController.deletage = self
             jsonController.parseDelegate = self
         
@@ -82,9 +81,6 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
         self.viewControllers = NSArray(objects: mainNavController, discoverNavController, meNavController)
         
         
-        waitIndication.startAnimating()
-        self.view.addSubview(waitIndication)
-        self.view.userInteractionEnabled = false
     }
     
     func getNavController() ->UINavigationController{
@@ -129,10 +125,6 @@ class HomeViewController: UITabBarController, HttpProtocol, JSONParseProtocol {
     }
     
     func didFinishParseUserInfo(user: User) {
-        
-        waitIndication.stopAnimating()
-        waitIndication.removeFromSuperview()
-        self.view.userInteractionEnabled = true
         
         self.user = user
         

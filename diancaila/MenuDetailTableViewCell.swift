@@ -79,7 +79,8 @@ class MenuDetailTableViewCell: UITableViewCell {
             let queue = NSOperationQueue()
             NSURLConnection.sendAsynchronousRequest(
                 request, queue: queue, completionHandler: { (response, data, error) -> Void in
-                let image = UIImage(data: data)
+                    let image = UIImage(data: data)
+                        
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.foodImage!.image = image
                     })

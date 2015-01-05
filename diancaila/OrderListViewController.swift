@@ -377,7 +377,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         case httpIdWithTodayCount:
             if result["error"] == nil {
                 let data = result["result"] as NSDictionary
-                let money = data["earncount"] as? String
+                let money: AnyObject? = data["earncount"]
                 moneyLabel.text = "今天营业额为: ¥ \(money!)"
             } else {
                 moneyLabel.text = "null"
@@ -464,7 +464,7 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             let date = (allOrder[indexPath.row] as DOrder).orderTime
             let time = date.componentsSeparatedByString(" ")[1]
-            let earn = (allOrder[indexPath.row] as DOrder).price
+            let earn = (allOrder[indexPath.row] as DOrder).truePrice
             cell?.detailTextLabel?.text = "¥ \(earn)  |  \(time)"
             
         } else {
@@ -482,26 +482,12 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     
+    // 必须重写这个方法，不然table无法左滑显示操作选项
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-//        if tableView == didNotFinishOrderTableView {
-//            if editingStyle == UITableViewCellEditingStyle.Delete {
-//                
-//                tableViewCellEditingIndexPath = indexPath
-//                
-//                foodStateAlert = UIAlertView(title: "选择状态", message: "", delegate: self, cancelButtonTitle: "更多", otherButtonTitles: "上菜")
-//
-//                foodStateAlert.show()
-//                
-//                
-//            }
-//        }
     }
     
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
         let finishAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "上菜") { (UITableViewRowAction, NSIndexPath) -> Void in
-            
-            
-           
             
             self.tableViewCellEditingIndexPath = indexPath
             

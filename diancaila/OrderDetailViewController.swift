@@ -251,8 +251,14 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         settleVC.orderId = orderId
         settleVC.vipPrice = (orderDetail["vip_totalprice"] as NSString).doubleValue
         settleVC.price = (orderDetail["totalprice"] as NSString).doubleValue
+        let groupPrice = orderDetail["group_price"] as? NSString
+        if groupPrice != nil {
+            settleVC.groupPrice = groupPrice?.doubleValue
+        } else {
+            settleVC.groupPrice = -1
+        }
+        settleVC.specialPrice = (orderDetail["special_totalprice"] as NSString).doubleValue
         settleVC.deletage = self
-//        self.navigationController?.presentViewController(settleVC, animated: true, completion: nil)
         self.navigationController?.pushViewController(settleVC, animated: true)
     }
     
@@ -406,6 +412,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
         let vipPrice = item["vip_price"] as String
         let specialPrice = item["special_price"] as String
         let state = item["state"] as String
+        
  
         let separator = UIView(frame: CGRectMake(16, 21.5, 359, 1))
         separator.backgroundColor = UIColor.grayColor()
@@ -431,6 +438,7 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 
                 cell.detailTextLabel?.text = "x \(sameDishArray.count)   ¥\(price) | ¥\(vipPrice)"
                 
+                // 显示上菜的 划线
                 var isAllDidFinish = true
                 for food in sameDishArray {
                     let tempFood = food as NSDictionary
@@ -445,6 +453,12 @@ class OrderDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 }
                 
             }
+        }
+        
+        // 团购
+        let group = item["group_name"] as? String
+        if group != nil {
+            cell.detailTextLabel?.text = group
         }
        
         return cell

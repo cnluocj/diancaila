@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc protocol HttpProtocol {
     
@@ -90,6 +91,7 @@ return "http://dclweixin.diancai.la"
         return path() + "/order/today_count?clerk_shop_id=\(shop_id)"
     }
     
+    // 获取支付方式
     class func apiCheckoutType(shopId: String) -> String {
         return path() + "/order/checkout_type?clerk_shop_id=\(shopId)"
     }
@@ -140,6 +142,7 @@ return "http://dclweixin.diancai.la"
     }
     
     func postWithUrl(url: String, andJson json: NSDictionary, forIdentifier identifier: String) {
+        
         var nsUrl: NSURL! = NSURL(string: url)
         var request = NSMutableURLRequest(URL: nsUrl)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -163,17 +166,123 @@ return "http://dclweixin.diancai.la"
     }
     
     
+    
+    func postWithUrl(url: String, andJson json: NSDictionary, forIdentifier identifier: String, inView view: UIView!) {
+        
+        var isTimeout = false
+        
+        // 开始等待 动画
+        let waitIndicator = UIUtil.waitIndicator()
+        waitIndicator.startAnimating()
+        view.addSubview(waitIndicator)
+        view.userInteractionEnabled = false
+        
+        // 计时器
+        var timer: NSTimer? = NSTimer.scheduledTimerWithTimeInterval(8, target: self, selector: "timerAction:", userInfo: ["wait": waitIndicator, "view": view], repeats: false)
+        
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request = NSMutableURLRequest(URL: nsUrl)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPMethod = "POST"
+        var data = NSJSONSerialization.dataWithJSONObject(json, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+        request.HTTPBody = data
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            
+            //            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            //            println(string)
+            //            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            
+            if error == nil {
+                // 停止计时器
+                timer?.invalidate()
+                timer = nil
+                
+                // 结束等待动画
+                waitIndicator.removeFromSuperview()
+                view.userInteractionEnabled = true
+                
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                
+                self.deletage?.httpControllerDidReceiveResult!(jsonResult, forIdentifier: identifier)
+                
+
+            }
+        }
+    }
+    
+    func timerAction(sender: NSTimer) {
+        let dic = sender.userInfo as [String: AnyObject]
+        let waitIndicator = dic["wait"] as? UIActivityIndicatorView
+        let view = dic["view"] as? UIView
+        
+        // 结束等待动画
+        if waitIndicator != nil {
+            waitIndicator!.stopAnimating()
+            waitIndicator!.removeFromSuperview()
+        }
+        if view != nil {
+            view!.userInteractionEnabled = true
+        }
+        
+        // 弹出提示框
+        let alert = UIAlertView(title: "网络连接出问题了 0.0", message: "", delegate: nil, cancelButtonTitle: "好吧我检查一下")
+        alert.show()
+    }
+    
+    
     func getWithUrl(url: String, forIndentifier identifier: String) {
+        println(url)
         var nsUrl: NSURL! = NSURL(string: url)
         var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
             response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             
-//            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-//            println(string)
-//            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+            println(string)
+            let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
             
             if error == nil {
+                var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
+                
+                self.deletage?.httpControllerDidReceiveResult!(jsonResult, forIdentifier: identifier)
+            }
+        }
+    }
+    
+    
+    func getWithUrl(url: String, forIndentifier identifier: String, inView view: UIView) {
+        println(url)
+        
+        var isTimeout = false
+        
+        // 开始等待 动画
+        let waitIndicator = UIUtil.waitIndicator()
+        waitIndicator.startAnimating()
+        view.addSubview(waitIndicator)
+        view.userInteractionEnabled = false
+        
+        // 计时器
+        var timer: NSTimer? = NSTimer.scheduledTimerWithTimeInterval(8, target: self, selector: "timerAction:", userInfo: ["wait": waitIndicator, "view": view], repeats: false)
+        
+        
+        var nsUrl: NSURL! = NSURL(string: url)
+        var request: NSURLRequest  = NSURLRequest(URL: nsUrl)
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (
+            response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            
+                        let string = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println(string)
+                        let tempData = string?.dataUsingEncoding(NSUTF8StringEncoding)
+            
+            if error == nil {
+                // 停止计时器
+                timer?.invalidate()
+                timer = nil
+                // 结束等待动画
+                waitIndicator.removeFromSuperview()
+                view.userInteractionEnabled = true
+                
                 var jsonResult: NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: NSErrorPointer()) as NSDictionary
                 
                 self.deletage?.httpControllerDidReceiveResult!(jsonResult, forIdentifier: identifier)

@@ -20,8 +20,6 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
     
     var registerButton: UIButton!
     
-    var waitIndicator = UIUtil.waitIndicator()
-    
     let httpController = HttpController()
     
     let jsonController = JSONController()
@@ -101,11 +99,8 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         let dic = NSMutableDictionary()
         dic["name"] = accountTF.text
         dic["pwd"] = pwdTF.text
-        httpController.postWithUrl(HttpController.apiLogin(), andJson: dic, forIdentifier: httpIdWithLogin)
+        httpController.postWithUrl(HttpController.apiLogin(), andJson: dic, forIdentifier: httpIdWithLogin, inView: self.view)
         
-        waitIndicator.startAnimating()
-        self.view.addSubview(waitIndicator)
-        self.view.userInteractionEnabled = false
     }
 
     // MARK: - HttpProtocol
@@ -122,10 +117,6 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
         if let error = result["error"] as? String {
             println(error)
             
-            waitIndicator.stopAnimating()
-            waitIndicator.removeFromSuperview()
-            self.view.userInteractionEnabled = true
-            
         } else {
             let defaults = NSUserDefaults.standardUserDefaults()
             defaults.setObject(accountTF.text, forKey: "account")
@@ -137,9 +128,6 @@ class LoginViewController: UIViewController, HttpProtocol, JSONParseProtocol {
     
     // MARK: - JSONParseProtocol
     func didFinishParseUserInfo(user: User) {
-        waitIndicator.userInteractionEnabled = true
-        waitIndicator.stopAnimating()
-        waitIndicator.removeFromSuperview()
         
         self.user = user
         let defaults = NSUserDefaults.standardUserDefaults()
