@@ -317,7 +317,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
         var count = 0
         for ordlist in self.orderDic.values {
             for ord in ordlist {
-                ord.menuIndex = count++ // 定位标记
+//                ord.menuIndex = count++ // 定位标记
+                ord.indexPath = NSIndexPath(forRow: count++, inSection: 0)
                 self.orderList.addObject(ord)
             }
         }
@@ -532,7 +533,8 @@ class OrderListViewController: UIViewController, UITableViewDelegate, UITableVie
             searchController.setActive(false, animated: true)
             
             let order: Order = filterData?.objectAtIndex(indexPath.row) as Order
-            let outSideIndexPath = NSIndexPath(forRow: order.menuIndex, inSection: order.menuTypeIndex)
+//            let outSideIndexPath = NSIndexPath(forRow: order.menuIndex, inSection: order.menuTypeIndex)
+            let outSideIndexPath = order.indexPath
             didNotFinishOrderTableView.scrollToRowAtIndexPath(outSideIndexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
             
         } else if tableView == didNotPayTableView {

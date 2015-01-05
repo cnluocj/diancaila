@@ -15,8 +15,8 @@ import AudioToolbox
 
 class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, JSONParseProtocol, HttpProtocol, OrderConfirmViewControllerDelegate, UISearchBarDelegate {
 
-    var tableView1: UITableView!
-    var tableView2: UITableView!
+    var tableView1: UITableView?
+    var tableView2: UITableView?
     var countView: UIView!
     var badge: UIButton!
     var priceLabel: UILabel!
@@ -38,9 +38,14 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     let menuCellHeight = CGFloat(50)
     let menuDetailCellHeight = CGFloat(90)
     
+    // 下单栏高度
     let countViewHeight = CGFloat(60)
     
+    // 内容高度
     var contentHeight : CGFloat!
+    
+    // 搜索框高度
+    var searchbarHeight = CGFloat(44)
     
     // 菜单类型
     var menuTypeArray: NSArray = NSArray()
@@ -55,7 +60,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     // 订单     key 为 "menuTypeIndex_menuIndex"  用于记录每样订单在表中的位置
-    var orderList: [String:Order] = [:]
+    var orderList: [NSIndexPath:Order] = [:]
     // 订单总份数
     var orderCount = 0
     // 金额
@@ -94,7 +99,6 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
         self.view.backgroundColor = UIColor.whiteColor()
         
-        
         let navHeight = self.navigationController?.navigationBar.frame.height ?? 0
         // 除了导航，底下内容的高度
         contentHeight = UIUtil.screenHeight - UIUtil.statusHeight - navHeight
@@ -105,12 +109,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
         
         // 目录菜单
-        tableView1 = UITableView(frame: CGRectMake(0, 0, UIUtil.screenWidth/7 * 2, contentHeight - countViewHeight))
-        tableView1.delegate = self
-        tableView1.dataSource = self
-        tableView1.backgroundColor = UIUtil.gray
-        setExtraCellLineHidden(tableView1)
-        self.view.addSubview(tableView1)
+        tableView1 = UITableView(frame: CGRectMake(0, searchbarHeight, UIUtil.screenWidth/7 * 2, contentHeight - countViewHeight - searchbarHeight))
+        tableView1!.delegate = self
+        tableView1!.dataSource = self
+        tableView1!.backgroundColor = UIUtil.gray
+        setExtraCellLineHidden(tableView1!)
+        self.view.addSubview(tableView1!)
         
         
         // 分割线
@@ -121,24 +125,23 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         // 详细菜单
-        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight - 44))
-        tableView2.delegate = self
-        tableView2.dataSource = self
-        self.view.addSubview(tableView2)
-        setExtraCellLineHidden(tableView2)
+        tableView2 = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, searchbarHeight, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight - searchbarHeight))
+        tableView2!.delegate = self
+        tableView2!.dataSource = self
+        self.view.addSubview(tableView2!)
+        setExtraCellLineHidden(tableView2!)
         
-        searchBar = UISearchBar(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 0, (UIUtil.screenWidth/7)*5, 44))
+        searchBar = UISearchBar(frame: CGRectMake(0, 0, UIUtil.screenWidth, searchbarHeight))
         searchBar.placeholder = "搜索"
         searchBar.delegate = self
         self.view.addSubview(searchBar)
         
         // 搜索列表
-        searchBarTableView = UITableView(frame: CGRectMake(UIUtil.screenWidth/7*2+1, 44, (UIUtil.screenWidth/7)*5, contentHeight - countViewHeight - 44))
+        searchBarTableView = UITableView(frame: CGRectMake(0, searchbarHeight, UIUtil.screenWidth, contentHeight - countViewHeight - searchbarHeight))
         searchBarTableView.delegate = self
         searchBarTableView.dataSource = self
         
-        
-         // 订单列表
+        // 订单列表
         orderListView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight , UIUtil.screenWidth, UIUtil.screenHeight*2))
         orderListView.backgroundColor = UIColor.clearColor()
         self.view.addSubview(orderListView)
@@ -151,7 +154,7 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         orderListView.addSubview(orderListTableView)
         
         
-        // 下单栏
+        // 下单栏 -----------------------------------------------
         countView = UIView(frame: CGRectMake(0, contentHeight - countViewHeight , UIUtil.screenWidth, countViewHeight))
         countView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(countView)
@@ -291,9 +294,10 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func closeOrderListView() {
-         tableView2.reloadData()
+        tableView2!.reloadData()
+        println("\(orderList.count)")
         
-         UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
+        UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
             self.orderListView.transform = CGAffineTransformMakeTranslation(0, self.contentHeight - self.countViewHeight)
         }, completion: nil)
         
@@ -336,8 +340,8 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func didFinishParseMenuTypeAndReturn(menuTypeArray: NSArray) {
         
         self.menuTypeArray = menuTypeArray ?? NSArray()
-        tableView1.reloadData()
-        tableView1.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
+        tableView1!.reloadData()
+        tableView1!.selectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
         
         // 分配空间 menuDetail
         for menuType in self.menuTypeArray {
@@ -371,15 +375,18 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             menuDetail[typeId]?.append(menu as Menu)
         }
         
-        tableView2.reloadData()
+        tableView2!.reloadData()
     }
     
  
     
     // MARK: - UITableViewDelegate / UITableViewDataSource
+    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if tableView == self.tableView1 {
             return 1
+        } else if tableView == self.tableView2 {
+            return menuDetail.count
         } else {
             return 1
         }
@@ -394,35 +401,17 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if menuDetail.count == 0{
                 return 0
             } else {
-                
-                if let menuArray = menuDetail["\(menuTypeIndex)"] {
-                    return menuArray.count
-                    
-                } else {
-                    return 0
-                }
+                let typeId = menuTypeArray[section].id as String
+                return (menuDetail[typeId]! as [Menu]).count
             }
             
         } else if tableView == searchBarTableView {
             // 谓词搜索
             
-            // todo
-//            var menuArray = NSMutableArray()
-//            for t in menuTypeArray {
-//                let type = t as MenuType
-//                if let array = menuDetail["\(menuTypeIndex)"] {
-//                }
-//            }
-            
-            if let menuArray = menuDetail["\(menuTypeIndex)"] {
-                let predicate = NSPredicate(format: "name contains [cd] %@", searchBar.text)
-                filterData =  NSArray(array: NSMutableArray(array: menuArray).filteredArrayUsingPredicate(predicate!))
-                if let fData = filterData {
-                    return fData.count
-                } else {
-                    return 0
-                }
-                
+            let predicate = NSPredicate(format: "name contains [cd] %@", searchBar.text)
+            filterData =  NSArray(array: NSMutableArray(array: allMenu()).filteredArrayUsingPredicate(predicate!))
+            if let fData = filterData {
+                return fData.count
             } else {
                 return 0
             }
@@ -434,10 +423,29 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
     }
     
+    
+    // 把所有菜放到一个数组里，方便搜索
+    func allMenu() -> NSMutableArray {
+        let allMenuArray = NSMutableArray()
+        for menuArray in menuDetail.values {
+            allMenuArray.addObjectsFromArray(menuArray)
+        }
+        
+        return allMenuArray
+    }
+    
+    
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if orderListTableView != nil {
             if tableView == orderListTableView {
                 return "点餐清单"
+            }
+        }
+        
+        if tableView == tableView2 {
+            if menuTypeArray.count > 0 {
+                return menuTypeArray[section].name
+                
             }
         }
         return nil
@@ -460,17 +468,17 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             return cell! as UITableViewCell
             
-        } else if tableView == self .tableView2 {
+        } else if tableView == self.tableView2 {
             
-            var menu = (menuDetail["\(menuTypeIndex)"] as Array!)[indexPath.row]
+            var menu = menuDetail[menuTypeArray[indexPath.section].id]![indexPath.row]
         
-            var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, _menuStyleIndex: menuTypeIndex, _menuIndex: indexPath.row, _menu: menu, _viewContriller: self, _superTableView: tableView)
+            var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, indexPath: indexPath, menu: menu, viewContriller: self, superTableView: tableView)
             
             let tempCell  = cell as MenuDetailTableViewCell
             
             tempCell.set(menu.name, price: menu.price)
             
-            let order: Order? = orderList["\(menuTypeIndex)_\(indexPath.row)"]
+            let order: Order? = orderList[indexPath]
             if let tempOrder = order {
                 tempCell.badge.hidden = false
                 tempCell.badge.setTitle("\(tempOrder.count)", forState: UIControlState.Normal)
@@ -488,9 +496,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             var cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: "")
             cell.textLabel?.text = menu.name
             return cell
-        }else {
+        } else {
             let order = orderList.values.array[indexPath.row]
-            var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, _menuStyleIndex: order.menuTypeIndex, _menuIndex: order.menuIndex, _menu: order.menu, _viewContriller: self, _superTableView: tableView)
+            
+            // indexPath 传的是外面菜单的 位置
+            var cell = MenuDetailTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: menuDetailCellStyle, indexPath: order.indexPath, menu: order.menu, viewContriller: self, superTableView: tableView)
             
             let tempCell  = cell as MenuDetailTableViewCell
             
@@ -506,22 +516,55 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     
+    var selectedMenuTypeRow = 0
+    var isScrollTo = true // 判断是滑动到达的， 还是点击 到达的
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView == tableView1 {
-            let typeIdIntValue = NSString(string: "\(menuTypeArray[indexPath.row].id)").integerValue
-            menuTypeIndex = typeIdIntValue
-            tableView2.reloadData()
+            isScrollTo = false
+            
+            selectedMenuTypeRow = indexPath.row
+            tableView2!.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: indexPath.row), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
             
         } else if tableView == searchBarTableView {
             searchBar.text = ""
             
+            var typeId = (filterData?.objectAtIndex(indexPath.row) as Menu).typeId
+            var section = 0
+            for menuType in menuTypeArray {
+                if menuType.id == typeId {
+                    break
+                } else {
+                    section++
+                }
+            }
+            
             var searchIndex = (filterData?.objectAtIndex(indexPath.row) as Menu).index
-            tableView2.scrollToRowAtIndexPath(NSIndexPath(forRow: searchIndex, inSection: 0), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+            println("\(section) -- \(searchIndex)")
+            tableView2!.scrollToRowAtIndexPath(NSIndexPath(forRow: searchIndex, inSection: section), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
             searchBarTableView.removeFromSuperview()
             
         }
         
+    }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        if tableView == tableView2 {
+            if isScrollTo {
+                tableView1?.selectRowAtIndexPath(NSIndexPath(forRow: indexPath.section, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
+            } else {
+                if indexPath.section == selectedMenuTypeRow {
+                    tableView1?.selectRowAtIndexPath(NSIndexPath(forRow: indexPath.section, inSection: 0), animated: false, scrollPosition: UITableViewScrollPosition.Top)
+                    isScrollTo = true
+                }
+            }
+        }
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        // 隐藏键盘
+        searchBar.resignFirstResponder()
     }
     
     
@@ -535,16 +578,11 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
   
     func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if (tableView == self.tableView2 && searchBarIsEmpty) || tableView == self.orderListTableView {
+        if tableView == self.tableView2 || tableView == self.orderListTableView {
             return false
         } else {
             return true
         }
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     // 隐藏tableview多余分割线
@@ -555,21 +593,21 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 
     
-    // OrderConfirmViewControllerDelegate
+    // MARK: - OrderConfirmViewControllerDelegate
     func OrderDidFinish() {
         orderList = [:]
         orderPrice = 0
         orderCount = 0
         orderListIsOpen = false
         
-        tableView2.reloadData()
+        tableView2!.reloadData()
         badge.setTitle("\(orderCount)", forState: UIControlState.Normal)
         badge.hidden = true
         priceLabel.text = "￥\(orderPrice)"
         chooseOverButton.enabled = false
     }
     
-    // UISearchBarDelegate
+    // MARK: - UISearchBarDelegate
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
     }

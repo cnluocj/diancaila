@@ -19,8 +19,9 @@ class MenuDetailTableViewCell: UITableViewCell {
     var preNum = 0.0
     
     
-    var menuStyleIndex: Int!
-    var menuIndex: Int!
+//    var menuStyleIndex: Int!
+//    var menuIndex: Int!
+    var indexPath: NSIndexPath!
     var menu: Menu!
     var viewcontroller: OrderViewController!
     var superTableView: UITableView!
@@ -42,14 +43,13 @@ class MenuDetailTableViewCell: UITableViewCell {
         
     }
     
-    convenience init(style: UITableViewCellStyle, reuseIdentifier: String?, _menuStyleIndex: Int, _menuIndex: Int, _menu: Menu, _viewContriller: OrderViewController, _superTableView: UITableView) {
+    convenience init(style: UITableViewCellStyle, reuseIdentifier: String?, indexPath: NSIndexPath, menu: Menu, viewContriller: OrderViewController, superTableView: UITableView) {
         self.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        viewcontroller = _viewContriller
-        menuIndex = _menuIndex
-        menu = _menu
-        menuStyleIndex = _menuStyleIndex
-        superTableView = _superTableView
+        self.viewcontroller = viewContriller
+        self.menu = menu
+        self.indexPath = indexPath
+        self.superTableView = superTableView
         
         
         if menu.isActivity {
@@ -122,7 +122,7 @@ class MenuDetailTableViewCell: UITableViewCell {
     
     func imageTapGesture(gesture: UITapGestureRecognizer) {
         
-        let rectInTableView = superTableView.rectForRowAtIndexPath(NSIndexPath(forRow: menuIndex, inSection: 0))
+        let rectInTableView = superTableView.rectForRowAtIndexPath(indexPath)
         var x = rectInTableView.origin.x
         var y = rectInTableView.origin.y
         let imageRectInTableView = CGRectMake(x + 15, y + 10 + 44, 50, 50)
@@ -150,7 +150,7 @@ class MenuDetailTableViewCell: UITableViewCell {
             foodDescTextView?.editable = false
             foodDescTextView?.font = UIFont.systemFontOfSize(15)
             foodDescTextView?.text = menu.desc
-            foodDescTextView?.text = "习近平指出，办好中国特色社会主义大学，要坚持立德树人，把培育和践行社会主义核心价值观融入教书育人全过程；强化思想引领，牢牢把握高校意识形态工作领导权；坚持和完善党委领导下的校长负责制，不断改革和完善高校体制机制；全面推进党的建设各项工作，有效发挥基层党组织战斗堡垒作用和共产党员先锋模范作用。各级党委和宣传思想部门、组织部门、教育部门要加强对高校党的建设工作的领导和指导，坚持党的教育方针，坚持社会主义办学方向，加强和改进思想政治工作，切实把党要管党、从严治党落到实处。"
+//            foodDescTextView?.text = "习近平指出，办好中国特色社会主义大学，要坚持立德树人，把培育和践行社会主义核心价值观融入教书育人全过程；强化思想引领，牢牢把握高校意识形态工作领导权；坚持和完善党委领导下的校长负责制，不断改革和完善高校体制机制；全面推进党的建设各项工作，有效发挥基层党组织战斗堡垒作用和共产党员先锋模范作用。各级党委和宣传思想部门、组织部门、教育部门要加强对高校党的建设工作的领导和指导，坚持党的教育方针，坚持社会主义办学方向，加强和改进思想政治工作，切实把党要管党、从严治党落到实处。"
             textView?.addSubview(foodDescTextView!)
             
             
@@ -220,7 +220,8 @@ class MenuDetailTableViewCell: UITableViewCell {
             
             badge.hidden = true
             
-            self.viewcontroller.orderList.removeValueForKey("\(menuStyleIndex)_\(menuIndex)")
+//            self.viewcontroller.orderList.removeValueForKey("\(menuStyleIndex)_\(menuIndex)")
+            self.viewcontroller.orderList.removeValueForKey(indexPath)
             
             if self.superTableView == self.viewcontroller.orderListTableView {
                 self.superTableView.reloadData()
@@ -231,8 +232,9 @@ class MenuDetailTableViewCell: UITableViewCell {
             badge.hidden = false
             badge.setTitle("\(Int(sender.value))", forState: UIControlState.Normal)
             
-            let order = Order(menuTypeIndex: self.menuStyleIndex, menuIndex: self.menuIndex, menu: menu, count: Int(sender.value))
-            self.viewcontroller.orderList["\(self.menuStyleIndex)_\(menuIndex)"] = order
+//            let order = Order(menuTypeIndex: indexPath.section, menuIndex: indexPath.row, menu: menu, count: Int(sender.value))
+            let order = Order(indexPath: indexPath, menu: menu, count: Int(sender.value))
+            self.viewcontroller.orderList[indexPath] = order
         }
         
         

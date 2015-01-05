@@ -11,8 +11,7 @@ import Foundation
 // 单个菜品
 class Order: NSObject {
     
-    var menuTypeIndex: Int = 0
-    var menuIndex: Int = 0
+    var indexPath: NSIndexPath!
     var menu: Menu = Menu()
     var count: Int = 0
     var deskId: Int = 0
@@ -23,17 +22,15 @@ class Order: NSObject {
     
     var isSelected = false // 是否在table中被选中了
     
-    init(menuTypeIndex: Int, menuIndex: Int, menu: Menu, count: Int) {
-        self.menuTypeIndex = menuTypeIndex
-        self.menuIndex = menuIndex
+    init(indexPath: NSIndexPath, menu: Menu, count: Int) {
+        self.indexPath = indexPath
         self.menu = menu
         self.count = count
     }
     
-    convenience init(menuTypeIndex: Int,  menuIndex: Int, menu: Menu, deskId: Int) {
+    convenience init(indexPath: NSIndexPath, menu: Menu, deskId: Int) {
         self.init(menu: menu, deskId: deskId)
-        self.menuIndex = menuIndex
-        self.menuTypeIndex = menuTypeIndex
+        self.indexPath = indexPath
     }
     
     // 等待上的菜
