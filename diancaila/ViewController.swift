@@ -106,11 +106,11 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         backMoneyButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
         scrollView.addSubview(backMoneyButton)
         
-//        let couponButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3*2, 0, UIUtil.screenWidth/3, 130 - 0.8), image: UIImage(named: "ticket")!, title: "优惠券", detailTitle: "30张")
-//        couponButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
-//        couponButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
-//        scrollView.addSubview(couponButton)
-//        
+        let couponButton = CustomGrid(frame: CGRectMake(UIUtil.screenWidth/3*2, 0, UIUtil.screenWidth/3, 130 - 0.8), image: UIImage(named: "ticket")!, title: "优惠券", detailTitle: "30张")
+        couponButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
+        couponButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)
+        scrollView.addSubview(couponButton)
+        
 //        let vipCardButton = CustomGrid(frame: CGRectMake(0, 0 + 130, UIUtil.screenWidth/3 - 0.8, 130 - 0.8), image: UIImage(named: "vip")!, title: "会员卡", detailTitle: "30张")
 //        vipCardButton.setBackgroundImage(smailBgimg1, forState: UIControlState.Normal)
 //        vipCardButton.setBackgroundImage(smailBgimgSelected1, forState: UIControlState.Highlighted)

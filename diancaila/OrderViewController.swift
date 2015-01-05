@@ -528,7 +528,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
         } else if tableView == searchBarTableView {
             searchBar.text = ""
+            // 收起搜索栏
+            searchBarTableView.removeFromSuperview()
+            searchBar.resignFirstResponder()
             
+            
+            // 通过 menutypeid 和 index 定位
             var typeId = (filterData?.objectAtIndex(indexPath.row) as Menu).typeId
             var section = 0
             for menuType in menuTypeArray {
@@ -564,7 +569,10 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         // 隐藏键盘
-        searchBar.resignFirstResponder()
+        if scrollView == searchBarTableView {
+            searchBar.resignFirstResponder()
+        }
+        
     }
     
     
@@ -608,8 +616,12 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     // MARK: - UISearchBarDelegate
+    
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
         searchBar.showsCancelButton = true
+        
+        // 开始编辑时，显示searchbar 的 搜索结果列表
+        self.view.addSubview(searchBarTableView)
     }
     
     func searchBarTextDidEndEditing(searchBar: UISearchBar) {
@@ -618,16 +630,10 @@ class OrderViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
+        searchBarTableView.removeFromSuperview()
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText == "" {
-            searchBarTableView.removeFromSuperview()
-            searchBarIsEmpty = true
-        } else {
-            searchBarIsEmpty = false
-            self.view.addSubview(searchBarTableView)
-        }
         searchBarTableView.reloadData()
     }
     
